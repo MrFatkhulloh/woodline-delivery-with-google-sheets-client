@@ -59,6 +59,10 @@ export default function Simple() {
                     <NavLink to="/admin/new-furniture-type">Модели</NavLink>
                     <NavLink to="/admin">Пользователи</NavLink>
                   </>
+                ) : role == "ACCOUNTANT" ? (
+                  <>
+                    <NavLink to={"/pay-salary"}>Заявки</NavLink>
+                  </>
                 ) : (
                   <div>"Вы пока не админ!"</div>
                 )}

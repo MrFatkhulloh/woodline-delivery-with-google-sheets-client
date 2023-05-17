@@ -17,6 +17,7 @@ import AddUserModal from "./AddUserModal";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { OpenModalContext } from "../../../Contexts/ModalContext/ModalContext";
+import EditUserModal from "./EditUserModal";
 
 const companies = [
   {
@@ -38,8 +39,15 @@ const companies = [
 
 export default function AdminLinkList() {
   const { onOpen, isOpen, onClose } = useDisclosure();
+  const {
+    onOpen: editOpen,
+    isOpen: editIsOpen,
+    onClose: editClose,
+  } = useDisclosure();
   const { token } = useContext(OpenModalContext);
   const [users, setUsers] = useState([]);
+  const [userId, setUserId] = useState("");
+  const [reload, setReload] = useState(false);
 
   const handleActive = (activeIndex) => {
     const newUsers = users.map((user, index) => {
@@ -56,7 +64,6 @@ export default function AdminLinkList() {
 
   const handleActivate = (activeIndex) => {
     const foundUser = users[activeIndex];
-    console.log(foundUser);
     axios
       .patch(
         "/seller",
@@ -89,16 +96,29 @@ export default function AdminLinkList() {
         },
       })
       .then((response) => {
+        console.log(response);
         setUsers(response.data);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [reload]);
+
+  console.log(users);
 
   return (
     <>
       <AddUserModal onOpen={onOpen} isOpen={isOpen} onClose={onClose} />
+
+      <EditUserModal
+        reload={reload}
+        setReload={setReload}
+        onOpen={editOpen}
+        isOpen={editIsOpen}
+        onClose={editClose}
+        user={userId}
+      />
+
       <Layout>
         <Flex justifyContent="space-between" alignItems="center" my={5}>
           <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
@@ -117,6 +137,7 @@ export default function AdminLinkList() {
                 <Th>Компания</Th>
                 <Th>Роль</Th>
                 <Th>Активен</Th>
+                <Th>Изменять</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -138,9 +159,21 @@ export default function AdminLinkList() {
                     <Td>
                       <Switch
                         size="lg"
+                        colorScheme="green"
                         defaultChecked={e.is_active}
                         onChange={() => handleActivate(i)}
                       />
+                    </Td>
+                    <Td>
+                      <Button
+                        colorScheme="yellow"
+                        onClick={() => {
+                          setUserId(e);
+                          editOpen();
+                        }}
+                      >
+                        Изменять
+                      </Button>
                     </Td>
                   </Tr>
                 ))}

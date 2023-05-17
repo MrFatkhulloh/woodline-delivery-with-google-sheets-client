@@ -8,6 +8,9 @@ import Admin from "./Pages/Admin/main/Admin";
 import NotFoundPage from "./Pages/404/404";
 import LastModal from "./components/checkupModal/checkupModal";
 import { OpenModalContext } from "./Contexts/ModalContext/ModalContext";
+import PaySalary from "./Pages/pay-salary/pay-salary";
+import Companys from "./Pages/companys/companys";
+import Wallets from "./Pages/wallets/wallets";
 
 const token = window.localStorage.getItem("token");
 
@@ -17,6 +20,7 @@ function App() {
   const handleNavigate = () => {
     navigate("/login");
   };
+
   useEffect(() => {
     if (!token) {
       handleNavigate();
@@ -30,6 +34,9 @@ function App() {
         <Route path="/" element={<Order />} />
         <Route path="/admin/*" element={<Admin />} />
         <Route path="/my-orders" element={<MyOrders />} />
+        <Route path="/pay-salary" element={<PaySalary />} />
+        <Route path="/companys" element={<Companys />} />
+        <Route path="/wallets" element={<Wallets />} />
         <Route path="/login" element={<LoginModal />} />
         <Route path="/*" element={<NotFoundPage />} />
       </Routes>

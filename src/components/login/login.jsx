@@ -35,10 +35,11 @@ export default function LoginModal() {
         password: password.trim(),
       })
       .then((response) => {
+        console.log(response);
         if (response.data != "Error") {
           setLoading(false);
-          window.localStorage.setItem("token", response.data.token.token);
-          window.localStorage.setItem("role", response.data.token.role);
+          window.localStorage.setItem("token", response.data?.token.token);
+          window.localStorage.setItem("role", response.data?.token.role);
           // window.location.href = "/";
           navigate("/");
           setState(state + 1);
