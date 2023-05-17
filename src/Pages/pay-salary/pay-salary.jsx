@@ -24,7 +24,8 @@ const PaySalary = () => {
 
   useEffect(() => {
     instance.get("/applies").then((res) => {
-      legacy_c
+      console.log(res.data);
+      setPays(res?.data?.allApplies);
     });
   }, [reload]);
 
