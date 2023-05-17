@@ -15,27 +15,27 @@ import axios from "axios";
 import React, { useContext, useRef, useState } from "react";
 import { OpenModalContext } from "../../../Contexts/ModalContext/ModalContext";
 
-export const companies = [
-  {
-    id: 1,
-    name: "Юнусабад",
-    company_id: "1joMveTW7kRDxrENE4_3IErra9-2qVZasKYS2PE10Ees",
-  },
-  {
-    id: 2,
-    name: "Чиланзар",
-    company_id: "1WD4_q3GUsiKocqzPzwXEESJdxbMUXPY4kgTKlHhQiH4",
-  },
-  {
-    id: 3,
-    name: "B to B 2023",
-    company_id: "1lA6JYkdRyH8qFs_UYEpqzlCujAX0PIFtRQl9_6RI6MU",
-  },
-];
 const AddUserModal = ({ onOpen, isOpen, onClose }) => {
   const { token } = useContext(OpenModalContext);
   const initialRef = useRef(null);
   const finalRef = useRef(null);
+  const companies = [
+    {
+      id: 1,
+      name: "Юнусабад",
+      company_id: "1joMveTW7kRDxrENE4_3IErra9-2qVZasKYS2PE10Ees",
+    },
+    {
+      id: 2,
+      name: "Чиланзар",
+      company_id: "1WD4_q3GUsiKocqzPzwXEESJdxbMUXPY4kgTKlHhQiH4",
+    },
+    {
+      id: 3,
+      name: "B to B 2023",
+      company_id: "1lA6JYkdRyH8qFs_UYEpqzlCujAX0PIFtRQl9_6RI6MU",
+    },
+  ];
 
   const [user, setUser] = useState({
     name: "",

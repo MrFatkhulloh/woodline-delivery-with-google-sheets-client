@@ -1,0 +1,97 @@
+import React, { useEffect, useState } from "react";
+import Layout from "../../components/layout/layout";
+import {
+  Button,
+  Flex,
+  Heading,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  useDisclosure,
+} from "@chakra-ui/react";
+import PayModal from "./components/pay-modal";
+import { instance } from "../../config/axios.instance.config";
+
+const PaySalary = () => {
+  const { onOpen, isOpen, onClose } = useDisclosure();
+  const [pays, setPays] = useState([]);
+  const [id, setId] = useState("");
+  const [reload, setReload] = useState(false);
+
+  useEffect(() => {
+    instance.get("/applies").then((res) => {
+      legacy_c
+    });
+  }, [reload]);
+
+  console.log(pays);
+
+  return (
+    <>
+      <PayModal
+        isOpen={isOpen}
+        onClose={onClose}
+        id={id}
+        reload={reload}
+        setReload={setReload}
+      />
+
+      <Layout>
+        <Flex justifyContent="space-between" alignItems="center" my={5}>
+          <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
+            Заявки
+          </Heading>
+        </Flex>
+
+        <TableContainer>
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>ид</Th>
+                <Th>Категория</Th>
+                <Th>Отдел получател</Th>
+                <Th>Конь получатель</Th>
+                <Th>Сумма (сумм)</Th>
+                <Th>Сумма $</Th>
+                <Th>заплачено сумма</Th>
+                <Th>Платить</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {pays?.map((p, i) => {
+                return (
+                  <Tr key={i}>
+                    <Td>{i + 1}</Td>
+                    <Td>{p.cathegory}</Td>
+                    <Td>{p.receiver_department}</Td>
+                    <Td>{p.receiver_finish}</Td>
+                    <Td>{p.amount_in_sum}</Td>
+                    <Td>${p.amount_in_dollar}</Td>
+                    <Td>50%</Td>
+                    <Td>
+                      <Button
+                        colorScheme="teal"
+                        onClick={() => {
+                          onOpen();
+                          setId(p.id);
+                        }}
+                      >
+                        Платить
+                      </Button>
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      </Layout>
+    </>
+  );
+};
+
+export default PaySalary;
