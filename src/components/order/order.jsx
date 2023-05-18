@@ -345,32 +345,25 @@ function OrderTable() {
 
   return (
     <>
-      {/* <UserInfo
-        onClose={onClose}
-        isOpen={isOpen}
-        onOpen={onOpen}
-        selectedCourier={selectedCourier}
-      /> */}
-
       <Flex justifyContent="space-between" alignItems="center" mb={8}>
         <Spacer />
         <Flex flex={1}>
           <Box>
-            <Text>Delivery type:</Text>
+            <Text>Вид доставки:</Text>
             <Select
-              placeholder="Select ..."
+              placeholder="Выберите ..."
               mr={4}
               onChange={(element) => setDelivery_type(element.target.value)}
             >
-              <option value="deliver to warehouse">deliver to warehouse</option>
-              <option value="deliver to client">deliver to client</option>
+              <option value="deliver to warehouse">доставка на склад</option>
+              <option value="deliver to client">доставка на клиент</option>
             </Select>
           </Box>
           <Spacer />
           <Box>
-            <Text>Courier:</Text>
+            <Text>Курьер:</Text>
             <Select
-              placeholder="Select ..."
+              placeholder="Выберите ..."
               onChange={(event) => handleCoruier(event.target.value)}
               defaultValue={selectedCourier?.name}
             >

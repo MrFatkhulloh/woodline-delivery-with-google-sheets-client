@@ -155,7 +155,7 @@ function SearchModal({
       <Modal size="6xl" isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader mx={5}>Search modal</ModalHeader>
+          <ModalHeader mx={5}>Искать</ModalHeader>
           <ModalCloseButton mx={5} />
           <ModalBody>
             <Heading ml={5} my={5} variant="h2" size="lg">
@@ -165,19 +165,19 @@ function SearchModal({
                 wrap={"wrap"}
               >
                 <Flex wrap={"wrap"} m={2}>
-                  <Text minWidth={200}>Search by:</Text>
+                  <Text minWidth={200}>Искать по:</Text>
                   <Select
-                    placeholder="Select..."
+                    placeholder="Выберите..."
                     minWidth={200}
                     maxWidth={350}
                     onChange={(event) => setSearchBy(event.target.value)}
                   >
                     <option value={"order_id"}>ID</option>
-                    <option value={"name"}>client_name</option>
-                    <option value={"phone"}>client_phone</option>
-                    <option value={"model"}>model</option>
-                    <option value={"tissue"}>tissue</option>
-                    <option value={"rest"}>rest</option>
+                    <option value={"name"}>Имя клиента</option>
+                    <option value={"phone"}>Номер телефона</option>
+                    <option value={"model"}>Модель</option>
+                    <option value={"tissue"}>Ткань</option>
+                    <option value={"rest"}>Остаток</option>
                   </Select>
                 </Flex>
                 <Spacer />

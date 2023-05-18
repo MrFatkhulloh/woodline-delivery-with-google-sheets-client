@@ -204,7 +204,7 @@ function D2COrderRow({
             }
           }}
         >
-          {e?.order?.id ? e?.order?.order_id : "select ID"}
+          {e?.order?.id ? e?.order?.order_id : "Выберите ID"}
           <Text>
             {e?.order?.id
               ? "\n" + e?.order?.model?.name + " - " + e?.order?.tissue
@@ -216,7 +216,7 @@ function D2COrderRow({
         <Text cursor={"pointer"}>
           {e?.order?.id
             ? accounting.formatNumber(e?.order?.deal?.rest, 0, " ") + " sum"
-            : "select ID"}
+            : "Выберите ID"}
         </Text>
       </Td>
       <Td>
