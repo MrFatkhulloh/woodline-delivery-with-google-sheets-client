@@ -167,9 +167,11 @@ export default function NewModelModal({ myOpen, myOnOpen, myOnClose }) {
             <TableContainer>
               <Table variant="simple">
                 <Thead>
-                  <Th>№</Th>
-                  <Th>Вид мебели</Th>
-                  <Th>Модель</Th>
+                  <Tr>
+                    <Th>№</Th>
+                    <Th>Вид мебели</Th>
+                    <Th>Модель</Th>
+                  </Tr>
                 </Thead>
                 <Tbody>
                   {models.length &&

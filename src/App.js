@@ -27,6 +27,8 @@ function App() {
     }
   }, []);
 
+  console.log(process.env);
+
   return (
     <div className="App">
       <LastModal onClose={closeFinal} isOpen={isOpenFinal} onOpen={openFinal} />
