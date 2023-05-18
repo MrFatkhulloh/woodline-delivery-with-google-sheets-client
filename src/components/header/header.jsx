@@ -15,6 +15,7 @@ import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
+import "./header.css";
 
 export default function Simple() {
   const { role } = useContext(OpenModalContext);
@@ -57,11 +58,14 @@ export default function Simple() {
                 ) : role == "SUPER_ADMIN" ? (
                   <>
                     <NavLink to="/admin/new-furniture-type">Модели</NavLink>
-                    <NavLink to="/admin">Пользователи</NavLink>
+                    <NavLink to="/admin/users">Пользователи</NavLink>
+                    <NavLink to={"/pay-salary"}>Заявки</NavLink>
+                    <NavLink to={"/companys"}>Компании</NavLink>
                   </>
                 ) : role == "ACCOUNTANT" ? (
                   <>
-                    <NavLink to={"/pay-salary"}>Заявки</NavLink>
+                    <NavLink to={"/pa-salary"}>Заявки</NavLink>
+                    <NavLink to={"/wallets"}>Кошельки</NavLink>
                   </>
                 ) : (
                   <div>"Вы пока не админ!"</div>

@@ -191,8 +191,10 @@ export default function NewFurnitureType() {
               <TableContainer my={5}>
                 <Table variant="simple">
                   <Thead>
-                    <Th>№</Th>
-                    <Th>Модель</Th>
+                    <Tr>
+                      <Th>№</Th>
+                      <Th>Модель</Th>
+                    </Tr>
                   </Thead>
                   <Tbody>
                     {model_names.length &&

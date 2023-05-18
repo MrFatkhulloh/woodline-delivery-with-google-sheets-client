@@ -45,7 +45,7 @@ const PayModal = ({ isOpen, onClose, id, reload, setReload }) => {
     if (checkObjectValues(data)) {
       setLoading(true);
       instance
-        .post(`/approval/${id}`, { ...data })
+        .post(`/approval/${id.id}`, { ...data })
         .then((res) => {
           console.log(res);
           if (res.status === 200) {

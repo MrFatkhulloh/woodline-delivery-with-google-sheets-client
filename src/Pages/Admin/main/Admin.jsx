@@ -7,7 +7,7 @@ export default function Admin() {
     <>
       <Routes>
         <Route path="/new-furniture-type" element={<NewFurnitureType />} />
-        <Route path="/" element={<AdminLinkList />} />
+        <Route path="/users" element={<AdminLinkList />} />
       </Routes>
     </>
   );
