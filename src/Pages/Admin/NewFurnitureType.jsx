@@ -99,7 +99,6 @@ export default function NewFurnitureType() {
           name,
         };
       } else {
-        console.log("nothing");
         return row;
       }
     });
@@ -113,7 +112,6 @@ export default function NewFurnitureType() {
   const handleSubmit = () => {
     if (!ready) return;
     setReady(false);
-    console.log({ type_name, model_names });
     axios
       .post(
         "/new-type-with-models",
@@ -128,7 +126,6 @@ export default function NewFurnitureType() {
         }
       )
       .then((response) => {
-        console.log(response.data);
         window.location.reload();
         // setReady(true);
       })

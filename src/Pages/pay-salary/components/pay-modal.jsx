@@ -47,7 +47,6 @@ const PayModal = ({ isOpen, onClose, id, reload, setReload }) => {
       instance
         .post(`/approval/${id.id}`, { ...data })
         .then((res) => {
-          console.log(res);
           if (res.status === 200) {
             toast.success("Succeded");
           }

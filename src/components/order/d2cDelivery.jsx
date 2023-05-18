@@ -223,7 +223,6 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
         }
       )
       .then((response) => {
-        console.log(response?.data);
         setLoading(false);
         setHook(hook + 1);
         handleReloadD2c();
