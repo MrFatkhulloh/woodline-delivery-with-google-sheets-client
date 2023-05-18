@@ -26,13 +26,10 @@ const PaySalary = () => {
 
   useEffect(() => {
     instance.get("/applies").then((res) => {
-      console.log(res);
       setPays(res?.data?.allApplies);
       setCourse(res?.data?.kurs);
     });
   }, [reload]);
-
-  console.log(pays, course);
 
   return (
     <>
@@ -98,7 +95,9 @@ const PaySalary = () => {
                               Number(p.amount_sum)
                             );
                           })
-                          ?.reduce((a, b) => Number(a) + Number(b)),
+                          ?.reduce((a, b) => {
+                            return Number(a) + Number(b);
+                          }, 0),
                         0,
                         " "
                       )}{" "}
@@ -113,7 +112,9 @@ const PaySalary = () => {
                               Number(p.amount_sum)
                             );
                           })
-                          ?.reduce((a, b) => Number(a) + Number(b)) *
+                          ?.reduce((a, b) => {
+                            return Number(a) + Number(b);
+                          }, 0) *
                           100) /
                           (p.amount_in_dollar * course +
                             Number(p.amount_in_sum))
@@ -132,7 +133,9 @@ const PaySalary = () => {
                                 Number(p.amount_sum)
                               );
                             })
-                            ?.reduce((a, b) => Number(a) + Number(b))
+                            ?.reduce((a, b) => {
+                              return Number(a) + Number(b);
+                            }, 0)
                             ? false
                             : true
                         }

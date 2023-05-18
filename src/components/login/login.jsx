@@ -35,7 +35,6 @@ export default function LoginModal() {
         password: password.trim(),
       })
       .then((response) => {
-        console.log(response);
         if (response.data != "Error") {
           setLoading(false);
           window.localStorage.setItem("token", response.data?.token.token);

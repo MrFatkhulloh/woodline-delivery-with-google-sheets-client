@@ -79,7 +79,6 @@ export default function AdminLinkList() {
         }
       )
       .then((response) => {
-        console.log(response.data);
         handleActive(activeIndex);
       })
       .catch((error) => {
@@ -96,15 +95,12 @@ export default function AdminLinkList() {
         },
       })
       .then((response) => {
-        console.log(response);
         setUsers(response.data);
       })
       .catch((error) => {
         console.error(error);
       });
   }, [reload]);
-
-  console.log(users);
 
   return (
     <>

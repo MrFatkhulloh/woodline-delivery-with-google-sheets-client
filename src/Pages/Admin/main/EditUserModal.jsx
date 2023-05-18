@@ -65,7 +65,6 @@ const EditUserModal = ({
         }
       })
       .catch((err) => {
-        console.log(err);
         if (err.message === "Network Error") {
           toast.warning("Вы не подключены к Интернету !");
         } else {
