@@ -15,21 +15,24 @@ import {
 } from "@chakra-ui/react";
 import PayModal from "./components/pay-modal";
 import { instance } from "../../config/axios.instance.config";
+import accounting from "accounting";
 
 const PaySalary = () => {
   const { onOpen, isOpen, onClose } = useDisclosure();
   const [pays, setPays] = useState([]);
-  const [id, setId] = useState("");
+  const [id, setId] = useState({});
   const [reload, setReload] = useState(false);
+  const [course, setCourse] = useState(0);
 
   useEffect(() => {
     instance.get("/applies").then((res) => {
-      console.log(res.data);
+      console.log(res);
       setPays(res?.data?.allApplies);
+      setCourse(res?.data?.kurs);
     });
   }, [reload]);
 
-  console.log(pays);
+  console.log(pays, course);
 
   return (
     <>
@@ -58,7 +61,9 @@ const PaySalary = () => {
                 <Th>Конь получатель</Th>
                 <Th>Сумма (сумм)</Th>
                 <Th>Сумма $</Th>
-                <Th>заплачено сумма</Th>
+                <Th>Общая сумма</Th>
+                <Th>Оплаченный</Th>
+                <Th>Оплаченный %</Th>
                 <Th>Платить</Th>
               </Tr>
             </Thead>
@@ -70,15 +75,71 @@ const PaySalary = () => {
                     <Td>{p.cathegory}</Td>
                     <Td>{p.receiver_department}</Td>
                     <Td>{p.receiver_finish}</Td>
-                    <Td>{p.amount_in_sum}</Td>
-                    <Td>${p.amount_in_dollar}</Td>
-                    <Td>50%</Td>
+                    <Td>
+                      {accounting.formatNumber(p.amount_in_sum, 0, " ")} so'm
+                    </Td>
+                    <Td>
+                      ${accounting.formatNumber(p.amount_in_dollar, 0, " ")}
+                    </Td>
+                    <Td>
+                      {accounting.formatNumber(
+                        p.amount_in_dollar * course + Number(p.amount_in_sum),
+                        0,
+                        " "
+                      )}{" "}
+                      so'm
+                    </Td>
+                    <Td>
+                      {accounting.formatNumber(
+                        p?.approvals
+                          ?.map((p) => {
+                            return (
+                              Number(p.amount_dollar) * course +
+                              Number(p.amount_sum)
+                            );
+                          })
+                          ?.reduce((a, b) => Number(a) + Number(b)),
+                        0,
+                        " "
+                      )}{" "}
+                      so'm
+                    </Td>
+                    <Td>
+                      {Math.round(
+                        (p?.approvals
+                          ?.map((p) => {
+                            return (
+                              Number(p.amount_dollar) * course +
+                              Number(p.amount_sum)
+                            );
+                          })
+                          ?.reduce((a, b) => Number(a) + Number(b)) *
+                          100) /
+                          (p.amount_in_dollar * course +
+                            Number(p.amount_in_sum))
+                      )}{" "}
+                      %
+                    </Td>
                     <Td>
                       <Button
+                        isDisabled={
+                          p.amount_in_dollar * course +
+                            Number(p.amount_in_sum) >
+                          p?.approvals
+                            ?.map((p) => {
+                              return (
+                                Number(p.amount_dollar) * course +
+                                Number(p.amount_sum)
+                              );
+                            })
+                            ?.reduce((a, b) => Number(a) + Number(b))
+                            ? false
+                            : true
+                        }
                         colorScheme="teal"
                         onClick={() => {
                           onOpen();
-                          setId(p.id);
+                          setId(p);
                         }}
                       >
                         Платить
