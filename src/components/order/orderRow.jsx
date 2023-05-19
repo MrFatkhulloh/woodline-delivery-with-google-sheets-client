@@ -1,4 +1,13 @@
-import { Button, Input, Select, Td, Text, Tr, Box } from "@chakra-ui/react";
+import {
+  Button,
+  Input,
+  Select,
+  Td,
+  Text,
+  Tr,
+  Box,
+  Tooltip,
+} from "@chakra-ui/react";
 import accounting from "accounting";
 import { useContext, useEffect, useState } from "react";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
@@ -195,65 +204,71 @@ function D2COrderRow({
   return (
     <Tr>
       <Td>
-        <Box
-          display={"inline-block"}
-          padding={"6px"}
-          borderRadius={"4px"}
-          transition={"0.3s all ease"}
-          _hover={{
-            background: "#2D5F5F",
-            color: "white",
-          }}
-          cursor={"pointer"}
-          onClick={() => {
-            handleSelectModel(i);
-            if (e?.order?.id) {
-              setFoundOrders([e?.order]);
-            }
-          }}
-        >
-          {e?.order?.id ? e?.order?.order_id : "Выберите ID"}
-          <Text>
+        <Tooltip label="Bos meni :)">
+          <Box
+            display={"inline-block"}
+            padding={"6px"}
+            borderRadius={"4px"}
+            transition={"0.3s all ease"}
+            _hover={{
+              background: "#2D5F5F",
+              color: "white",
+            }}
+            cursor={"pointer"}
+            onClick={() => {
+              handleSelectModel(i);
+              if (e?.order?.id) {
+                setFoundOrders([e?.order]);
+              }
+            }}
+          >
+            {e?.order?.id ? e?.order?.order_id : "Выберите ID"}
+            <Text>
+              {e?.order?.id
+                ? "\n" + e?.order?.model?.name + " - " + e?.order?.tissue
+                : ""}
+            </Text>
+          </Box>
+        </Tooltip>
+      </Td>
+      <Td>
+        <Tooltip label="Bos meni :)">
+          <Text
+            display={"inline-block"}
+            padding={"6px"}
+            borderRadius={"4px"}
+            transition={"0.3s all ease"}
+            _hover={{
+              background: "#2D5F5F",
+              color: "white",
+            }}
+            cursor={"pointer"}
+          >
             {e?.order?.id
-              ? "\n" + e?.order?.model?.name + " - " + e?.order?.tissue
-              : ""}
+              ? accounting.formatNumber(e?.order?.deal?.rest, 0, " ") + " sum"
+              : "Выберите ID"}
           </Text>
-        </Box>
+        </Tooltip>
       </Td>
       <Td>
-        <Text
-          display={"inline-block"}
-          padding={"6px"}
-          borderRadius={"4px"}
-          transition={"0.3s all ease"}
-          _hover={{
-            background: "#2D5F5F",
-            color: "white",
-          }}
-          cursor={"pointer"}
-        >
-          {e?.order?.id
-            ? accounting.formatNumber(e?.order?.deal?.rest, 0, " ") + " sum"
-            : "Выберите ID"}
-        </Text>
-      </Td>
-      <Td>
-        <Text
-          display={"inline-block"}
-          padding={"6px"}
-          borderRadius={"4px"}
-          transition={"0.3s all ease"}
-          _hover={{
-            background: "#2D5F5F",
-            color: "white",
-          }}
-          onClick={() => handleSelectPayment(i)}
-          // w={"200px"}
-          id={e.id}
-          cursor={"pointer"}
-        >
-          {accounting.formatNumber(payment_sum, 0, " ") + " sum"}
-        </Text>
+        <Tooltip label="Bos meni :)">
+          <Text
+            display={"inline-block"}
+            padding={"6px"}
+            borderRadius={"4px"}
+            transition={"0.3s all ease"}
+            _hover={{
+              background: "#2D5F5F",
+              color: "white",
+            }}
+            onClick={() => handleSelectPayment(i)}
+            // w={"200px"}
+            id={e.id}
+            cursor={"pointer"}
+          >
+            {accounting.formatNumber(payment_sum, 0, " ") + " sum"}
+          </Text>
+        </Tooltip>
       </Td>
       <Td>
         <Input
