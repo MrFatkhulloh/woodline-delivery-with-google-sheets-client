@@ -196,6 +196,14 @@ function D2COrderRow({
     <Tr>
       <Td>
         <Box
+          display={"inline-block"}
+          padding={"6px"}
+          borderRadius={"4px"}
+          transition={"0.3s all ease"}
+          _hover={{
+            background: "#2D5F5F",
+            color: "white",
+          }}
           cursor={"pointer"}
           onClick={() => {
             handleSelectModel(i);
@@ -213,7 +221,17 @@ function D2COrderRow({
         </Box>
       </Td>
       <Td>
-        <Text cursor={"pointer"}>
+        <Text
+          display={"inline-block"}
+          padding={"6px"}
+          borderRadius={"4px"}
+          transition={"0.3s all ease"}
+          _hover={{
+            background: "#2D5F5F",
+            color: "white",
+          }}
+          cursor={"pointer"}
+        >
           {e?.order?.id
             ? accounting.formatNumber(e?.order?.deal?.rest, 0, " ") + " sum"
             : "Выберите ID"}
@@ -221,9 +239,16 @@ function D2COrderRow({
       </Td>
       <Td>
         <Text
+          display={"inline-block"}
+          padding={"6px"}
+          borderRadius={"4px"}
+          transition={"0.3s all ease"}
+          _hover={{
+            background: "#2D5F5F",
+            color: "white",
+          }}
           onClick={() => handleSelectPayment(i)}
-          w={"200px"}
-          type="text"
+          // w={"200px"}
           id={e.id}
           cursor={"pointer"}
         >
