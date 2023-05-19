@@ -16,6 +16,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { instance } from "../../../config/axios.instance.config";
 import { toast } from "react-toastify";
+import accounting from "accounting";
 
 const PayModal = ({ isOpen, onClose, id, reload, setReload }) => {
   const [companys, setCompanys] = useState([]);
@@ -78,18 +79,36 @@ const PayModal = ({ isOpen, onClose, id, reload, setReload }) => {
           <FormControl>
             <FormLabel>Сумма (сум)</FormLabel>
             <Input
-              onChange={(e) => setData({ ...data, amount_sum: e.target.value })}
-              type="number"
+              onChange={(e) => {
+                e.target.value = accounting.formatNumber(
+                  e.target.value,
+                  0,
+                  " "
+                );
+                setData({
+                  ...data,
+                  amount_sum: accounting.unformat(e.target.value),
+                });
+              }}
+              type="text"
             />
           </FormControl>
 
           <FormControl mt={4}>
             <FormLabel>Сумма $</FormLabel>
             <Input
-              onChange={(e) =>
-                setData({ ...data, amount_dollar: e.target.value })
-              }
-              type="number"
+              onChange={(e) => {
+                e.target.value = accounting.formatNumber(
+                  e.target.value,
+                  0,
+                  " "
+                );
+                setData({
+                  ...data,
+                  amount_dollar: accounting.unformat(e.target.value),
+                });
+              }}
+              type="text"
             />
           </FormControl>
 
