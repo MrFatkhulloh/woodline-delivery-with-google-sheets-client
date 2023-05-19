@@ -356,7 +356,7 @@ function OrderTable() {
               onChange={(element) => setDelivery_type(element.target.value)}
             >
               <option value="deliver to warehouse">доставка на склад</option>
-              <option value="deliver to client">доставка на клиент</option>
+              <option value="deliver to client">доставка к клиенту</option>
             </Select>
           </Box>
           <Spacer />
