@@ -81,8 +81,8 @@ function OrderRow({
           }}
         >
           {typeOptions.map((el, ind) => (
-            <option key={ind} value={el.name}>
-              {el.name}
+            <option key={ind} value={el?.name}>
+              {el?.name}
             </option>
           ))}
         </Select>

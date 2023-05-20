@@ -59,8 +59,8 @@ function PaymentRow({ e, handleChange, typeOptions, handleMinus, i }) {
           }
         >
           {typeOptions.map((el, ind) => (
-            <option key={ind} value={el}>
-              {el}
+            <option key={ind} value={el?.name}>
+              {el?.name}
             </option>
           ))}
         </Select>
@@ -159,17 +159,19 @@ function PaymentTable({
     useContext(OpenModalContext);
   const [state, setState] = useState(1);
 
-  const typeOptions = [
-    "нал. касса",
-    "нал. другой",
-    "перечисление ( терминал)",
-    "карта узкарт(Мадина8379)",
-    "карта узкарт(Умид8142)",
-    "карта узкарт(Дамир7762)",
-    "карта узкарт(Толиб3824)",
-    "хумо(Интизор2863)",
-    "рассрочка(анорБанк)",
-  ];
+  const typeOptions = wallets?.length
+    ? wallets
+    : [
+        "нал. касса",
+        "нал. другой",
+        "перечисление ( терминал)",
+        "карта узкарт(Мадина8379)",
+        "карта узкарт(Умид8142)",
+        "карта узкарт(Дамир7762)",
+        "карта узкарт(Толиб3824)",
+        "хумо(Интизор2863)",
+        "рассрочка(анорБанк)",
+      ];
 
   const handleMinus = (index) => {
     temporaryPaymentRow.splice(index, 1);
