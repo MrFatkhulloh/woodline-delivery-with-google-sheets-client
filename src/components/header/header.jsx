@@ -69,7 +69,7 @@ export default function Simple() {
                     <NavLink to={"/wallets"}>Кошельки</NavLink>
                   </>
                 ) : (
-                  <div>"Вы пока не админ!"</div>
+                  null
                 )}
               </HStack>
             </HStack>
@@ -96,7 +96,7 @@ export default function Simple() {
                 ) : role == "SUPER_ADMIN" ? (
                   <>
                     <NavLink to="/admin/new-furniture-type">Модели</NavLink>
-                    <NavLink to="/admin">Пользователи</NavLink>
+                    <NavLink to="/admin/users">Пользователи</NavLink>
                   </>
                 ) : (
                   <div>"Вы пока не админ!"</div>
