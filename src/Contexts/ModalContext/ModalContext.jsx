@@ -65,6 +65,7 @@ function Provider({ children }) {
       rest_money: 0,
       deal_id: "",
       order_id: "",
+      wallet_id: "",
     },
   ]);
   const [paymentModal, setPaymentModal] = useState(false);

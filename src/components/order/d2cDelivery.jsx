@@ -59,6 +59,7 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
       rest_money: 0,
       deal_id: "",
       order_id: "",
+      wallet_id: "",
     },
   ]);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -82,6 +83,7 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
         rest_money: 0,
         deal_id: selectedOrder?.deal?.id ? selectedOrder?.deal?.id : "",
         order_id: selectedOrder?.id ? selectedOrder?.id : "",
+        wallet_id: "",
       },
     ]);
 
@@ -154,6 +156,7 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
           rest_money: 0,
           deal_id: selectedOrder?.deal?.id ? selectedOrder?.deal?.id : "",
           order_id: selectedOrder?.id ? selectedOrder?.id : "",
+          wallet_id: "",
         },
       ]);
     }

@@ -155,7 +155,8 @@ function PaymentTable({
   setTemporaryPaymentRow,
   selectedOrder,
 }) {
-  const { paymentRow, setPaymentRow, openFinal } = useContext(OpenModalContext);
+  const { paymentRow, setPaymentRow, openFinal, wallets } =
+    useContext(OpenModalContext);
   const [state, setState] = useState(1);
 
   const typeOptions = [
@@ -211,6 +212,7 @@ function PaymentTable({
       rest_money: 0,
       deal_id: selectedOrder?.deal?.id,
       order_id: selectedOrder?.id,
+      wallet_id: "",
     });
     setTemporaryPaymentRow(temporaryPaymentRow);
     setState(state + 1);
@@ -219,6 +221,17 @@ function PaymentTable({
   function handleChange(event, rowId, fieldName) {
     const updatedRows = temporaryPaymentRow.map((row) => {
       if (row.id == rowId) {
+        if (fieldName == "payment_type") {
+          return {
+            ...row,
+            [fieldName]: event.target.value,
+            wallet_id: wallets.find(
+              (wallet) => wallet.name == event.target.value
+            )?.id
+              ? wallets.find((wallet) => wallet.name == event.target.value)?.id
+              : "",
+          };
+        }
         if (fieldName == "payment_sum") {
           return {
             ...row,
