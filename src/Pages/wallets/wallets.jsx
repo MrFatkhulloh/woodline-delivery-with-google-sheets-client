@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import AddWalletModal from "./components/add-wallet-modal";
 import { instance } from "../../config/axios.instance.config";
+import accounting from "accounting";
 
 const Wallets = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -62,8 +63,8 @@ const Wallets = () => {
                     <Td>{i + 1}</Td>
                     <Td>{w.name}</Td>
                     <Td>{w.type}</Td>
-                    <Td>{w.amount_sum}</Td>
-                    <Td>{w.amount_dollar}</Td>
+                    <Td>{accounting.formatNumber(w.amount_sum, 0, " ")} so'm</Td>
+                    <Td>$ {accounting.formatNumber(w.amount_dollar, 0, " ")}</Td>
                     <Td>
                       <Switch
                         size="lg"
