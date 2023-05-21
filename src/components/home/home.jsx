@@ -16,7 +16,7 @@ function Home() {
   return (
     <>
       <form className="left">
-        <div className="wrap">
+        <div clasИД	sName="wrap">
           <label>
             Заявитель:
             <select name="applier" id="applier">

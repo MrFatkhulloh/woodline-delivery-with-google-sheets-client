@@ -151,10 +151,12 @@ export default function NewFurnitureType() {
             gap={{ base: "5px", md: "10px", lg: "20px" }}
             flexDirection={{ base: "column", md: "row", lg: "row" }}
           >
-            <Button w={{ base: "100%" }} onClick={onOpen}>
+            <Button 
+              colorScheme="blue"
+              w={{ base: "100%" }} onClick={onOpen}>
               Добавить Вид мебели
             </Button>
-            <Button w={{ base: "100%" }} onClick={myOnOpen}>
+            <Button colorScheme="blue" w={{ base: "100%" }} onClick={myOnOpen}>
               Добавить модель
             </Button>
           </Flex>

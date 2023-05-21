@@ -16,6 +16,10 @@ import {
 import PayModal from "./components/pay-modal";
 import { instance } from "../../config/axios.instance.config";
 import accounting from "accounting";
+import moment from "moment";
+import "moment/locale/ru";
+import Items from "../../components/pagin/pagin";
+import Pagination from "rc-pagination";
 
 const PaySalary = () => {
   const { onOpen, isOpen, onClose } = useDisclosure();
@@ -55,6 +59,7 @@ const PaySalary = () => {
                 <Th>ид</Th>
                 <Th>Категория</Th>
                 <Th>Отдел получател</Th>
+                <Th>Дата</Th>
                 <Th>Конь получатель</Th>
                 <Th>Сумма (сумм)</Th>
                 <Th>Сумма $</Th>
@@ -68,9 +73,10 @@ const PaySalary = () => {
               {pays?.map((p, i) => {
                 return (
                   <Tr key={i}>
-                    <Td>{i + 1}</Td>
+                    <Td>{p.apply_id}</Td>
                     <Td>{p.cathegory}</Td>
                     <Td>{p.receiver_department}</Td>
+                    <Td>{moment(p.createdAt).locale("ru").format("L")}</Td>
                     <Td>{p.receiver_finish}</Td>
                     <Td>
                       {accounting.formatNumber(p.amount_in_sum, 0, " ")} so'm
@@ -154,6 +160,7 @@ const PaySalary = () => {
             </Tbody>
           </Table>
         </TableContainer>
+
       </Layout>
     </>
   );

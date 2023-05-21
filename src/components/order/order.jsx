@@ -378,6 +378,7 @@ function OrderTable() {
         </Flex>
         <Spacer />
         <Button
+          colorScheme="blue"
           onClick={() => {
             setOpenApply(true);
             setOrderShow(false);

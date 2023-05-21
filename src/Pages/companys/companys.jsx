@@ -58,7 +58,7 @@ const Companys = () => {
           <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
             Компании
           </Heading>
-          <Button onClick={onOpen}>Добавить kомпании</Button>
+          <Button colorScheme="blue" onClick={onOpen}>Добавить kомпании</Button>
         </Flex>
 
         <TableContainer>

@@ -90,6 +90,9 @@ export default function MyOrders() {
                   <Td>ПОКА ПУСТО!</Td>
                   <Td>ПОКА ПУСТО!</Td>
                   <Td>ПОКА ПУСТО!</Td>
+                  <Td>ПОКА ПУСТО!</Td>
+                  <Td>ПОКА ПУСТО!</Td>
+                  <Td>ПОКА ПУСТО!</Td>
                 </Tr>
               )}
             </Tbody>
