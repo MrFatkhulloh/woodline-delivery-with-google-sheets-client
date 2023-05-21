@@ -120,7 +120,7 @@ export default function AdminLinkList() {
           <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
             Пользователи
           </Heading>
-          <Button onClick={onOpen}>Добавить пользователя</Button>
+          <Button colorScheme="blue" onClick={onOpen}>Добавить пользователя</Button>
         </Flex>
         <TableContainer>
           <Table variant="simple">

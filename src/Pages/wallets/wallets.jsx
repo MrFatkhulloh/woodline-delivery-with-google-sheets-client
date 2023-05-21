@@ -41,7 +41,7 @@ const Wallets = () => {
           <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
             Кошельки
           </Heading>
-          <Button onClick={onOpen}>Добавить кошелек</Button>
+          <Button colorScheme="blue" onClick={onOpen}>Добавить кошелек</Button>
         </Flex>
 
         <TableContainer>
