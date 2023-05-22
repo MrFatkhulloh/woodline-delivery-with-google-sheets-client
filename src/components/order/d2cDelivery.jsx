@@ -39,6 +39,7 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
     paymentRow,
     setPaymentRow,
     token,
+    delivery_uuid,
   } = useContext(OpenModalContext);
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState(1);
@@ -60,6 +61,7 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
       deal_id: "",
       order_id: "",
       wallet_id: "",
+      delivery_uuid,
     },
   ]);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -70,6 +72,7 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
   } = useDisclosure();
 
   const handleReloadD2c = () => {
+    const uuid = uuidv4();
     setTemporaryPaymentRow([
       {
         id: paymentRow?.length > 1 ? paymentRow.length + 1 : 1,
@@ -84,6 +87,7 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
         deal_id: selectedOrder?.deal?.id ? selectedOrder?.deal?.id : "",
         order_id: selectedOrder?.id ? selectedOrder?.id : "",
         wallet_id: "",
+        delivery_uuid: uuid,
       },
     ]);
 
@@ -100,6 +104,7 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
         rest_money: 0,
         deal_id: "",
         order_id: "",
+        delivery_uuid: uuid,
       },
     ]);
 
@@ -109,6 +114,7 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
         price: 0,
         order: {},
         title: "",
+        delivery_uuid: uuid,
       },
     ]);
 
@@ -157,6 +163,7 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
           deal_id: selectedOrder?.deal?.id ? selectedOrder?.deal?.id : "",
           order_id: selectedOrder?.id ? selectedOrder?.id : "",
           wallet_id: "",
+          delivery_uuid: d2cDeliveryRow[deliveryIndex]?.delivery_uuid,
         },
       ]);
     }
@@ -201,6 +208,7 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
       price: 0,
       order: {},
       title: "",
+      delivery_uuid: uuidv4(),
     });
     setD2cDeliveryRow(d2cDeliveryRow);
     setState(state + 1);
@@ -210,30 +218,33 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
     if (loading) return;
     if (!selectedCourier?.phone) return alert("select the courier!");
     setLoading(true);
-    axios
-      .post(
-        "/universal-d2c-delivery",
-        {
-          delivery_row: d2cDeliveryRow,
-          courier: selectedCourier?.id,
-          paymentRow,
-        },
-        {
-          headers: {
-            token,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((response) => {
-        setLoading(false);
-        setHook(hook + 1);
-        handleReloadD2c();
-      })
-      .catch((error) => {
-        alert("Ощибка в сервере! Созвонитесь с разработчиком.");
-        console.error(error);
-      });
+    console.log("d2cDeliveryRow - ", d2cDeliveryRow);
+    console.log("paypaymentRow - ", paymentRow);
+    setLoading(false);
+    // axios
+    //   .post(
+    //     "/universal-d2c-delivery",
+    //     {
+    //       delivery_row: d2cDeliveryRow,
+    //       courier: selectedCourier?.id,
+    //       paymentRow,
+    //     },
+    //     {
+    //       headers: {
+    //         token,
+    //         "Content-Type": "application/json",
+    //       },
+    //     }
+    //   )
+    //   .then((response) => {
+    //     setLoading(false);
+    //     setHook(hook + 1);
+    //     handleReloadD2c();
+    //   })
+    //   .catch((error) => {
+    //     alert("Ощибка в сервере! Созвонитесь с разработчиком.");
+    //     console.error(error);
+    //   });
   };
 
   function handleDeliveryChange(event, rowId, fieldName) {

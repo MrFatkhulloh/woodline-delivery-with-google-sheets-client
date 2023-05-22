@@ -7,6 +7,7 @@ const OpenModalContext = createContext();
 
 function Provider({ children }) {
   const myUuid = uuidv4();
+  const delivery_uuid = uuidv4();
   const {
     onOpen: openFinal,
     isOpen: isOpenFinal,
@@ -43,6 +44,7 @@ function Provider({ children }) {
       price: 0,
       order: {},
       title: "",
+      delivery_uuid,
     },
   ]);
   const [deliveryRow, setDeliveryRow] = useState([
@@ -67,6 +69,7 @@ function Provider({ children }) {
       deal_id: "",
       order_id: "",
       wallet_id: "",
+      delivery_uuid: "",
     },
   ]);
   const [paymentModal, setPaymentModal] = useState(false);
@@ -280,6 +283,7 @@ function Provider({ children }) {
         courier,
         wallets,
         setWallets,
+        delivery_uuid,
       }}
     >
       {children}

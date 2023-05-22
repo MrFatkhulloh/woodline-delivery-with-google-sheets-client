@@ -154,9 +154,11 @@ function PaymentTable({
   temporaryPaymentRow,
   setTemporaryPaymentRow,
   selectedOrder,
+  rowIndex,
 }) {
-  const { paymentRow, setPaymentRow, openFinal, wallets } =
+  const { paymentRow, setPaymentRow, openFinal, wallets, d2cDeliveryRow } =
     useContext(OpenModalContext);
+  const [uuid, setUuid] = useState("");
   const [state, setState] = useState(1);
 
   const typeOptions = wallets?.length
@@ -172,6 +174,20 @@ function PaymentTable({
         "хумо(Интизор2863)",
         "рассрочка(анорБанк)",
       ];
+
+  useEffect(() => {
+    const newUuid = d2cDeliveryRow[rowIndex]?.delivery_uuid;
+    console.log("new_uuid - ", newUuid);
+    const payRow = temporaryPaymentRow?.map((pay) => {
+      return {
+        ...pay,
+        delivery_uuid: newUuid,
+      };
+    });
+
+    setTemporaryPaymentRow(payRow);
+    setUuid(newUuid);
+  }, [rowIndex]);
 
   const handleMinus = (index) => {
     temporaryPaymentRow.splice(index, 1);
@@ -215,6 +231,7 @@ function PaymentTable({
       deal_id: selectedOrder?.deal?.id,
       order_id: selectedOrder?.id,
       wallet_id: "",
+      delivery_uuid: d2cDeliveryRow[rowIndex]?.delivery_uuid,
     });
     setTemporaryPaymentRow(temporaryPaymentRow);
     setState(state + 1);
