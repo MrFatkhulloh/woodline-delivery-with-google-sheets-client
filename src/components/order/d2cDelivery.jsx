@@ -218,33 +218,30 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
     if (loading) return;
     if (!selectedCourier?.phone) return alert("select the courier!");
     setLoading(true);
-    console.log("d2cDeliveryRow - ", d2cDeliveryRow);
-    console.log("paypaymentRow - ", paymentRow);
-    setLoading(false);
-    // axios
-    //   .post(
-    //     "/universal-d2c-delivery",
-    //     {
-    //       delivery_row: d2cDeliveryRow,
-    //       courier: selectedCourier?.id,
-    //       paymentRow,
-    //     },
-    //     {
-    //       headers: {
-    //         token,
-    //         "Content-Type": "application/json",
-    //       },
-    //     }
-    //   )
-    //   .then((response) => {
-    //     setLoading(false);
-    //     setHook(hook + 1);
-    //     handleReloadD2c();
-    //   })
-    //   .catch((error) => {
-    //     alert("Ощибка в сервере! Созвонитесь с разработчиком.");
-    //     console.error(error);
-    //   });
+    axios
+      .post(
+        "/universal-d2c-delivery",
+        {
+          delivery_row: d2cDeliveryRow,
+          courier: selectedCourier?.id,
+          paymentRow,
+        },
+        {
+          headers: {
+            token,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((response) => {
+        setLoading(false);
+        setHook(hook + 1);
+        handleReloadD2c();
+      })
+      .catch((error) => {
+        alert("Ощибка в сервере! Созвонитесь с разработчиком.");
+        console.error(error);
+      });
   };
 
   function handleDeliveryChange(event, rowId, fieldName) {
