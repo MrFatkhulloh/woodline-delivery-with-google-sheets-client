@@ -30,6 +30,7 @@ function Provider({ children }) {
         console.error(error);
       });
   }
+  const [wallets, setWallets] = useState([]);
   const [courier, setCourier] = useState([]);
   const [state, setState] = useState(1);
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -134,6 +135,20 @@ function Provider({ children }) {
       });
 
     axios
+      .get("/wallet", {
+        headers: {
+          "Content-Type": "application/json",
+          token: `${token}`,
+        },
+      })
+      .then((response) => {
+        setWallets(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    axios
       .get("/get-couriers", {
         headers: {
           "Content-Type": "application/json",
@@ -159,6 +174,20 @@ function Provider({ children }) {
       })
       .then((response) => {
         setTypes(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    axios
+      .get("/wallet", {
+        headers: {
+          "Content-Type": "application/json",
+          token: `${token}`,
+        },
+      })
+      .then((response) => {
+        setWallets(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -249,6 +278,8 @@ function Provider({ children }) {
         d2cDeliveryRow,
         setD2cDeliveryRow,
         courier,
+        wallets,
+        setWallets,
       }}
     >
       {children}
