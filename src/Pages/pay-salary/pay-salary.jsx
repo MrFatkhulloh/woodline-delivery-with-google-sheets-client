@@ -4,6 +4,7 @@ import {
   Button,
   Flex,
   Heading,
+  Select,
   Table,
   TableContainer,
   Tbody,
@@ -18,8 +19,8 @@ import { instance } from "../../config/axios.instance.config";
 import accounting from "accounting";
 import moment from "moment";
 import "moment/locale/ru";
-import Items from "../../components/pagin/pagin";
-import Pagination from "rc-pagination";
+import DynamicPagination from "../../components/pagin/pagin";
+import Pagination from "../../components/pagination/p";
 
 const PaySalary = () => {
   const { onOpen, isOpen, onClose } = useDisclosure();
@@ -27,13 +28,19 @@ const PaySalary = () => {
   const [id, setId] = useState({});
   const [reload, setReload] = useState(false);
   const [course, setCourse] = useState(0);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
   useEffect(() => {
-    instance.get("/applies").then((res) => {
+    instance.get(`/applies?page=${page}&limit=${limit}`).then((res) => {
       setPays(res?.data?.allApplies);
       setCourse(res?.data?.kurs);
     });
-  }, [reload]);
+  }, [reload, limit, page]);
+
+  const handlePageChange = (p) => {
+    setPage(p);
+  };
 
   return (
     <>
@@ -50,6 +57,16 @@ const PaySalary = () => {
           <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
             Заявки
           </Heading>
+
+          <Select
+            width={"200px"}
+            onChange={(e) => setLimit(e.target.value)}
+            placeholder="Choose"
+          >
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={30}>30</option>
+          </Select>
         </Flex>
 
         <TableContainer>
@@ -161,6 +178,12 @@ const PaySalary = () => {
           </Table>
         </TableContainer>
 
+        <DynamicPagination
+          totalItems={100}
+          itemsPerPage={5}
+          currentPage={page}
+          onPageChange={handlePageChange}
+        />
       </Layout>
     </>
   );

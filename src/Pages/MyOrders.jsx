@@ -13,6 +13,8 @@ import Layout from "../components/layout/layout";
 import { useContext, useEffect, useState } from "react";
 import { OpenModalContext } from "../Contexts/ModalContext/ModalContext";
 import axios from "axios";
+import moment from "moment";
+import "moment/locale/ru";
 
 export default function MyOrders() {
   const [myOrders, setMyOrders] = useState([]);
@@ -50,6 +52,7 @@ export default function MyOrders() {
                 <Th>Телефон</Th>
                 <Th>Остаток</Th>
                 <Th>Статус</Th>
+                <Th>ДАТА</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -81,6 +84,7 @@ export default function MyOrders() {
                         сум
                       </Td>
                       <Td>{e.copied ? "В таблице" : "Ожидание..."}</Td>
+                      <Td>{moment(e?.createdAt).locale("ru").format("L")}</Td>
                     </Tr>
                   );
                 })
