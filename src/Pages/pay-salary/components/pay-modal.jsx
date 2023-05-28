@@ -25,8 +25,10 @@ const PayModal = ({ isOpen, onClose, id, reload, setReload }) => {
   const [data, setData] = useState({
     amount_sum: 0,
     amount_dollar: 0,
+    kurs: 0,
     wallet_id: "",
     company_id: "",
+    transaction_fee: 0,
   });
 
   useEffect(() => {
@@ -113,6 +115,24 @@ const PayModal = ({ isOpen, onClose, id, reload, setReload }) => {
           </FormControl>
 
           <FormControl mt={4}>
+            <FormLabel>Курс $100</FormLabel>
+            <Input
+              onChange={(e) => {
+                e.target.value = accounting.formatNumber(
+                  e.target.value,
+                  0,
+                  " "
+                );
+                setData({
+                  ...data,
+                  kurs: accounting.unformat(e.target.value),
+                });
+              }}
+              type="text"
+            />
+          </FormControl>
+
+          <FormControl mt={4}>
             <FormLabel>С какого кашелка</FormLabel>
 
             <Select
@@ -127,6 +147,24 @@ const PayModal = ({ isOpen, onClose, id, reload, setReload }) => {
                 );
               })}
             </Select>
+          </FormControl>
+
+          <FormControl mt={4}>
+            <FormLabel>Комиссия %</FormLabel>
+            <Input
+              onChange={(e) => {
+                e.target.value = accounting.formatNumber(
+                  e.target.value,
+                  0,
+                  " "
+                );
+                setData({
+                  ...data,
+                  transaction_fee: accounting.unformat(e.target.value),
+                });
+              }}
+              type="text"
+            />
           </FormControl>
 
           <FormControl mt={4}>
