@@ -16,6 +16,7 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import Analytics from "./Pages/analytics/analytics";
 
 const token = window.localStorage.getItem("token");
 
@@ -42,6 +43,7 @@ function App() {
         <Route path="/pay-salary" element={<PaySalary />} />
         <Route path="/companys" element={<Companys />} />
         <Route path="/wallets" element={<Wallets />} />
+        <Route path="/analytics" element={<Analytics />} />
         <Route path="/login" element={<LoginModal />} />
         <Route path="/*" element={<NotFoundPage />} />
       </Routes>

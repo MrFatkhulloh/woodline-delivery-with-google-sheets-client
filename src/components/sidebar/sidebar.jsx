@@ -25,6 +25,8 @@ import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import HomeWorkIcon from "@mui/icons-material/HomeWork";
 import WalletIcon from "@mui/icons-material/Wallet";
+import AutoGraphIcon from "@mui/icons-material/AutoGraph";
+
 export default function SidebarWithHeader({ children }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
@@ -272,6 +274,18 @@ const SidebarContent = ({ onClose, ...rest }) => {
           </NavLink>
         </>
       ) : null}
+
+      <NavLink
+        to="/analytics"
+        style={{ display: "inline-block", width: "100%", borderRadius: "0px" }}
+      >
+        <Flex alignItems="center" p="3" role="group" cursor="pointer" {...rest}>
+          <Icon mr="4" fontSize="20">
+            <AutoGraphIcon />
+          </Icon>
+          Аналитика
+        </Flex>
+      </NavLink>
     </Box>
   );
 };
