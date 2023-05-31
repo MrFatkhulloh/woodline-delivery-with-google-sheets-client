@@ -237,6 +237,7 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
         setLoading(false);
         setHook(hook + 1);
         handleReloadD2c();
+        console.log(response?.data);
       })
       .catch((error) => {
         alert("Ощибка в сервере! Созвонитесь с разработчиком.");
