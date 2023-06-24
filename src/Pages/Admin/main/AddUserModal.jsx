@@ -12,30 +12,33 @@ import {
   Select,
 } from "@chakra-ui/react";
 import axios from "axios";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { OpenModalContext } from "../../../Contexts/ModalContext/ModalContext";
+import { instance } from "../../../config/axios.instance.config";
 
-export const companies = [
-  {
-    id: 1,
-    name: "Юнусабад",
-    company_id: "1joMveTW7kRDxrENE4_3IErra9-2qVZasKYS2PE10Ees",
-  },
-  {
-    id: 2,
-    name: "Чиланзар",
-    company_id: "1WD4_q3GUsiKocqzPzwXEESJdxbMUXPY4kgTKlHhQiH4",
-  },
-  {
-    id: 3,
-    name: "B to B 2023",
-    company_id: "1lA6JYkdRyH8qFs_UYEpqzlCujAX0PIFtRQl9_6RI6MU",
-  },
-];
+// export const companies = [
+//   {
+//     id: 1,
+//     name: "Юнусабад",
+//     company_id: "1joMveTW7kRDxrENE4_3IErra9-2qVZasKYS2PE10Ees",
+//   },
+//   {
+//     id: 2,
+//     name: "Чиланзар",
+//     company_id: "1WD4_q3GUsiKocqzPzwXEESJdxbMUXPY4kgTKlHhQiH4",
+//   },
+//   {
+//     id: 3,
+//     name: "B to B 2023",
+//     company_id: "1lA6JYkdRyH8qFs_UYEpqzlCujAX0PIFtRQl9_6RI6MU",
+//   },
+// ];
+
 const AddUserModal = ({ onOpen, isOpen, onClose }) => {
   const { token } = useContext(OpenModalContext);
   const initialRef = useRef(null);
   const finalRef = useRef(null);
+  const [companys, setCompanys] = useState([]);
 
   const [user, setUser] = useState({
     name: "",
@@ -72,6 +75,12 @@ const AddUserModal = ({ onOpen, isOpen, onClose }) => {
         console.log(error);
       });
   };
+
+  useEffect(() => {
+    instance.get("/company").then((res) => {
+      setCompanys(res.data);
+    });
+  }, []);
 
   return (
     <Modal
@@ -112,8 +121,8 @@ const AddUserModal = ({ onOpen, isOpen, onClose }) => {
               placeholder="Выбрать компанию"
               onChange={(e) => handleChange("company_id", e.target.value)}
             >
-              {companies.length &&
-                companies.map((company, comp_index) => (
+              {companys.length &&
+                companys.map((company, comp_index) => (
                   <option key={comp_index} value={company.company_id}>
                     {company.name}
                   </option>

@@ -18,6 +18,7 @@ import {
   Spacer,
   Box,
   Spinner,
+  useColorMode,
 } from "@chakra-ui/react";
 import accounting from "accounting";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
@@ -70,6 +71,7 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
     onOpen: onOpenPayment,
     onClose: onClosePayment,
   } = useDisclosure();
+  const { colorMode } = useColorMode();
 
   const handleReloadD2c = () => {
     const uuid = uuidv4();
@@ -305,7 +307,10 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
       />
 
       <TableContainer display={delivery_type == "deliver to client" || "none"}>
-        <Table variant="simple">
+        <Table
+          variant="simple"
+          background={colorMode === "light" ? "#fff" : ""}
+        >
           <Thead>
             <Tr>
               <Th>ID_______</Th>

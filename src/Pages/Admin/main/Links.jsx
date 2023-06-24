@@ -10,6 +10,7 @@ import {
   Th,
   Thead,
   Tr,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 import Layout from "../../../components/layout/layout";
@@ -102,6 +103,8 @@ export default function AdminLinkList() {
       });
   }, [reload]);
 
+  const { colorMode } = useColorMode();
+
   return (
     <>
       <AddUserModal onOpen={onOpen} isOpen={isOpen} onClose={onClose} />
@@ -120,10 +123,15 @@ export default function AdminLinkList() {
           <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
             Пользователи
           </Heading>
-          <Button colorScheme="blue" onClick={onOpen}>Добавить пользователя</Button>
+          <Button colorScheme="blue" onClick={onOpen}>
+            Добавить пользователя
+          </Button>
         </Flex>
         <TableContainer>
-          <Table variant="simple">
+          <Table
+            variant="simple"
+            background={colorMode === "light" ? "#fff" : ""}
+          >
             <Thead>
               <Tr>
                 <Th>ID</Th>

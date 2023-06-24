@@ -19,6 +19,7 @@ import {
   Th,
   Thead,
   Tr,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -105,6 +106,7 @@ export default function NewModelModal({ myOpen, myOnOpen, myOnClose }) {
   const [models, setModels] = useState([{ id: 1, name: "", type_id: "" }]);
   const [model_names, setModel_names] = useState([{ id: 1, name: "" }]);
   const [ready, setReady] = useState(true);
+  const { colorMode } = useColorMode();
 
   const handleChange = (rowId, name, value) => {
     const updatedRows = models.map((row) => {
@@ -165,7 +167,10 @@ export default function NewModelModal({ myOpen, myOnOpen, myOnClose }) {
           <ModalCloseButton />
           <ModalBody>
             <TableContainer>
-              <Table variant="simple">
+              <Table
+                variant="simple"
+                background={colorMode === "light" ? "#fff" : ""}
+              >
                 <Thead>
                   <Tr>
                     <Th>№</Th>
