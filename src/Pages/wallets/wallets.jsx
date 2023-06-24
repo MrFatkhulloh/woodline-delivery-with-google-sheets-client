@@ -12,6 +12,7 @@ import {
   Th,
   Thead,
   Tr,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 import AddWalletModal from "./components/add-wallet-modal";
@@ -28,6 +29,8 @@ const Wallets = () => {
     instance.get("wallet").then((res) => setWallets(res.data));
   }, [reload]);
 
+  const { colorMode } = useColorMode();
+
   return (
     <>
       <AddWalletModal
@@ -41,11 +44,16 @@ const Wallets = () => {
           <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
             Кошельки
           </Heading>
-          <Button colorScheme="blue" onClick={onOpen}>Добавить кошелек</Button>
+          <Button colorScheme="blue" onClick={onOpen}>
+            Добавить кошелек
+          </Button>
         </Flex>
 
         <TableContainer>
-          <Table variant="simple">
+          <Table
+            variant="simple"
+            background={colorMode === "light" ? "#fff" : ""}
+          >
             <Thead>
               <Tr>
                 <Th>ID</Th>
@@ -63,8 +71,12 @@ const Wallets = () => {
                     <Td>{i + 1}</Td>
                     <Td>{w.name}</Td>
                     <Td>{w.type}</Td>
-                    <Td>{accounting.formatNumber(w.amount_sum, 0, " ")} so'm</Td>
-                    <Td>$ {accounting.formatNumber(w.amount_dollar, 0, " ")}</Td>
+                    <Td>
+                      {accounting.formatNumber(w.amount_sum, 0, " ")} so'm
+                    </Td>
+                    <Td>
+                      $ {accounting.formatNumber(w.amount_dollar, 0, " ")}
+                    </Td>
                     <Td>
                       <Switch
                         size="lg"

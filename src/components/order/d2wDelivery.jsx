@@ -9,6 +9,7 @@ import {
   Th,
   Thead,
   Tr,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 import accounting from "accounting";
@@ -187,6 +188,8 @@ function D2wOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
     setWarehouseOrders(updatedRows);
   }
 
+  const { colorMode } = useColorMode()
+
   return (
     <>
       <UserInfo
@@ -199,7 +202,10 @@ function D2wOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
       <TableContainer
         display={delivery_type == "deliver to warehouse" || "none"}
       >
-        <Table variant="simple">
+        <Table
+          variant="simple"
+          background={colorMode === "light" ? "#fff" : ""}
+        >
           <Thead>
             <Tr>
               <Th>ID_______</Th>

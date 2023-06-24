@@ -16,10 +16,10 @@ import {
   Select,
 } from "@chakra-ui/react";
 import axios from "axios";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { OpenModalContext } from "../../../Contexts/ModalContext/ModalContext";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { companies } from "./AddUserModal";
+// import { companies } from "./AddUserModal";
 import { toast } from "react-toastify";
 import { instance } from "../../../config/axios.instance.config";
 
@@ -41,6 +41,7 @@ const EditUserModal = ({
     company_id: "",
     role: "",
   });
+  const [companys, setCompanys] = useState([]);
 
   function removeNullKeys(obj) {
     Object.keys(obj).forEach(function (key) {
@@ -52,7 +53,7 @@ const EditUserModal = ({
     });
     return obj;
   }
-  
+
   const handleEdit = () => {
     setLoading(true);
     instance
@@ -77,6 +78,12 @@ const EditUserModal = ({
         onClose();
       });
   };
+
+  useEffect(() => {
+    instance.get("/company").then((res) => {
+      setCompanys(res.data);
+    });
+  }, []);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -140,7 +147,7 @@ const EditUserModal = ({
               defaultValue={user.company_id}
               placeholder="Выбрать компанию"
             >
-              {companies?.map((c, i) => {
+              {companys?.map((c, i) => {
                 return (
                   <option key={i} value={c.company_id}>
                     {c.name}

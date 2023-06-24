@@ -19,6 +19,7 @@ import {
   Th,
   Thead,
   Tr,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -63,6 +64,7 @@ export default function NewFurnitureType() {
   const [model_names, setModel_names] = useState([{ id: 1, name: "" }]);
   const [ready, setReady] = useState(true);
   const [models, setModels] = useState([]);
+  const { colorMode } = useColorMode();
 
   useEffect(() => {
     axios
@@ -136,6 +138,7 @@ export default function NewFurnitureType() {
         console.error(error);
       });
   };
+
   return (
     <>
       <Layout>
@@ -151,9 +154,7 @@ export default function NewFurnitureType() {
             gap={{ base: "5px", md: "10px", lg: "20px" }}
             flexDirection={{ base: "column", md: "row", lg: "row" }}
           >
-            <Button 
-              colorScheme="blue"
-              w={{ base: "100%" }} onClick={onOpen}>
+            <Button colorScheme="blue" w={{ base: "100%" }} onClick={onOpen}>
               Добавить Вид мебели
             </Button>
             <Button colorScheme="blue" w={{ base: "100%" }} onClick={myOnOpen}>
@@ -188,7 +189,10 @@ export default function NewFurnitureType() {
                 />
               </Flex>
               <TableContainer my={5}>
-                <Table variant="simple">
+                <Table
+                  variant="simple"
+                  background={colorMode === "light" ? "#fff" : ""}
+                >
                   <Thead>
                     <Tr>
                       <Th>№</Th>
@@ -239,7 +243,10 @@ export default function NewFurnitureType() {
         />
 
         <TableContainer>
-          <Table variant={"simple"}>
+          <Table
+            variant={"simple"}
+            background={colorMode === "light" ? "#fff" : ""}
+          >
             <Thead>
               <Tr>
                 <Th>№</Th>

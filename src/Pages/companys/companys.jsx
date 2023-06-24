@@ -12,6 +12,7 @@ import {
   Th,
   Thead,
   Tr,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 import AddCompanyModal from "./components/add-company-modal";
@@ -36,6 +37,8 @@ const Companys = () => {
     });
   }, [reload]);
 
+  const { colorMode } = useColorMode();
+
   return (
     <>
       <AddCompanyModal
@@ -58,11 +61,16 @@ const Companys = () => {
           <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
             Компании
           </Heading>
-          <Button colorScheme="blue" onClick={onOpen}>Добавить kомпании</Button>
+          <Button colorScheme="blue" onClick={onOpen}>
+            Добавить kомпании
+          </Button>
         </Flex>
 
         <TableContainer>
-          <Table variant="simple">
+          <Table
+            variant="simple"
+            background={colorMode === "light" ? "#fff" : ""}
+          >
             <Thead>
               <Tr>
                 <Th>ид</Th>

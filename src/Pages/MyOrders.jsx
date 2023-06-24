@@ -7,6 +7,7 @@ import {
   Th,
   Thead,
   Tr,
+  useColorMode,
 } from "@chakra-ui/react";
 import accounting from "accounting";
 import Layout from "../components/layout/layout";
@@ -19,6 +20,7 @@ import "moment/locale/ru";
 export default function MyOrders() {
   const [myOrders, setMyOrders] = useState([]);
   const { token } = useContext(OpenModalContext);
+  const { colorMode } = useColorMode();
 
   useEffect(() => {
     axios
@@ -35,6 +37,7 @@ export default function MyOrders() {
         console.error(error);
       });
   }, []);
+
   return (
     <>
       <Layout>
@@ -42,9 +45,13 @@ export default function MyOrders() {
           Рейсы
         </Heading>
         <TableContainer>
-          <Table variant="simple">
+        <Table
+            variant="simple"
+            background={colorMode === "light" ? "#fff" : ""}
+          >
             <Thead>
               <Tr>
+                <Th>ДАТА</Th>
                 <Th>Курер</Th>
                 <Th>Вознаграждение</Th>
                 <Th>ID</Th>
@@ -52,7 +59,6 @@ export default function MyOrders() {
                 <Th>Телефон</Th>
                 <Th>Остаток</Th>
                 <Th>Статус</Th>
-                <Th>ДАТА</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -60,6 +66,8 @@ export default function MyOrders() {
                 myOrders.map((e, i) => {
                   return (
                     <Tr key={i}>
+                      <Td>{moment(e?.createdAt).locale("ru").format("L")}</Td>
+
                       <Td>{e?.seller ? e?.seller?.name : ""}</Td>
                       <Td>
                         {accounting.formatNumber(e?.price, 0, " ") + " sum"}
@@ -84,7 +92,6 @@ export default function MyOrders() {
                         сум
                       </Td>
                       <Td>{e.copied ? "В таблице" : "Ожидание..."}</Td>
-                      <Td>{moment(e?.createdAt).locale("ru").format("L")}</Td>
                     </Tr>
                   );
                 })

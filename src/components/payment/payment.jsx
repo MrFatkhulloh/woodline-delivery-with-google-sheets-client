@@ -22,6 +22,7 @@ import {
   Th,
   Thead,
   Tr,
+  useColorMode,
 } from "@chakra-ui/react";
 import { MinusIcon } from "@chakra-ui/icons";
 
@@ -160,6 +161,7 @@ function PaymentTable({
     useContext(OpenModalContext);
   const [uuid, setUuid] = useState("");
   const [state, setState] = useState(1);
+  const { colorMode } = useColorMode();
 
   const typeOptions = wallets?.length
     ? wallets
@@ -306,6 +308,7 @@ function PaymentTable({
     setTemporaryPaymentRow(updatedRows);
   }
 
+
   return (
     <>
       <Modal size="6xl" isOpen={isOpen} onClose={onClose}>
@@ -318,7 +321,10 @@ function PaymentTable({
               Оплата
             </Heading>
             <TableContainer>
-              <Table variant="simple">
+              <Table
+                variant="simple"
+                background={colorMode === "light" ? "#fff" : ""}
+              >
                 <Thead>
                   <Tr>
                     <Th>Вид оплаты</Th>

@@ -12,6 +12,7 @@ import {
   Th,
   Thead,
   Tr,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 import PayModal from "./components/pay-modal";
@@ -42,6 +43,8 @@ const PaySalary = () => {
     setPage(p);
   };
 
+  const { colorMode } = useColorMode();
+
   return (
     <>
       <PayModal
@@ -70,7 +73,10 @@ const PaySalary = () => {
         </Flex>
 
         <TableContainer>
-          <Table variant="simple">
+          <Table
+            variant="simple"
+            background={colorMode === "light" ? "#fff" : ""}
+          >
             <Thead>
               <Tr>
                 <Th>ид</Th>
