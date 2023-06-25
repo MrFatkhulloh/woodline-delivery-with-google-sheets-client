@@ -39,6 +39,10 @@ export default function LoginModal() {
           setLoading(false);
           window.localStorage.setItem("token", response.data?.token.token);
           window.localStorage.setItem("role", response.data?.token.role);
+          window.localStorage.setItem("name", response.data?.token.name);
+
+          console.log(response);
+
           // window.location.href = "/";
           navigate("/");
           setState(state + 1);

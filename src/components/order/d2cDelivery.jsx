@@ -27,8 +27,9 @@ import { D2COrderRow, OrderRow } from "./orderRow";
 import SearchModal from "../search/search";
 import PaymentTable from "../payment/payment";
 import axios from "axios";
+import CheckUpModalDelivery from "./components/checkModal";
 
-function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
+function D2cOrderTable({ selectedCourier, setSelectedCourier }) {
   const {
     types,
     allModels,
@@ -42,7 +43,6 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
     token,
     delivery_uuid,
   } = useContext(OpenModalContext);
-  const [loading, setLoading] = useState(false);
   const [state, setState] = useState(1);
   const [payState, setPayState] = useState(1);
   const [deliveryIndex, setDeliveryIndex] = useState(0);
@@ -67,65 +67,16 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
   ]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
+    isOpen: chIsOpen,
+    onOpen: chOnOpen,
+    onClose: chOnClose,
+  } = useDisclosure();
+  const {
     isOpen: isOpenPayment,
     onOpen: onOpenPayment,
     onClose: onClosePayment,
   } = useDisclosure();
   const { colorMode } = useColorMode();
-
-  const handleReloadD2c = () => {
-    const uuid = uuidv4();
-    setTemporaryPaymentRow([
-      {
-        id: paymentRow?.length > 1 ? paymentRow.length + 1 : 1,
-        payment_type: "",
-        payment_sum: 0,
-        payment_$: 0,
-        kurs: 0,
-        amount_by_kurs: 0,
-        change: 0,
-        total_sum: 0,
-        rest_money: 0,
-        deal_id: selectedOrder?.deal?.id ? selectedOrder?.deal?.id : "",
-        order_id: selectedOrder?.id ? selectedOrder?.id : "",
-        wallet_id: "",
-        delivery_uuid: uuid,
-      },
-    ]);
-
-    setPaymentRow([
-      {
-        id: 1,
-        payment_type: "",
-        payment_sum: 0,
-        payment_$: 0,
-        kurs: 0,
-        amount_by_kurs: 0,
-        change: 0,
-        total_sum: 0,
-        rest_money: 0,
-        deal_id: "",
-        order_id: "",
-        delivery_uuid: uuid,
-      },
-    ]);
-
-    setD2cDeliveryRow([
-      {
-        id: 1,
-        price: 0,
-        order: {},
-        title: "",
-        delivery_uuid: uuid,
-      },
-    ]);
-
-    setSelectedOrder({});
-    setSelectedCourier({
-      id: "someId",
-      name: "some name",
-    });
-  };
 
   useEffect(() => {
     const mappedData = d2cDeliveryRow.map((e) => {
@@ -216,37 +167,6 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
     setState(state + 1);
   };
 
-  const handleSubmit = () => {
-    if (loading) return;
-    if (!selectedCourier?.phone) return alert("select the courier!");
-    setLoading(true);
-    axios
-      .post(
-        "/universal-d2c-delivery",
-        {
-          delivery_row: d2cDeliveryRow,
-          courier: selectedCourier?.id,
-          paymentRow,
-        },
-        {
-          headers: {
-            token,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((response) => {
-        setLoading(false);
-        setHook(hook + 1);
-        handleReloadD2c();
-        console.log(response?.data);
-      })
-      .catch((error) => {
-        alert("Ощибка в сервере! Созвонитесь с разработчиком.");
-        console.error(error);
-      });
-  };
-
   function handleDeliveryChange(event, rowId, fieldName) {
     const updatedRows = d2cDeliveryRow.map((row) => {
       if (row.id == rowId) {
@@ -283,6 +203,17 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
 
   return (
     <>
+      <CheckUpModalDelivery
+        hook={hook}
+        setHook={setHook}
+        setTemporaryPaymentRow={setTemporaryPaymentRow}
+        pRows={temporaryPaymentRow}
+        rows={d2cDeliveryRow}
+        isOpen={chIsOpen}
+        onClose={chOnClose}
+        curier={selectedCourier}
+      />
+
       <SearchModal
         onClose={onClose}
         isOpen={isOpen}
@@ -306,7 +237,7 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
         selectedOrder={selectedOrder}
       />
 
-      <TableContainer display={delivery_type == "deliver to client" || "none"}>
+      <TableContainer>
         <Table
           variant="simple"
           background={colorMode === "light" ? "#fff" : ""}
@@ -347,16 +278,12 @@ function D2cOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
         </Table>
       </TableContainer>
 
-      <Flex
-        alignItems="center"
-        justifyContent="space-between"
-        mx={3}
-        my={5}
-        display={delivery_type == "deliver to client" || "none"}
-      >
-        <Button onClick={handlePlus}>+</Button>
-        <Button style={{ float: "right" }} onClick={handleSubmit}>
-          {loading ? "loading..." : "submit"} {loading && <Spinner />}
+      <Flex alignItems="center" justifyContent="end" gap={"20px"} my={5}>
+        <Button colorScheme="cyan" onClick={handlePlus}>
+          +
+        </Button>
+        <Button colorScheme="green" onClick={chOnOpen}>
+          {"submit"}
         </Button>
       </Flex>
     </>

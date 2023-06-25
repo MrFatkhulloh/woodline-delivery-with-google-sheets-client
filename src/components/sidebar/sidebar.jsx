@@ -12,11 +12,17 @@ import {
   useDisclosure,
   useColorMode,
   Button,
+  Menu,
+  MenuButton,
+  HStack,
+  Avatar,
+  VStack,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
-import { FiHome, FiMenu } from "react-icons/fi";
+import { FiChevronDown, FiHome, FiMenu } from "react-icons/fi";
 import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
-import { NavLink } from "react-router-dom";
-import "./sidebar.css";
+import { NavLink, useLocation } from "react-router-dom";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
 import HomeIcon from "@mui/icons-material/Home";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
@@ -26,6 +32,7 @@ import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import HomeWorkIcon from "@mui/icons-material/HomeWork";
 import WalletIcon from "@mui/icons-material/Wallet";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
+import "./sidebar.css";
 
 export default function SidebarWithHeader({ children }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -59,6 +66,8 @@ export default function SidebarWithHeader({ children }) {
 
 const SidebarContent = ({ onClose, ...rest }) => {
   const { role } = useContext(OpenModalContext);
+  const { colorMode } = useColorMode();
+  const { pathname } = useLocation();
 
   return (
     <Box
@@ -73,16 +82,36 @@ const SidebarContent = ({ onClose, ...rest }) => {
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
         <Text fontSize="2xl" fontWeight="bold">
-          Woodline
+          woodline
         </Text>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
 
-      <NavLink
-        to="/"
-        style={{ display: "inline-block", width: "100%", borderRadius: "0px" }}
-      >
-        <Flex alignItems="center" p="3" role="group" cursor="pointer" {...rest}>
+      <NavLink to="/">
+        <Flex
+          alignItems="center"
+          align="center"
+          p="4"
+          mx="4"
+          borderRadius="lg"
+          role="group"
+          cursor="pointer"
+          bg={
+            pathname === "/"
+              ? colorMode === "light"
+                ? "blue.500"
+                : "blue.200"
+              : ""
+          }
+          color={
+            pathname === "/"
+              ? colorMode === "light"
+                ? "#fff"
+                : "gray.800"
+              : ""
+          }
+          {...rest}
+        >
           <Icon mr="4" fontSize="20">
             <HomeIcon />
           </Icon>
@@ -90,11 +119,31 @@ const SidebarContent = ({ onClose, ...rest }) => {
         </Flex>
       </NavLink>
 
-      <NavLink
-        to="/my-orders"
-        style={{ display: "inline-block", width: "100%", borderRadius: "0px" }}
-      >
-        <Flex alignItems="center" p="3" role="group" cursor="pointer" {...rest}>
+      <NavLink to="/my-orders">
+        <Flex
+          alignItems="center"
+          align="center"
+          p="4"
+          mx="4"
+          borderRadius="lg"
+          role="group"
+          cursor="pointer"
+          bg={
+            pathname === "/my-orders"
+              ? colorMode === "light"
+                ? "blue.500"
+                : "blue.200"
+              : ""
+          }
+          color={
+            pathname === "/my-orders"
+              ? colorMode === "light"
+                ? "#fff"
+                : "gray.800"
+              : ""
+          }
+          {...rest}
+        >
           <Icon mr="4" fontSize="20">
             <LocalShippingIcon />
           </Icon>
@@ -104,19 +153,29 @@ const SidebarContent = ({ onClose, ...rest }) => {
 
       {role == "ADMIN" ? (
         <>
-          <NavLink
-            to="/admin/new-furniture-type"
-            style={{
-              display: "inline-block",
-              width: "100%",
-              borderRadius: "0px",
-            }}
-          >
+          <NavLink to="/admin/new-furniture-type">
             <Flex
               alignItems="center"
-              p="3"
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
               role="group"
               cursor="pointer"
+              bg={
+                pathname === "/admin/new-furniture-type"
+                  ? colorMode === "light"
+                    ? "blue.500"
+                    : "blue.200"
+                  : ""
+              }
+              color={
+                pathname === "/admin/new-furniture-type"
+                  ? colorMode === "light"
+                    ? "#fff"
+                    : "gray.800"
+                  : ""
+              }
               {...rest}
             >
               <Icon mr="4" fontSize="20" />
@@ -126,19 +185,29 @@ const SidebarContent = ({ onClose, ...rest }) => {
         </>
       ) : role == "SUPER_ADMIN" ? (
         <>
-          <NavLink
-            to="/admin/new-furniture-type"
-            style={{
-              display: "inline-block",
-              width: "100%",
-              borderRadius: "0px",
-            }}
-          >
+          <NavLink to="/admin/new-furniture-type">
             <Flex
               alignItems="center"
-              p="3"
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
               role="group"
               cursor="pointer"
+              bg={
+                pathname === "/admin/new-furniture-type"
+                  ? colorMode === "light"
+                    ? "blue.500"
+                    : "blue.200"
+                  : ""
+              }
+              color={
+                pathname === "/admin/new-furniture-type"
+                  ? colorMode === "light"
+                    ? "#fff"
+                    : "gray.800"
+                  : ""
+              }
               {...rest}
             >
               <Icon mr="4" fontSize="20">
@@ -147,19 +216,29 @@ const SidebarContent = ({ onClose, ...rest }) => {
               Модели
             </Flex>
           </NavLink>
-          <NavLink
-            to="/admin/users"
-            style={{
-              display: "inline-block",
-              width: "100%",
-              borderRadius: "0px",
-            }}
-          >
+          <NavLink to="/admin/users">
             <Flex
               alignItems="center"
-              p="3"
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
               role="group"
               cursor="pointer"
+              bg={
+                pathname === "/admin/users"
+                  ? colorMode === "light"
+                    ? "blue.500"
+                    : "blue.200"
+                  : ""
+              }
+              color={
+                pathname === "/admin/users"
+                  ? colorMode === "light"
+                    ? "#fff"
+                    : "gray.800"
+                  : ""
+              }
               {...rest}
             >
               <Icon mr="4" fontSize="20">
@@ -168,19 +247,29 @@ const SidebarContent = ({ onClose, ...rest }) => {
               Пользователи
             </Flex>
           </NavLink>
-          <NavLink
-            to={"/pay-salary"}
-            style={{
-              display: "inline-block",
-              width: "100%",
-              borderRadius: "0px",
-            }}
-          >
+          <NavLink to={"/pay-salary"}>
             <Flex
               alignItems="center"
-              p="3"
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
               role="group"
               cursor="pointer"
+              bg={
+                pathname === "/pay-salary"
+                  ? colorMode === "light"
+                    ? "blue.500"
+                    : "blue.200"
+                  : ""
+              }
+              color={
+                pathname === "/pay-salary"
+                  ? colorMode === "light"
+                    ? "#fff"
+                    : "gray.800"
+                  : ""
+              }
               {...rest}
             >
               <Icon mr="4" fontSize="20">
@@ -189,19 +278,29 @@ const SidebarContent = ({ onClose, ...rest }) => {
               Заявки
             </Flex>
           </NavLink>
-          <NavLink
-            to={"/companys"}
-            style={{
-              display: "inline-block",
-              width: "100%",
-              borderRadius: "0px",
-            }}
-          >
+          <NavLink to={"/companys"}>
             <Flex
               alignItems="center"
-              p="3"
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
               role="group"
               cursor="pointer"
+              bg={
+                pathname === "/companys"
+                  ? colorMode === "light"
+                    ? "blue.500"
+                    : "blue.200"
+                  : ""
+              }
+              color={
+                pathname === "/companys"
+                  ? colorMode === "light"
+                    ? "#fff"
+                    : "gray.800"
+                  : ""
+              }
               {...rest}
             >
               <Icon mr="4" fontSize="20">
@@ -210,19 +309,29 @@ const SidebarContent = ({ onClose, ...rest }) => {
               Компании
             </Flex>
           </NavLink>
-          <NavLink
-            to={"/wallets"}
-            style={{
-              display: "inline-block",
-              width: "100%",
-              borderRadius: "0px",
-            }}
-          >
+          <NavLink to={"/wallets"}>
             <Flex
               alignItems="center"
-              p="3"
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
               role="group"
               cursor="pointer"
+              bg={
+                pathname === "/wallets"
+                  ? colorMode === "light"
+                    ? "blue.500"
+                    : "blue.200"
+                  : ""
+              }
+              color={
+                pathname === "/wallets"
+                  ? colorMode === "light"
+                    ? "#fff"
+                    : "gray.800"
+                  : ""
+              }
               {...rest}
             >
               <Icon mr="4" fontSize="20">
@@ -234,38 +343,58 @@ const SidebarContent = ({ onClose, ...rest }) => {
         </>
       ) : role == "ACCOUNTANT" ? (
         <>
-          <NavLink
-            to={"/pa-salary"}
-            style={{
-              display: "inline-block",
-              width: "100%",
-              borderRadius: "0px",
-            }}
-          >
+          <NavLink to={"/pay-salary"}>
             <Flex
               alignItems="center"
-              p="3"
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
               role="group"
               cursor="pointer"
+              bg={
+                pathname === "/pay-salary"
+                  ? colorMode === "light"
+                    ? "blue.500"
+                    : "blue.200"
+                  : ""
+              }
+              color={
+                pathname === "/pay-salary"
+                  ? colorMode === "light"
+                    ? "#fff"
+                    : "gray.800"
+                  : ""
+              }
               {...rest}
             >
               <Icon mr="4" fontSize="20" />
               Заявки
             </Flex>
           </NavLink>
-          <NavLink
-            to={"/wallets"}
-            style={{
-              display: "inline-block",
-              width: "100%",
-              borderRadius: "0px",
-            }}
-          >
+          <NavLink to={"/wallets"}>
             <Flex
               alignItems="center"
-              p="3"
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
               role="group"
               cursor="pointer"
+              bg={
+                pathname === "/wallets"
+                  ? colorMode === "light"
+                    ? "blue.500"
+                    : "blue.200"
+                  : ""
+              }
+              color={
+                pathname === "/wallets"
+                  ? colorMode === "light"
+                    ? "#fff"
+                    : "gray.800"
+                  : ""
+              }
               {...rest}
             >
               <Icon mr="4" fontSize="20" />
@@ -275,11 +404,31 @@ const SidebarContent = ({ onClose, ...rest }) => {
         </>
       ) : null}
 
-      <NavLink
-        to="/analytics"
-        style={{ display: "inline-block", width: "100%", borderRadius: "0px" }}
-      >
-        <Flex alignItems="center" p="3" role="group" cursor="pointer" {...rest}>
+      <NavLink to="/analytics">
+        <Flex
+          alignItems="center"
+          align="center"
+          p="4"
+          mx="4"
+          borderRadius="lg"
+          role="group"
+          bg={
+            pathname === "/analytics"
+              ? colorMode === "light"
+                ? "blue.500"
+                : "blue.200"
+              : ""
+          }
+          color={
+            pathname === "/analytics"
+              ? colorMode === "light"
+                ? "#fff"
+                : "gray.800"
+              : ""
+          }
+          cursor="pointer"
+          {...rest}
+        >
           <Icon mr="4" fontSize="20">
             <AutoGraphIcon />
           </Icon>
@@ -292,6 +441,9 @@ const SidebarContent = ({ onClose, ...rest }) => {
 
 const MobileNav = ({ onOpen, ...rest }) => {
   const { colorMode, toggleColorMode } = useColorMode();
+
+  const { setOrderShow, setOpenApply, role, name } =
+    useContext(OpenModalContext);
 
   const logOut = () => {
     window.localStorage.removeItem("token");
@@ -331,7 +483,48 @@ const MobileNav = ({ onOpen, ...rest }) => {
           {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
         </Button>
 
-        <Button onClick={logOut}>Log Out</Button>
+        <Flex alignItems={"center"}>
+          <Menu>
+            <MenuButton
+              py={2}
+              transition="all 0.3s"
+              _focus={{ boxShadow: "none" }}
+            >
+              <HStack>
+                <Avatar size={"sm"} src={""} />
+                <VStack
+                  display={{ base: "none", md: "flex" }}
+                  alignItems="flex-start"
+                  spacing="1px"
+                  ml="2"
+                >
+                  <Text fontSize="sm">{name}</Text>
+                  <Text fontSize="xs" color="gray.600">
+                    {role}
+                  </Text>
+                </VStack>
+                <Box display={{ base: "none", md: "flex" }}>
+                  <FiChevronDown />
+                </Box>
+              </HStack>
+            </MenuButton>
+            <MenuList
+              bg={useColorModeValue("white", "gray.900")}
+              borderColor={useColorModeValue("gray.200", "gray.700")}
+            >
+              <MenuItem>Профиль</MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setOpenApply(true);
+                  setOrderShow(false);
+                }}
+              >
+                Подача заявки на оплату
+              </MenuItem>
+              <MenuItem onClick={logOut}>Выйти</MenuItem>
+            </MenuList>
+          </Menu>
+        </Flex>
       </Flex>
     </Flex>
   );

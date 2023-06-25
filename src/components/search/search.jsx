@@ -31,6 +31,7 @@ import {
   CardBody,
   CardFooter,
   Spinner,
+  FormControl,
 } from "@chakra-ui/react";
 import {
   AddIcon,
@@ -152,57 +153,59 @@ function SearchModal({
 
   return (
     <>
-      <Modal size="6xl" isOpen={isOpen} onClose={onClose}>
+      <Modal size="2xl" isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader mx={5}>Искать</ModalHeader>
-          <ModalCloseButton mx={5} />
+          <ModalHeader>Искать</ModalHeader>
+          <ModalCloseButton />
           <ModalBody>
-            <Heading ml={5} my={5} variant="h2" size="lg">
-              <Flex
-                justifyContent={"space-between"}
-                alignItems={"flex-end"}
-                wrap={"wrap"}
-              >
-                <Flex wrap={"wrap"} m={2}>
-                  <Text minWidth={200}>Искать по:</Text>
-                  <Select
-                    placeholder="Выберите..."
-                    minWidth={200}
-                    maxWidth={350}
-                    onChange={(event) => setSearchBy(event.target.value)}
-                  >
-                    <option value={"order_id"}>ID</option>
-                    <option value={"name"}>Имя клиента</option>
-                    <option value={"phone"}>Номер телефона</option>
-                    <option value={"model"}>Модель</option>
-                    <option value={"tissue"}>Ткань</option>
-                    <option value={"rest"}>Остаток</option>
-                  </Select>
-                </Flex>
-                <Spacer />
-                <Flex>
-                  <Input
-                    mr={2}
-                    onChange={(event) => setSearchKey(event.target.value)}
-                  />
-                  <IconButton
-                    aria-label="Search database"
-                    icon={!loading ? <SearchIcon /> : <Spinner />}
-                    onClick={(event) => {
-                      setIndexSelected(999999999);
-                      handleSearch(searchKey);
-                    }}
-                  />
-                </Flex>
-                <Spacer />
+            <Flex
+              justifyContent={"space-between"}
+              alignItems={"center"}
+              gap={"15px"}
+              mb={"15px"}
+            >
+              <FormControl>
+                <Select
+                  defaultValue={searchBy}
+                  placeholder="Искать по:"
+                  onChange={(event) => setSearchBy(event.target.value)}
+                >
+                  <option value={"order_id"}>ID</option>
+                  <option value={"name"}>имя клиента</option>
+                  <option value={"phone"}>Телефон</option>
+                  <option value={"model"}>Модель</option>
+                  <option value={"tissue"}>Ткань</option>
+                  <option value={"rest"}>Остаток</option>
+                </Select>
+              </FormControl>
+
+              <Flex gap={2}>
+                <Input
+                  placeholder="Поиск"
+                  w={"100%"}
+                  onChange={(event) => setSearchKey(event.target.value)}
+                />
+                <IconButton
+                  aria-label="Search database"
+                  icon={!loading ? <SearchIcon /> : <Spinner />}
+                  onClick={(event) => {
+                    setIndexSelected(999999999);
+                    handleSearch(searchKey);
+                  }}
+                />
               </Flex>
-            </Heading>
+            </Flex>
             <Divider />
-            <Flex wrap={"wrap"}>
+            <Flex wrap={"wrap"} overflow={"auto"} gap={"20px"} height={"400px"}>
               {foundOrders?.length ? (
                 foundOrders.map((foundOrder, orderIndex) => (
-                  <Card m={2} variant={"outline"} key={orderIndex}>
+                  <Card
+                    width={"100%"}
+                    maxWidth={"280px"}
+                    variant={"outline"}
+                    key={orderIndex}
+                  >
                     <CardHeader p={2}>
                       <Heading size="md">{foundOrder?.order_id}</Heading>
                     </CardHeader>
@@ -253,20 +256,11 @@ function SearchModal({
                   </Card>
                 ))
               ) : (
-                <Card m={2} variant={"outline"}>
-                  <CardHeader>
-                    <Heading size="md">123456</Heading>
-                  </CardHeader>
-                  <CardBody>
-                    <Text maxWidth={300}>
-                      View a summary of all your customers over the last month.
-                      Some another title here to broaden
-                    </Text>
-                  </CardBody>
-                  <CardFooter>
-                    <Button>View here</Button>
-                  </CardFooter>
-                </Card>
+                <Flex alignItems={"center"} justifyContent={"center"}>
+                  <Heading textAlign={"center"}>
+                    Пока нечего не найдено 😐 побробуйте искать 🔎 заново
+                  </Heading>
+                </Flex>
               )}
             </Flex>
             <Flex
@@ -280,7 +274,7 @@ function SearchModal({
 
           <ModalFooter>
             <Button
-              isLoading={indexSelected > 1000}
+              isDisabled={indexSelected > 1000}
               colorScheme="blue"
               spinner={<Spinner color="white" />}
               mr={3}
