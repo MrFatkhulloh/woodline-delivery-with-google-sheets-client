@@ -15,6 +15,7 @@ function Provider({ children }) {
   } = useDisclosure();
   const token = window.localStorage.getItem("token");
   const role = window.localStorage.getItem("role");
+  const name = window.localStorage.getItem("name");
   const [id, setId] = useState("");
   function generateRandomNumber() {
     axios
@@ -265,6 +266,7 @@ function Provider({ children }) {
         generateRandomNumber,
         token,
         role,
+        name,
         id,
         setId,
         types,

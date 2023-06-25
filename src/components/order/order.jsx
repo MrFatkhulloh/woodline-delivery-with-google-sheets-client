@@ -17,6 +17,13 @@ import {
   Text,
   Spacer,
   Box,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import accounting from "accounting";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
@@ -184,7 +191,10 @@ function OrderTable() {
     id: "someId",
     name: "some name",
   });
-  const [delivery_type, setDelivery_type] = useState("");
+  const [selectedCourier2, setSelectedCourier2] = useState({
+    id: "someId",
+    name: "курьер не выбран",
+  });
   const [state, setState] = useState(1);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -205,6 +215,12 @@ function OrderTable() {
     const foundCourier = courier.find((c) => c?.id == value);
     if (!foundCourier) return;
     setSelectedCourier(foundCourier);
+  };
+
+  const handleCoruier2 = (value) => {
+    const foundCourier = courier.find((c) => c?.id == value);
+    if (!foundCourier) return;
+    setSelectedCourier2(foundCourier);
   };
 
   const handleMinus = (index) => {
@@ -345,60 +361,62 @@ function OrderTable() {
 
   return (
     <>
-      <Flex justifyContent="space-between" alignItems="center" mb={8}>
-        <Spacer />
-        <Flex flex={1}>
-          <Box>
-            <Text>Вид доставки:</Text>
-            <Select
-              placeholder="Выберите ..."
-              mr={4}
-              onChange={(element) => setDelivery_type(element.target.value)}
-            >
-              <option value="deliver to warehouse">доставка на склад</option>
-              <option value="deliver to client">доставка к клиенту</option>
-            </Select>
-          </Box>
-          <Spacer />
-          <Box>
-            <Text>Курьер:</Text>
-            <Select
-              placeholder="Выберите ..."
-              onChange={(event) => handleCoruier(event.target.value)}
-              defaultValue={selectedCourier?.name}
-            >
-              {courier.length &&
-                courier.map((c, ci) => (
-                  <option value={c?.id} key={ci}>
-                    {c?.name}
-                  </option>
-                ))}
-            </Select>
-          </Box>
-        </Flex>
-        <Spacer />
-        <Button
-          colorScheme="blue"
-          onClick={() => {
-            setOpenApply(true);
-            setOrderShow(false);
-          }}
-        >
-          Подача заявки на оплату
-        </Button>
-      </Flex>
+      <Spacer />
 
-      <D2wOrderTable
-        delivery_type={delivery_type}
-        selectedCourier={selectedCourier}
-        setSelectedCourier={setSelectedCourier}
-      />
+      <Tabs>
+        <TabList>
+          <Tab>доставка на склад</Tab>
+          <Tab>доставка к клиенту</Tab>
+        </TabList>
 
-      <D2cOrderTable
-        delivery_type={delivery_type}
-        selectedCourier={selectedCourier}
-        setSelectedCourier={setSelectedCourier}
-      />
+        <TabPanels>
+          <TabPanel>
+            <FormControl width={200} mt={3} ml={"auto"} mb={6}>
+              <FormLabel>Курьер:</FormLabel>
+
+              <Select
+                placeholder="Выберите ..."
+                onChange={(event) => handleCoruier(event.target.value)}
+                defaultValue={selectedCourier?.name}
+              >
+                {courier.length &&
+                  courier.map((c, ci) => (
+                    <option value={c?.id} key={ci}>
+                      {c?.name}
+                    </option>
+                  ))}
+              </Select>
+            </FormControl>
+
+            <D2wOrderTable
+              selectedCourier={selectedCourier}
+              setSelectedCourier={setSelectedCourier}
+            />
+          </TabPanel>
+          <TabPanel>
+            <FormControl width={200} mt={3} ml={"auto"} mb={6}>
+              <FormLabel>Курьер:</FormLabel>
+              <Select
+                placeholder="Выберите ..."
+                onChange={(event) => handleCoruier2(event.target.value)}
+                defaultValue={selectedCourier?.name}
+              >
+                {courier.length &&
+                  courier.map((c, ci) => (
+                    <option value={c?.id} key={ci}>
+                      {c?.name}
+                    </option>
+                  ))}
+              </Select>
+            </FormControl>
+
+            <D2cOrderTable
+              selectedCourier={selectedCourier2}
+              setSelectedCourier={setSelectedCourier2}
+            />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </>
   );
 }

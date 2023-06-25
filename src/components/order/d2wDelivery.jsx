@@ -17,7 +17,7 @@ import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
 import UserInfo from "../userInfo/userInfo";
 import { D2COrderRow, OrderRow } from "./orderRow";
 
-function D2wOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
+function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
   const {
     warehouseOrders,
     setWarehouseOrders,
@@ -188,7 +188,7 @@ function D2wOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
     setWarehouseOrders(updatedRows);
   }
 
-  const { colorMode } = useColorMode()
+  const { colorMode } = useColorMode();
 
   return (
     <>
@@ -200,7 +200,6 @@ function D2wOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
       />
 
       <TableContainer
-        display={delivery_type == "deliver to warehouse" || "none"}
       >
         <Table
           variant="simple"
@@ -243,13 +242,15 @@ function D2wOrderTable({ delivery_type, selectedCourier, setSelectedCourier }) {
 
       <Flex
         alignItems="center"
-        justifyContent="space-between"
+        justifyContent="end"
+        gap={"20px"}
         mx={3}
         my={5}
-        display={delivery_type == "deliver to warehouse" || "none"}
       >
-        <Button onClick={handlePlus}>+</Button>
-        <Button style={{ float: "right" }} onClick={handleSubmit}>
+        <Button colorScheme="cyan" onClick={handlePlus}>
+          +
+        </Button>
+        <Button colorScheme="green" onClick={handleSubmit}>
           submit
         </Button>
       </Flex>
