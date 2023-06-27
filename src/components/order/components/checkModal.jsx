@@ -27,18 +27,13 @@ function CheckUpModalDelivery({
   setTemporaryPaymentRow,
   hook,
   setHook,
+  setSelectedCourier,
+  setSelectedOrder,
 }) {
   const [loading, setLoading] = useState(false);
 
-  const {
-    token,
-    selectedOrder,
-    paymentRow,
-    setD2cDeliveryRow,
-    setPaymentRow,
-    setSelectedCourier,
-    setSelectedOrder,
-  } = useContext(OpenModalContext);
+  const { token, selectedOrder, paymentRow, setD2cDeliveryRow, setPaymentRow } =
+    useContext(OpenModalContext);
 
   const handleReloadD2c = () => {
     const uuid = uuidv4();

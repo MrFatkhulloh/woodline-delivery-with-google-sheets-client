@@ -212,6 +212,8 @@ function D2cOrderTable({ selectedCourier, setSelectedCourier }) {
         isOpen={chIsOpen}
         onClose={chOnClose}
         curier={selectedCourier}
+        setSelectedCourier={setSelectedCourier}
+        setSelectedOrder={setSelectedOrder}
       />
 
       <SearchModal
