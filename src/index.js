@@ -8,7 +8,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 // axios.defaults.baseURL = "http://localhost:9090";
-axios.defaults.baseURL = "http://64.226.90.160:9090";
+axios.defaults.baseURL = "https://fatkhullo.backend4devs.uz";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
