@@ -134,7 +134,7 @@ function CheckUpModalDelivery({
           <ModalCloseButton />
           <ModalBody>
             <Heading size="md" my={2}>
-              Курер Имя: {curier?.name}
+              Курер: {curier?.name}
             </Heading>
             <Divider />
             <Heading size="lg" my={2}>
