@@ -1,173 +1,145 @@
-import React, { useEffect, useState } from "react";
-import { Box, Button, Text } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex } from "@chakra-ui/react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import { useState } from "react";
 
 const DynamicPagination = ({
-  totalItems,
-  itemsPerPage,
-  currentPage,
+  totalCount,
+  pageSize,
   onPageChange,
+  children,
 }) => {
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const MAX_VISIBLE_PAGES = 5; // Maximum number of visible page buttons
-  const MAX_DOTS_THRESHOLD = MAX_VISIBLE_PAGES - 1; // Number of buttons required to display dots
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const [pageButtons, setPageButtons] = []
+  const totalPages = Math.ceil(totalCount / pageSize);
 
-  const handlePageChange = (page) => {
-    if (page < 1 || page > totalPages) {
-      return;
-    }
-
+  const handleClick = (page) => {
+    setCurrentPage(page);
     onPageChange(page);
   };
 
+  const handlePrevClick = () => {
+    if (currentPage > 1) {
+      handleClick(currentPage - 1);
+    }
+  };
+
+  const handleNextClick = () => {
+    if (currentPage < totalPages) {
+      handleClick(currentPage + 1);
+    }
+  };
+
   const renderPageButtons = () => {
-    let pageButtons = [];
+    const buttons = [];
 
-    if (totalPages <= MAX_VISIBLE_PAGES) {
-      for (let page = 1; page <= totalPages; page++) {
-        pageButtons.push(
-          <Button
-            key={page}
-            onClick={() => handlePageChange(page)}
-            variant={page === currentPage ? "solid" : "ghost"}
-            colorScheme={page === currentPage ? "blue" : "gray"}
-            size="sm"
-            mx={1}
-          >
-            {page}
-          </Button>
-        );
-      }
-    } else {
-      const pageDots = (
-        <Button key="dots" disabled variant="ghost" size="sm" mx={1}>
-          ...
-        </Button>
-      );
+    const maxVisiblePages = 4;
+    const maxVisibleButtons = Math.min(maxVisiblePages, totalPages);
 
-      const firstButton = (
+    const halfMaxVisibleButtons = Math.floor(maxVisibleButtons / 2);
+    const startPage = Math.max(currentPage - halfMaxVisibleButtons, 1);
+    const endPage = Math.min(startPage + maxVisibleButtons - 1, totalPages);
+
+    const showStartDots = startPage > 1;
+    const showEndDots = endPage < totalPages;
+
+    if (showStartDots) {
+      buttons.push(
         <Button
-          key={1}
-          onClick={() => handlePageChange(1)}
-          variant={1 === currentPage ? "solid" : "ghost"}
-          colorScheme={1 === currentPage ? "blue" : "gray"}
+          colorScheme="gray"
+          key="first"
           size="sm"
-          mx={1}
+          variant={currentPage === 1 ? "outline" : "solid"}
+          onClick={() => handleClick(1)}
         >
           1
         </Button>
       );
+    }
 
-      const lastButton = (
+    if (showStartDots) {
+      buttons.push(
         <Button
-          key={totalPages}
-          onClick={() => handlePageChange(totalPages)}
-          variant={totalPages === currentPage ? "solid" : "ghost"}
-          colorScheme={totalPages === currentPage ? "blue" : "gray"}
+          variant={currentPage === 1 ? "outline" : "solid"}
+          colorScheme="gray"
+          key="start-dots"
           size="sm"
-          mx={1}
+          disabled
+        >
+          ...
+        </Button>
+      );
+    }
+
+    for (let page = startPage; page <= endPage; page++) {
+      buttons.push(
+        <Button
+          colorScheme="gray"
+          key={page}
+          size="sm"
+          variant={currentPage === page ? "outline" : "solid"}
+          onClick={() => handleClick(page)}
+        >
+          {page}
+        </Button>
+      );
+    }
+
+    if (showEndDots) {
+      buttons.push(
+        <Button
+          colorScheme="gray"
+          key="end-dots"
+          size="sm"
+          variant={"solid"}
+          disabled
+        >
+          ...
+        </Button>
+      );
+    }
+
+    if (showEndDots) {
+      buttons.push(
+        <Button
+          colorScheme="gray"
+          key="last"
+          size="sm"
+          variant={currentPage === totalPages ? "outline" : "solid"}
+          onClick={() => handleClick(totalPages)}
         >
           {totalPages}
         </Button>
       );
-
-      if (currentPage <= MAX_DOTS_THRESHOLD) {
-        // Display buttons from 1 to MAX_VISIBLE_PAGES
-        for (let page = 1; page <= MAX_VISIBLE_PAGES; page++) {
-          const button = (
-            <Button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              variant={page === currentPage ? "solid" : "ghost"}
-              colorScheme={page === currentPage ? "blue" : "gray"}
-              size="sm"
-              mx={1}
-            >
-              {page}
-            </Button>
-          );
-          pageButtons.push(button);
-        }
-        pageButtons.push(pageDots, lastButton);
-      } else if (currentPage > totalPages - MAX_DOTS_THRESHOLD) {
-        // Display buttons from totalPages - MAX_VISIBLE_PAGES + 1 to totalPages
-        for (
-          let page = totalPages - MAX_VISIBLE_PAGES + 1;
-          page <= totalPages;
-          page++
-        ) {
-          const button = (
-            <Button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              variant={page === currentPage ? "solid" : "ghost"}
-              colorScheme={page === currentPage ? "blue" : "gray"}
-              size="sm"
-              mx={1}
-            >
-              {page}
-            </Button>
-          );
-          pageButtons.push(button);
-        }
-      } else {
-        // Display buttons around the current page with dots
-        pageButtons.push(firstButton, pageDots);
-        const pagesBeforeCurrent = Math.floor(MAX_VISIBLE_PAGES / 2) - 1;
-        const pagesAfterCurrent = MAX_VISIBLE_PAGES - pagesBeforeCurrent - 3;
-        const startPage = currentPage - pagesBeforeCurrent;
-        const endPage = currentPage + pagesAfterCurrent;
-
-        for (let page = startPage; page <= endPage; page++) {
-          const button = (
-            <Button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              variant={page === currentPage ? "solid" : "ghost"}
-              colorScheme={page === currentPage ? "blue" : "gray"}
-              size="sm"
-              mx={1}
-            >
-              {page}
-            </Button>
-          );
-          pageButtons.push(button);
-        }
-        pageButtons.push(pageDots, lastButton);
-      }
     }
 
-    return pageButtons;
+    return buttons;
   };
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="center" mt={4}>
-      <Button
-        onClick={() => {
-          console.log(renderPageButtons());
-          handlePageChange(currentPage - 1);
-        }}
-        isDisabled={currentPage === 1 ? true : false}
-        mr={2}
-      >
-        Previous
-      </Button>
-
-      {renderPageButtons()}
-
-      <Button
-        onClick={() => handlePageChange(currentPage + 1)}
-        isDisabled={currentPage === totalPages ? true : false}
-        ml={2}
-      >
-        Next
-      </Button>
-
-      <Text ml={4}>
-        Page {currentPage} of {totalPages}
-      </Text>
-    </Box>
+    <Flex align="center" justify="center" mt={4}>
+      <ButtonGroup>
+        <Button
+          colorScheme="gray"
+          size="sm"
+          leftIcon={<ChevronLeftIcon />}
+          onClick={handlePrevClick}
+          isDisabled={currentPage === 1}
+        >
+          Prev
+        </Button>
+        {renderPageButtons()}
+        <Button
+          colorScheme="gray"
+          size="sm"
+          rightIcon={<ChevronRightIcon />}
+          onClick={handleNextClick}
+          isDisabled={currentPage === totalPages ? true : false}
+        >
+          Next
+        </Button>
+      </ButtonGroup>
+      {children}
+    </Flex>
   );
 };
 

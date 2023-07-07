@@ -24,36 +24,41 @@ export default function LoginModal() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [disable, setDisable] = useState(true)
 
   const handleSubmit = (e) => {
-    setLoading(true);
-    e.preventDefault();
-    // Handle login logic here
-    axios
-      .post("/login", {
-        name: name.trim(),
-        password: password.trim(),
-      })
-      .then((response) => {
-        if (response.data != "Error") {
-          setLoading(false);
-          window.localStorage.setItem("token", response.data?.token.token);
-          window.localStorage.setItem("role", response.data?.token.role);
-          window.localStorage.setItem("name", response.data?.token.name);
+    if (name !== "" && password !== "") {
+      setLoading(true);
+      e.preventDefault();
+      // Handle login logic here
+      axios
+        .post("/login", {
+          name: name.trim(),
+          password: password.trim(),
+        })
+        .then((response) => {
+          if (response.data != "Error") {
+            setLoading(false);
+            window.localStorage.setItem("token", response.data?.token.token);
+            window.localStorage.setItem("role", response.data?.token.role);
+            window.localStorage.setItem("name", response.data?.token.name);
 
-          console.log(response);
+            console.log(response);
 
-          // window.location.href = "/";
-          navigate("/");
-          setState(state + 1);
-          // window.location.reload();
-        } else {
-          window.localStorage.removeItem("token");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+            // window.location.href = "/";
+            navigate("/");
+            setState(state + 1);
+            // window.location.reload();
+          } else {
+            window.localStorage.removeItem("token");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
+
+    }
   };
 
   return (
@@ -92,6 +97,8 @@ export default function LoginModal() {
             </FormControl>
             <Stack spacing={10}>
               <Button
+                isDisabled={name !== "" && password !== "" ? false : true}
+                isLoading={loading}
                 onClick={handleSubmit}
                 bg={"blue.400"}
                 color={"white"}
@@ -99,8 +106,7 @@ export default function LoginModal() {
                   bg: "blue.500",
                 }}
               >
-                {loading ? "loading..." : "Сохранять"}
-                <Spinner display={loading ? "block" : "none"} />
+                {"Сохранять"}
               </Button>
             </Stack>
           </Stack>
