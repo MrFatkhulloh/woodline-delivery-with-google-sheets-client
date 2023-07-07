@@ -7,6 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+import ModalForm from "./components/applyForm/applyForm";
 // axios.defaults.baseURL = "http://localhost:9090";
 axios.defaults.baseURL = "https://fatkhullo.backend4devs.uz";
 

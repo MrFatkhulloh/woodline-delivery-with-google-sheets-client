@@ -31,10 +31,13 @@ const PaySalary = () => {
   const [course, setCourse] = useState(0);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [totalPages, setTotalPages] = useState();
 
   useEffect(() => {
     instance.get(`/applies?page=${page}&limit=${limit}`).then((res) => {
       setPays(res?.data?.allApplies);
+      setTotalPages(res?.data?.totalAmount);
+      console.log(res?.data?.totalAmount);
       setCourse(res?.data?.kurs);
     });
   }, [reload, limit, page]);
@@ -60,16 +63,6 @@ const PaySalary = () => {
           <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
             Заявки
           </Heading>
-
-          <Select
-            width={"200px"}
-            onChange={(e) => setLimit(e.target.value)}
-            placeholder="Choose"
-          >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={30}>30</option>
-          </Select>
         </Flex>
 
         <TableContainer>
@@ -185,11 +178,23 @@ const PaySalary = () => {
         </TableContainer>
 
         <DynamicPagination
-          totalItems={100}
-          itemsPerPage={5}
+          totalCount={totalPages}
+          pageSize={limit}
           currentPage={page}
           onPageChange={handlePageChange}
-        />
+        >
+          <Select
+            defaultValue={limit}
+            ml={4}
+            onChange={(e) => setLimit(e.target.value)}
+            placeholder="Choose"
+            w={100}
+          >
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+          </Select>
+        </DynamicPagination>
       </Layout>
     </>
   );

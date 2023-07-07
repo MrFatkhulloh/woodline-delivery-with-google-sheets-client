@@ -1,7 +1,10 @@
 import {
   Button,
   Flex,
+  FormControl,
+  FormLabel,
   Heading,
+  IconButton,
   Input,
   Modal,
   ModalBody,
@@ -10,7 +13,9 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Select,
   Spinner,
+  Switch,
   Table,
   TableContainer,
   Tbody,
@@ -27,6 +32,10 @@ import { useContext, useEffect, useState } from "react";
 import Layout from "../../components/layout/layout";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
 import NewModelModal from "./AddNewModelModal";
+import DynamicPagination from "../../components/pagin/pagin";
+import { instance } from "../../config/axios.instance.config";
+import { toast } from "react-toastify";
+import { EditIcon } from "@chakra-ui/icons";
 
 const ModelRow = ({ element, handleChange, setReady }) => {
   const [modelHas, setModelHas] = useState(false);
@@ -58,6 +67,13 @@ export default function NewFurnitureType() {
     onOpen: myOnOpen,
     onClose: myOnClose,
   } = useDisclosure();
+
+  const {
+    isOpen: updateIsOpen,
+    onOpen: updateOpen,
+    onClose: updateClose,
+  } = useDisclosure();
+
   const { token, types } = useContext(OpenModalContext);
   const [isNew, setIsNew] = useState(true);
   const [type_name, setType_name] = useState("");
@@ -65,22 +81,30 @@ export default function NewFurnitureType() {
   const [ready, setReady] = useState(true);
   const [models, setModels] = useState([]);
   const { colorMode } = useColorMode();
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalPages, setTotalPages] = useState();
+  const [model, setModel] = useState();
+  const [newModelName, setNewModelName] = useState("");
+  const [updateLoading, setUpdateLoading] = useState(false);
 
   useEffect(() => {
     axios
-      .get("/models", {
+      .get(`/models?page=${page}&limit=${limit}`, {
         headers: {
           token,
-          "Content-Type": "application/json",
+          "Content-Typmodele": "application/json",
         },
       })
       .then((response) => {
-        setModels(response.data);
+        console.log(response.data.totalAmount);
+        setModels(response.data.models);
+        setTotalPages(response.data.totalAmount);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [page, limit, updateLoading]);
 
   const checkType = (name) => {
     const foundType = types.find((e) => e.name == name);
@@ -136,6 +160,35 @@ export default function NewFurnitureType() {
       })
       .catch((error) => {
         console.error(error);
+      });
+  };
+
+  const handleChangeStatusModel = (model) => {
+    instance
+      .put(`/model/${model.id}`, { is_active: !model.is_active })
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success("Updated model status");
+        }
+      });
+  };
+
+  const handlePageChange = (p) => {
+    setPage(p);
+  };
+
+  const handleUpdateSubmit = () => {
+    setUpdateLoading(true);
+    instance
+      .put(`/model/${model.id}`, { name: newModelName })
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success("Updated model name");
+        }
+      })
+      .finally(() => {
+        setUpdateLoading(false);
+        updateClose();
       });
   };
 
@@ -242,6 +295,47 @@ export default function NewFurnitureType() {
           myOnClose={myOnClose}
         />
 
+        {/* UPDATE model name */}
+
+        <Modal
+          mx={{ base: "20px" }}
+          isOpen={updateIsOpen}
+          onClose={updateClose}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Изменить название модели</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <FormControl>
+                <FormLabel>Изменить имя</FormLabel>
+
+                <Input
+                  onChange={(e) => {
+                    setNewModelName(e.target.value);
+                  }}
+                  defaultValue={model?.name}
+                  type="text"
+                />
+              </FormControl>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button
+                isLoading={updateLoading}
+                colorScheme="blue"
+                mr={3}
+                onClick={handleUpdateSubmit}
+              >
+                {"Изменять"}
+              </Button>
+              <Button variant="ghost" onClick={updateClose}>
+                Закрывать
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+
         <TableContainer>
           <Table
             variant={"simple"}
@@ -252,6 +346,8 @@ export default function NewFurnitureType() {
                 <Th>№</Th>
                 <Th>Вид_мебели</Th>
                 <Th>Модель</Th>
+                <Th>Статус</Th>
+                <Th>Изменять</Th>
               </Tr>
             </Thead>
 
@@ -262,6 +358,24 @@ export default function NewFurnitureType() {
                     <Td>{modelIndex + 1}</Td>
                     <Td>{model?.furniture_type?.name}</Td>
                     <Td>{model.name}</Td>
+                    <Td>
+                      <Switch
+                        defaultChecked={model.is_active}
+                        onChange={() => handleChangeStatusModel(model)}
+                        colorScheme="green"
+                        size="lg"
+                      />
+                    </Td>
+                    <Td>
+                      <IconButton
+                        onClick={() => {
+                          updateOpen();
+                          setModel(model);
+                        }}
+                        colorScheme="yellow"
+                        icon={<EditIcon />}
+                      />
+                    </Td>
                   </Tr>
                 ))
               ) : (
@@ -269,10 +383,32 @@ export default function NewFurnitureType() {
                   <Td>ПОКА ПУСТО!</Td>
                   <Td>ПОКА ПУСТО!</Td>
                   <Td>ПОКА ПУСТО!</Td>
+                  <Td>ПОКА ПУСТО!</Td>
+                  <Td>ПОКА ПУСТО!</Td>
                 </Tr>
               )}
             </Tbody>
           </Table>
+
+          <DynamicPagination
+            totalCount={totalPages}
+            itemsPerPage={5}
+            pageSize={limit}
+            currentPage={page}
+            onPageChange={handlePageChange}
+          >
+            <Select
+              defaultValue={limit}
+              ml={4}
+              onChange={(e) => setLimit(e.target.value)}
+              placeholder="Choose"
+              w={100}
+            >
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="30">30</option>
+            </Select>
+          </DynamicPagination>
         </TableContainer>
       </Layout>
     </>

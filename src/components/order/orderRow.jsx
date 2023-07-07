@@ -204,71 +204,41 @@ function D2COrderRow({
   return (
     <Tr>
       <Td>
-        <Tooltip label="Bos meni :)">
-          <Box
-            display={"inline-block"}
-            padding={"6px"}
-            borderRadius={"4px"}
-            transition={"0.3s all ease"}
-            _hover={{
-              background: "#2D5F5F",
-              color: "white",
-            }}
-            cursor={"pointer"}
-            onClick={() => {
-              handleSelectModel(i);
-              if (e?.order?.id) {
-                setFoundOrders([e?.order]);
-              }
-            }}
-          >
-            {e?.order?.id ? e?.order?.order_id : "Выберите ID"}
-            <Text>
-              {e?.order?.id
-                ? "\n" + e?.order?.model?.name + " - " + e?.order?.tissue
-                : ""}
-            </Text>
-          </Box>
-        </Tooltip>
-      </Td>
-      <Td>
-        <Tooltip label="Bos meni :)">
-          <Text
-            display={"inline-block"}
-            padding={"6px"}
-            borderRadius={"4px"}
-            transition={"0.3s all ease"}
-            _hover={{
-              background: "#2D5F5F",
-              color: "white",
-            }}
-            cursor={"pointer"}
-          >
+        <Button
+          onClick={() => {
+            handleSelectModel(i);
+            if (e?.order?.id) {
+              setFoundOrders([e?.order]);
+            }
+          }}
+        >
+          {e?.order?.id ? e?.order?.order_id : "Выберите ID"}
+          <Text>
             {e?.order?.id
-              ? accounting.formatNumber(e?.order?.deal?.rest, 0, " ") + " sum"
-              : "Выберите ID"}
+              ? "\n" + e?.order?.model?.name + " - " + e?.order?.tissue
+              : ""}
           </Text>
-        </Tooltip>
+        </Button>
+
+        <Box
+          display={"inline-block"}
+          padding={"6px"}
+          borderRadius={"4px"}
+          transition={"0.3s all ease"}
+          _hover={{
+            background: "#2D5F5F",
+            color: "white",
+          }}
+          cursor={"pointer"}
+        ></Box>
       </Td>
+      <Td>{accounting.formatNumber(e?.order?.deal?.rest, 0, " ") + " sum"}</Td>
       <Td>
-        <Tooltip label="Bos meni :)">
-          <Text
-            display={"inline-block"}
-            padding={"6px"}
-            borderRadius={"4px"}
-            transition={"0.3s all ease"}
-            _hover={{
-              background: "#2D5F5F",
-              color: "white",
-            }}
-            onClick={() => handleSelectPayment(i)}
-            // w={"200px"}
-            id={e.id}
-            cursor={"pointer"}
-          >
-            {accounting.formatNumber(payment_sum, 0, " ") + " sum"}
-          </Text>
-        </Tooltip>
+        <Button onClick={() => handleSelectPayment(i)}>
+          {payment_sum
+            ? accounting.formatNumber(payment_sum, 0, " ") + " sum"
+            : "выберите тип оплаты"}
+        </Button>
       </Td>
       <Td>
         <Input
