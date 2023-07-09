@@ -147,6 +147,27 @@ function OrderRow({
         />
       </Td>
       <Td>
+        <Input
+          id={e.id}
+          onChange={(event) =>
+            handleDeliveryChange(event, event.target.id, "trip_id")
+          }
+          w={"200px"}
+          type="number"
+        />
+      </Td>
+      <Td>
+        <Input
+          id={e.id}
+          onChange={(event) => {
+            console.log(new Date(event.target.value));
+            handleDeliveryChange(event, event.target.id, "delivery_date");
+          }}
+          w={"200px"}
+          type="date"
+        />
+      </Td>
+      <Td>
         <Button onClick={() => handleMinus(i)}>-</Button>
       </Td>
     </Tr>
@@ -258,6 +279,14 @@ function D2COrderRow({
           value={accounting.formatNumber(d2cDeliveryRow[i]?.price, 0, " ")}
           onChange={(event) =>
             handleDeliveryChange(event, event.target.id, "price")
+          }
+        />
+      </Td>
+      <Td>
+        <Input
+          type="date"
+          onChange={(event) =>
+            handleDeliveryChange(event, event.target.id, "delivery_date")
           }
         />
       </Td>

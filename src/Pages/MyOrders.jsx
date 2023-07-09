@@ -1,5 +1,14 @@
 import {
+  Button,
+  Flex,
   Heading,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Table,
   TableContainer,
   Tbody,
@@ -8,6 +17,7 @@ import {
   Thead,
   Tr,
   useColorMode,
+  useDisclosure,
 } from "@chakra-ui/react";
 import accounting from "accounting";
 import Layout from "../components/layout/layout";
@@ -18,6 +28,7 @@ import moment from "moment";
 import "moment/locale/ru";
 
 export default function MyOrders() {
+  const { onOpen, isOpen, onClose } = useDisclosure();
   const [myOrders, setMyOrders] = useState([]);
   const { token } = useContext(OpenModalContext);
   const { colorMode } = useColorMode();
@@ -40,18 +51,39 @@ export default function MyOrders() {
 
   return (
     <>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Modal Title</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>Salom alekum</ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3}>
+              Save
+            </Button>
+            <Button onClick={onClose} variant="ghost">
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       <Layout>
-        <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
-          Рейсы
-        </Heading>
+        <Flex alignItems={"center"} justifyContent={"space-between"}>
+          <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
+            Рейсы
+          </Heading>
+        </Flex>
+
         <TableContainer>
-        <Table
+          <Table
             variant="simple"
             background={colorMode === "light" ? "#fff" : ""}
           >
             <Thead>
               <Tr>
-                <Th>ДАТА</Th>
+                <Th>номер рейса</Th>
                 <Th>Курер</Th>
                 <Th>Вознаграждение</Th>
                 <Th>ID</Th>
@@ -59,6 +91,8 @@ export default function MyOrders() {
                 <Th>Телефон</Th>
                 <Th>Остаток</Th>
                 <Th>Статус</Th>
+                <Th>Дата создании</Th>
+                <Th>Дата доставки</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -66,7 +100,7 @@ export default function MyOrders() {
                 myOrders.map((e, i) => {
                   return (
                     <Tr key={i}>
-                      <Td>{moment(e?.createdAt).locale("ru").format("L")}</Td>
+                      <Td>{e?.trip_id}</Td>
 
                       <Td>{e?.seller ? e?.seller?.name : ""}</Td>
                       <Td>
@@ -92,6 +126,10 @@ export default function MyOrders() {
                         сум
                       </Td>
                       <Td>{e.copied ? "В таблице" : "Ожидание..."}</Td>
+                      <Td>{moment(e?.createdAt).locale("ru").format("L")}</Td>
+                      <Td>
+                        {moment(e?.delivery_date).locale("ru").format("L")}
+                      </Td>
                     </Tr>
                   );
                 })

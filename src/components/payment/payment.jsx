@@ -308,7 +308,6 @@ function PaymentTable({
     setTemporaryPaymentRow(updatedRows);
   }
 
-
   return (
     <>
       <Modal size="6xl" isOpen={isOpen} onClose={onClose}>

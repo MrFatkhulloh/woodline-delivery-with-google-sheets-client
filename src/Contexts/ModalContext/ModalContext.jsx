@@ -39,6 +39,8 @@ function Provider({ children }) {
   const [types, setTypes] = useState([]);
   const [orderShow, setOrderShow] = useState(true);
   const [userDataModal, setUserDataModal] = useState(false);
+  const now = new Date().getTime();
+  const [selectedOrder, setSelectedOrder] = useState({});
   const [d2cDeliveryRow, setD2cDeliveryRow] = useState([
     {
       id: 1,
@@ -46,6 +48,8 @@ function Provider({ children }) {
       order: {},
       title: "",
       delivery_uuid,
+      delivery_date: now,
+      trip_id: 0,
     },
   ]);
   const [deliveryRow, setDeliveryRow] = useState([
@@ -54,6 +58,8 @@ function Provider({ children }) {
       price: 0,
       order_id: myUuid,
       title: "",
+      delivery_date: now,
+      trip_id: 0,
     },
   ]);
   const [paymentRow, setPaymentRow] = useState([
@@ -286,6 +292,8 @@ function Provider({ children }) {
         wallets,
         setWallets,
         delivery_uuid,
+        selectedOrder,
+        setSelectedOrder,
       }}
     >
       {children}

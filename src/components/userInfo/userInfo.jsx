@@ -41,8 +41,10 @@ const UserInfo = ({ onClose, isOpen, onOpen, selectedCourier }) => {
   };
 
   const handleSubmit = () => {
+    console.log(deliveryRow);
     if (loading) return;
     setLoading(true);
+
     axios
       .post(
         "/universal-delivery",
@@ -59,6 +61,7 @@ const UserInfo = ({ onClose, isOpen, onOpen, selectedCourier }) => {
         }
       )
       .then((response) => {
+        console.log(deliveryRow);
         setState(state + 1);
         setLoading(false);
         onClose();

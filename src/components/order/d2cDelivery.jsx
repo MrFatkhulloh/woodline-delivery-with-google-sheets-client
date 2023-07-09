@@ -42,12 +42,14 @@ function D2cOrderTable({ selectedCourier, setSelectedCourier }) {
     setPaymentRow,
     token,
     delivery_uuid,
+    selectedOrder,
+    setSelectedOrder,
   } = useContext(OpenModalContext);
   const [state, setState] = useState(1);
   const [payState, setPayState] = useState(1);
   const [deliveryIndex, setDeliveryIndex] = useState(0);
   const [foundOrders, setFoundOrders] = useState([]);
-  const [selectedOrder, setSelectedOrder] = useState({});
+
   const [temporaryPaymentRow, setTemporaryPaymentRow] = useState([
     {
       id: 1,
@@ -170,6 +172,12 @@ function D2cOrderTable({ selectedCourier, setSelectedCourier }) {
   function handleDeliveryChange(event, rowId, fieldName) {
     const updatedRows = d2cDeliveryRow.map((row) => {
       if (row.id == rowId) {
+        if (fieldName == "delivery_date") {
+          return {
+            ...row,
+            [fieldName]: new Date(event.target.value).getTime(),
+          };
+        }
         return {
           ...row,
           [fieldName]: accounting.unformat(event.target.value),
@@ -251,6 +259,7 @@ function D2cOrderTable({ selectedCourier, setSelectedCourier }) {
               <Th>оплатили</Th>
               <Th>примечание</Th>
               <Th>вознаграждение</Th>
+              <Th>Дата доставки</Th>
               <Th>Удалить строка</Th>
             </Tr>
           </Thead>

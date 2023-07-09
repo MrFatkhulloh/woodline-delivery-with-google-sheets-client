@@ -45,10 +45,10 @@ const DynamicPagination = ({
     if (showStartDots) {
       buttons.push(
         <Button
-          colorScheme="gray"
+          colorScheme={currentPage === 1 ? "blue" : "gray"}
           key="first"
           size="sm"
-          variant={currentPage === 1 ? "outline" : "solid"}
+          variant={"solid"}
           onClick={() => handleClick(1)}
         >
           1
@@ -59,7 +59,7 @@ const DynamicPagination = ({
     if (showStartDots) {
       buttons.push(
         <Button
-          variant={currentPage === 1 ? "outline" : "solid"}
+          variant={"solid"}
           colorScheme="gray"
           key="start-dots"
           size="sm"
@@ -73,10 +73,10 @@ const DynamicPagination = ({
     for (let page = startPage; page <= endPage; page++) {
       buttons.push(
         <Button
-          colorScheme="gray"
+          colorScheme={currentPage === page ? "blue" : "gray"}
           key={page}
           size="sm"
-          variant={currentPage === page ? "outline" : "solid"}
+          variant={"solid"}
           onClick={() => handleClick(page)}
         >
           {page}
@@ -101,10 +101,10 @@ const DynamicPagination = ({
     if (showEndDots) {
       buttons.push(
         <Button
-          colorScheme="gray"
+          colorScheme={currentPage === totalPages ? "blue" : "gray"}
           key="last"
           size="sm"
-          variant={currentPage === totalPages ? "outline" : "solid"}
+          variant={"solid"}
           onClick={() => handleClick(totalPages)}
         >
           {totalPages}

@@ -28,12 +28,18 @@ function CheckUpModalDelivery({
   hook,
   setHook,
   setSelectedCourier,
-  setSelectedOrder,
 }) {
   const [loading, setLoading] = useState(false);
 
-  const { token, selectedOrder, paymentRow, setD2cDeliveryRow, setPaymentRow } =
-    useContext(OpenModalContext);
+  const {
+    token,
+    selectedOrder,
+    paymentRow,
+    setD2cDeliveryRow,
+    setPaymentRow,
+
+    setSelectedOrder,
+  } = useContext(OpenModalContext);
 
   const handleReloadD2c = () => {
     const uuid = uuidv4();
@@ -115,8 +121,8 @@ function CheckUpModalDelivery({
         console.log(response?.data);
       })
       .catch((error) => {
-        alert("Ощибка в сервере! Созвонитесь с разработчиком.");
         console.error(error);
+        alert("Ощибка в сервере! Созвонитесь с разработчиком.");
       });
   };
 
