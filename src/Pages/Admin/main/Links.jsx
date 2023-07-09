@@ -36,6 +36,11 @@ const companies = [
     name: "B to B 2023",
     company_id: "1lA6JYkdRyH8qFs_UYEpqzlCujAX0PIFtRQl9_6RI6MU",
   },
+  {
+    id: 4,
+    name: "Уртасарай",
+    company_id: "1sYJQr5EIpVh8BHFKEendlZnGA1HOIFZUfpdKkcHn1HA",
+  },
 ];
 
 export default function AdminLinkList() {

@@ -221,6 +221,7 @@ function D2cOrderTable({ selectedCourier, setSelectedCourier }) {
         onClose={chOnClose}
         curier={selectedCourier}
         setSelectedCourier={setSelectedCourier}
+        setSelectedOrder={setSelectedOrder}
       />
 
       <SearchModal
