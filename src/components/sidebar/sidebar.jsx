@@ -32,6 +32,7 @@ import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import HomeWorkIcon from "@mui/icons-material/HomeWork";
 import WalletIcon from "@mui/icons-material/Wallet";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
+import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import "./sidebar.css";
 
 export default function SidebarWithHeader({ children }) {
@@ -340,6 +341,37 @@ const SidebarContent = ({ onClose, ...rest }) => {
               Кошельки
             </Flex>
           </NavLink>
+          <NavLink to={"/debts"}>
+            <Flex
+              alignItems="center"
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
+              role="group"
+              cursor="pointer"
+              bg={
+                pathname === "/debts"
+                  ? colorMode === "light"
+                    ? "blue.500"
+                    : "blue.200"
+                  : ""
+              }
+              color={
+                pathname === "/debts"
+                  ? colorMode === "light"
+                    ? "#fff"
+                    : "gray.800"
+                  : ""
+              }
+              {...rest}
+            >
+              <Icon mr="4" fontSize="20">
+                <CurrencyExchangeIcon />
+              </Icon>
+              Долги
+            </Flex>
+          </NavLink>
         </>
       ) : role == "ACCOUNTANT" ? (
         <>
@@ -399,6 +431,37 @@ const SidebarContent = ({ onClose, ...rest }) => {
             >
               <Icon mr="4" fontSize="20" />
               Кошельки
+            </Flex>
+          </NavLink>
+          <NavLink to={"/debts"}>
+            <Flex
+              alignItems="center"
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
+              role="group"
+              cursor="pointer"
+              bg={
+                pathname === "/debts"
+                  ? colorMode === "light"
+                    ? "blue.500"
+                    : "blue.200"
+                  : ""
+              }
+              color={
+                pathname === "/debts"
+                  ? colorMode === "light"
+                    ? "#fff"
+                    : "gray.800"
+                  : ""
+              }
+              {...rest}
+            >
+              <Icon mr="4" fontSize="20">
+                <CurrencyExchangeIcon />
+              </Icon>
+              Долги
             </Flex>
           </NavLink>
         </>

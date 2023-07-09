@@ -109,6 +109,12 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
   function handleDeliveryChange(event, rowId, fieldName) {
     const updatedRows = deliveryRow.map((row) => {
       if (row.id == rowId) {
+        if (fieldName == "delivery_date") {
+          return {
+            ...row,
+            [fieldName]: new Date(event.target.value).getTime(),
+          };
+        }
         return {
           ...row,
           [fieldName]: accounting.unformat(event.target.value),
@@ -121,6 +127,7 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
   }
 
   function handleChange(event, rowId, fieldName) {
+    console.log(event.target.value, rowId, fieldName, "changeFn");
     const updatedRows = warehouseOrders.map((row) => {
       if (row.id == rowId) {
         if (fieldName == "price") {
@@ -177,10 +184,17 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
             ),
           };
         }
-        return {
-          ...row,
-          [fieldName]: event.target.value,
-        };
+        if (fieldName == "delivery_date") {
+          return {
+            ...row,
+            ["delivery_date"]: new Date(event.target.value).getTime(),
+          };
+        } else {
+          return {
+            ...row,
+            [fieldName]: event.target.value,
+          };
+        }
       } else {
         return row;
       }
@@ -199,8 +213,7 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
         selectedCourier={selectedCourier}
       />
 
-      <TableContainer
-      >
+      <TableContainer>
         <Table
           variant="simple"
           background={colorMode === "light" ? "#fff" : ""}
@@ -214,6 +227,9 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
               <Th>примечание</Th>
               <Th>кол-во</Th>
               <Th>вознаграждение</Th>
+              <Th>номер рейса</Th>
+
+              <Th>Дата доставки</Th>
               <Th>Удалить строка</Th>
             </Tr>
           </Thead>
@@ -240,13 +256,7 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
         </Table>
       </TableContainer>
 
-      <Flex
-        alignItems="center"
-        justifyContent="end"
-        gap={"20px"}
-        mx={3}
-        my={5}
-      >
+      <Flex alignItems="center" justifyContent="end" gap={"20px"} mx={3} my={5}>
         <Button colorScheme="cyan" onClick={handlePlus}>
           +
         </Button>

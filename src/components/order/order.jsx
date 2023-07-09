@@ -221,6 +221,7 @@ function OrderTable() {
     const foundCourier = courier.find((c) => c?.id == value);
     if (!foundCourier) return;
     setSelectedCourier2(foundCourier);
+    console.log(foundCourier);
   };
 
   const handleMinus = (index) => {
@@ -399,7 +400,7 @@ function OrderTable() {
               <Select
                 placeholder="Выберите ..."
                 onChange={(event) => handleCoruier2(event.target.value)}
-                defaultValue={selectedCourier?.name}
+                defaultValue={selectedCourier2?.name}
               >
                 {courier.length &&
                   courier.map((c, ci) => (

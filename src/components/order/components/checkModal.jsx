@@ -27,6 +27,7 @@ function CheckUpModalDelivery({
   setTemporaryPaymentRow,
   hook,
   setHook,
+  setSelectedCourier,
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -36,7 +37,7 @@ function CheckUpModalDelivery({
     paymentRow,
     setD2cDeliveryRow,
     setPaymentRow,
-    setSelectedCourier,
+
     setSelectedOrder,
   } = useContext(OpenModalContext);
 
@@ -120,8 +121,8 @@ function CheckUpModalDelivery({
         console.log(response?.data);
       })
       .catch((error) => {
-        alert("Ощибка в сервере! Созвонитесь с разработчиком.");
         console.error(error);
+        alert("Ощибка в сервере! Созвонитесь с разработчиком.");
       });
   };
 
