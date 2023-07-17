@@ -221,7 +221,6 @@ function D2cOrderTable({ selectedCourier, setSelectedCourier }) {
         onClose={chOnClose}
         curier={selectedCourier}
         setSelectedCourier={setSelectedCourier}
-        setSelectedOrder={setSelectedOrder}
       />
 
       <SearchModal
@@ -259,6 +258,7 @@ function D2cOrderTable({ selectedCourier, setSelectedCourier }) {
               <Th>оплатили</Th>
               <Th>примечание</Th>
               <Th>вознаграждение</Th>
+              <Th>НОМЕР РЕЙСА</Th>
               <Th>Дата доставки</Th>
               <Th>Удалить строка</Th>
             </Tr>

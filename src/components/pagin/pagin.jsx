@@ -32,7 +32,7 @@ const DynamicPagination = ({
   const renderPageButtons = () => {
     const buttons = [];
 
-    const maxVisiblePages = 4;
+    const maxVisiblePages = 3;
     const maxVisibleButtons = Math.min(maxVisiblePages, totalPages);
 
     const halfMaxVisibleButtons = Math.floor(maxVisibleButtons / 2);

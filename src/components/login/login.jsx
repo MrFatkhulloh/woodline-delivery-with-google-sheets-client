@@ -25,6 +25,7 @@ export default function LoginModal() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const [disable, setDisable] = useState(true)
+  
 
   const handleSubmit = (e) => {
     if (name !== "" && password !== "") {

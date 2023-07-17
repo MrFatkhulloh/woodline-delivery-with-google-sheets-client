@@ -26,6 +26,7 @@ import axios from "axios";
 import { useContext, useState } from "react";
 import Layout from "../../components/layout/layout";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
+import { toast } from "react-toastify";
 
 const ModelRow = ({ element, handleChange, setReady, ready, i, types }) => {
   const [isNew, setIsNew] = useState(true);
@@ -100,12 +101,19 @@ const ModelRow = ({ element, handleChange, setReady, ready, i, types }) => {
   );
 };
 
-export default function NewModelModal({ myOpen, myOnOpen, myOnClose }) {
+export default function NewModelModal({
+  myOpen,
+  myOnOpen,
+  myOnClose,
+  reload,
+  setReload,
+}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { token, types } = useContext(OpenModalContext);
   const [models, setModels] = useState([{ id: 1, name: "", type_id: "" }]);
   const [model_names, setModel_names] = useState([{ id: 1, name: "" }]);
   const [ready, setReady] = useState(true);
+  const [addModelLoading, setAddModelLoading] = useState(false);
   const { colorMode } = useColorMode();
 
   const handleChange = (rowId, name, value) => {
@@ -128,6 +136,7 @@ export default function NewModelModal({ myOpen, myOnOpen, myOnClose }) {
   };
 
   const handleSubmit = () => {
+    setAddModelLoading(true);
     setReady(false);
     axios
       .post(
@@ -143,11 +152,17 @@ export default function NewModelModal({ myOpen, myOnOpen, myOnClose }) {
         }
       )
       .then((response) => {
-        window.location.reload();
-        // setReady([true]);
+        if (response.status === 200) {
+          setReload(!reload);
+
+          myOnClose();
+
+          toast.success("Добавлена новая модель");
+        }
       })
       .finally(() => {
         setReady(true);
+        setAddModelLoading(false);
       })
       .catch((error) => {
         console.error(error);
@@ -205,9 +220,13 @@ export default function NewModelModal({ myOpen, myOnOpen, myOnClose }) {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
-              {ready ? "Создать" : "loading..."}
-              <Spinner display={ready ? "none" : "block"} />
+            <Button
+              isLoading={addModelLoading}
+              colorScheme="blue"
+              mr={3}
+              onClick={handleSubmit}
+            >
+              {"Создать"}
             </Button>
             <Button variant="ghost" onClick={myOnClose}>
               Закрывать

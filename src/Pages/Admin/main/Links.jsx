@@ -2,6 +2,17 @@ import {
   Button,
   Flex,
   Heading,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Modal,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Select,
   Switch,
   Table,
   TableContainer,
@@ -19,6 +30,10 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { OpenModalContext } from "../../../Contexts/ModalContext/ModalContext";
 import EditUserModal from "./EditUserModal";
+import { ChevronDownIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { toast } from "react-toastify";
+import { instance } from "../../../config/axios.instance.config";
+import DynamicPagination from "../../../components/pagin/pagin";
 
 const companies = [
   {
@@ -36,11 +51,6 @@ const companies = [
     name: "B to B 2023",
     company_id: "1lA6JYkdRyH8qFs_UYEpqzlCujAX0PIFtRQl9_6RI6MU",
   },
-  {
-    id: 4,
-    name: "Уртасарай",
-    company_id: "1sYJQr5EIpVh8BHFKEendlZnGA1HOIFZUfpdKkcHn1HA",
-  },
 ];
 
 export default function AdminLinkList() {
@@ -50,10 +60,22 @@ export default function AdminLinkList() {
     isOpen: editIsOpen,
     onClose: editClose,
   } = useDisclosure();
+
+  const {
+    isOpen: deleteIsOpen,
+    onOpen: deleteOnOpen,
+    onClose: deleteClose,
+  } = useDisclosure();
+
   const { token } = useContext(OpenModalContext);
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState("");
   const [reload, setReload] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [count, setCount] = useState();
 
   const handleActive = (activeIndex) => {
     const newUsers = users.map((user, index) => {
@@ -94,21 +116,44 @@ export default function AdminLinkList() {
 
   useEffect(() => {
     axios
-      .get("/sellers", {
+      .get(`/seller/pagination?page=${page}&limit=${limit}`, {
         headers: {
           "Content-Type": "application/json",
           token: `${token}`,
         },
       })
       .then((response) => {
-        setUsers(response.data);
+        console.log(response);
+        setUsers(response.data.sellers);
+        setCount(response.data.totalAmount);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, [reload]);
+  }, [reload, page, limit]);
 
   const { colorMode } = useColorMode();
+
+  const handleDeleteUser = () => {
+    setDeleteLoading(true);
+    instance
+      .delete(`/user/${userId}`)
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success(`${res.data}`);
+
+          setReload(!reload);
+        }
+      })
+      .finally(() => {
+        setDeleteLoading(false);
+        deleteClose();
+      });
+  };
+
+  const handlePageChange = (p) => {
+    setPage(p);
+  };
 
   return (
     <>
@@ -122,6 +167,32 @@ export default function AdminLinkList() {
         onClose={editClose}
         user={userId}
       />
+
+      <Modal
+        closeOnOverlayClick={false}
+        isOpen={deleteIsOpen}
+        onClose={deleteClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Вы уверены, что хотите удалить?</ModalHeader>
+          <ModalCloseButton />
+
+          <ModalFooter>
+            <Button
+              isLoading={deleteLoading}
+              onClick={() => {
+                handleDeleteUser();
+              }}
+              colorScheme="blue"
+              mr={3}
+            >
+              Да
+            </Button>
+            <Button onClick={onClose}>Нет</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       <Layout>
         <Flex justifyContent="space-between" alignItems="center" my={5}>
@@ -150,45 +221,79 @@ export default function AdminLinkList() {
               </Tr>
             </Thead>
             <Tbody>
-              {users.length &&
-                users.map((e, i) => (
-                  <Tr key={i}>
-                    <Td>{i + 1}</Td>
-                    <Td>{e.name}</Td>
-                    <Td>{e.password}</Td>
-                    <Td>{e?.phone}</Td>
-                    <Td>
-                      {
-                        companies.find(
-                          (comp) => comp.company_id == e.company_id
-                        )?.name
-                      }
-                    </Td>
-                    <Td>{e?.role}</Td>
-                    <Td>
-                      <Switch
-                        size="lg"
-                        colorScheme="green"
-                        defaultChecked={e.is_active}
-                        onChange={() => handleActivate(i)}
-                      />
-                    </Td>
-                    <Td>
-                      <Button
-                        colorScheme="yellow"
-                        onClick={() => {
-                          setUserId(e);
-                          editOpen();
-                        }}
-                      >
-                        Изменять
-                      </Button>
-                    </Td>
-                  </Tr>
-                ))}
+              {users?.map((e, i) => (
+                <Tr key={i}>
+                  <Td>{i + 1}</Td>
+                  <Td>{e.name}</Td>
+                  <Td>{e.password}</Td>
+                  <Td>{e?.phone}</Td>
+                  <Td>
+                    {
+                      companies.find((comp) => comp.company_id == e.company_id)
+                        ?.name
+                    }
+                  </Td>
+                  <Td>{e?.role}</Td>
+                  <Td>
+                    <Switch
+                      size="lg"
+                      colorScheme="green"
+                      defaultChecked={e.is_active}
+                      onChange={() => handleActivate(i)}
+                    />
+                  </Td>
+                  <Td>
+                    <Menu>
+                      <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                        Действия
+                      </MenuButton>
+                      <MenuList>
+                        <MenuItem
+                          onClick={() => {
+                            setUserId(e);
+                            editOpen();
+                          }}
+                          icon={<EditIcon />}
+                        >
+                          Изменять
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            setUserId(e.id);
+                            deleteOnOpen();
+                          }}
+                          icon={<DeleteIcon />}
+                        >
+                          Удалить
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
+                  </Td>
+                </Tr>
+              ))}
             </Tbody>
           </Table>
         </TableContainer>
+
+        <DynamicPagination
+          totalCount={count}
+          itemsPerPage={5}
+          pageSize={limit}
+          currentPage={page}
+          onPageChange={handlePageChange}
+        >
+          <Select
+            defaultValue={limit}
+            ml={4}
+            onChange={(e) => setLimit(e.target.value)}
+            placeholder="Choose"
+            w={100}
+          >
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+          </Select>
+        </DynamicPagination>
       </Layout>
     </>
   );
