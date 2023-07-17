@@ -214,9 +214,10 @@ const Debts = () => {
   };
 
   useEffect(() => {
-    instance.get(`/dealId/${deal?.id}`).then((res) => {
-      setDealMoreInfos(res.data);
-    });
+    deal !== undefined &&
+      instance.get(`/dealId/${deal?.id}`).then((res) => {
+        setDealMoreInfos(res.data);
+      });
   }, [deal]);
 
   return (
