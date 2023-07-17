@@ -282,6 +282,18 @@ function D2COrderRow({
           }
         />
       </Td>
+
+          <Td>
+            <Input 
+              w={"200px"}
+              type="number"
+              id={e.id}
+              onChange={(event) => {
+                handleDeliveryChange(event, event.target.id, "trip_id")
+              }}
+            />
+          </Td>
+
       <Td>
         <Input
           type="date"

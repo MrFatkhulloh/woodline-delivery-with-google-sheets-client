@@ -6,6 +6,12 @@ import {
   Heading,
   IconButton,
   Input,
+  InputGroup,
+  InputLeftElement,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -13,6 +19,15 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverFooter,
+  PopoverHeader,
+  PopoverTrigger,
+  Portal,
   Select,
   Spinner,
   Switch,
@@ -35,7 +50,14 @@ import NewModelModal from "./AddNewModelModal";
 import DynamicPagination from "../../components/pagin/pagin";
 import { instance } from "../../config/axios.instance.config";
 import { toast } from "react-toastify";
-import { EditIcon } from "@chakra-ui/icons";
+import {
+  AddIcon,
+  ChevronDownIcon,
+  DeleteIcon,
+  EditIcon,
+  Search2Icon,
+  SearchIcon,
+} from "@chakra-ui/icons";
 
 const ModelRow = ({ element, handleChange, setReady }) => {
   const [modelHas, setModelHas] = useState(false);
@@ -74,6 +96,12 @@ export default function NewFurnitureType() {
     onClose: updateClose,
   } = useDisclosure();
 
+  const {
+    isOpen: deleteIsOpen,
+    onOpen: deleteOnOpen,
+    onClose: deleteClose,
+  } = useDisclosure();
+
   const { token, types } = useContext(OpenModalContext);
   const [isNew, setIsNew] = useState(true);
   const [type_name, setType_name] = useState("");
@@ -86,25 +114,34 @@ export default function NewFurnitureType() {
   const [totalPages, setTotalPages] = useState();
   const [model, setModel] = useState();
   const [newModelName, setNewModelName] = useState("");
+
   const [updateLoading, setUpdateLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [reload, setReload] = useState(false);
+  const [addFTypeLoading, setAddFTypeLoading] = useState(false);
+
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
-    axios
-      .get(`/models?page=${page}&limit=${limit}`, {
-        headers: {
-          token,
-          "Content-Typmodele": "application/json",
-        },
-      })
-      .then((response) => {
-        console.log(response.data.totalAmount);
-        setModels(response.data.models);
-        setTotalPages(response.data.totalAmount);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [page, limit, updateLoading]);
+    searchValue.trim() !== ""
+      ? instance.get(`/search-model?name=${searchValue}`).then((res) => {
+          setModels(res.data);
+        })
+      : axios
+          .get(`/models?page=${page}&limit=${limit}`, {
+            headers: {
+              token,
+              "Content-Typmodele": "application/json",
+            },
+          })
+          .then((response) => {
+            setModels(response.data.models);
+            setTotalPages(response.data.totalAmount);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+  }, [page, limit, updateLoading, reload, searchValue]);
 
   const checkType = (name) => {
     const foundType = types.find((e) => e.name == name);
@@ -136,8 +173,10 @@ export default function NewFurnitureType() {
   };
 
   const handleSubmit = () => {
+    setAddFTypeLoading(true);
     if (!ready) return;
     setReady(false);
+
     axios
       .post(
         "/new-type-with-models",
@@ -152,11 +191,16 @@ export default function NewFurnitureType() {
         }
       )
       .then((response) => {
-        window.location.reload();
-        // setReady(true);
+        if (response.status === 200) {
+          setReload(!reload);
+
+          toast.success("Добавлен новый тип мебели");
+        }
       })
       .finally(() => {
         setReady(true);
+        setAddFTypeLoading(false);
+        onClose();
       })
       .catch((error) => {
         console.error(error);
@@ -169,6 +213,8 @@ export default function NewFurnitureType() {
       .then((res) => {
         if (res.status === 200) {
           toast.success("Updated model status");
+
+          setReload(!reload);
         }
       });
   };
@@ -184,6 +230,7 @@ export default function NewFurnitureType() {
       .then((res) => {
         if (res.status === 200) {
           toast.success("Updated model name");
+          setReload(!reload);
         }
       })
       .finally(() => {
@@ -192,31 +239,26 @@ export default function NewFurnitureType() {
       });
   };
 
+  const handleDeleteModel = () => {
+    setDeleteLoading(true);
+    instance
+      .delete(`/models/${model.id}`)
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success(`${res.data}`);
+
+          setReload(!reload);
+        }
+      })
+      .finally(() => {
+        setDeleteLoading(false);
+        deleteClose();
+      });
+  };
 
   return (
     <>
       <Layout>
-        <Flex justifyContent={"space-between"} alignItems={"center"}>
-          <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
-            Вид мебели
-          </Heading>
-          <Flex
-            mt={{ base: "10px" }}
-            mb={{ base: "20px" }}
-            fontSize={{ base: "5px", md: "15px", lg: "20px" }}
-            alignItems={"center"}
-            gap={{ base: "5px", md: "10px", lg: "20px" }}
-            flexDirection={{ base: "column", md: "row", lg: "row" }}
-          >
-            <Button colorScheme="blue" w={{ base: "100%" }} onClick={onOpen}>
-              Добавить Вид мебели
-            </Button>
-            <Button colorScheme="blue" w={{ base: "100%" }} onClick={myOnOpen}>
-              Добавить модель
-            </Button>
-          </Flex>
-        </Flex>
-
         {/* ADD new furn type Model of modal */}
 
         <Modal
@@ -277,9 +319,13 @@ export default function NewFurnitureType() {
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
-                {ready ? "Создать" : "loading..."}
-                <Spinner display={ready ? "none" : "block"} />
+              <Button
+                isLoading={addFTypeLoading}
+                colorScheme="blue"
+                mr={3}
+                onClick={handleSubmit}
+              >
+                {"Создать"}
               </Button>
               <Button variant="ghost" onClick={onClose}>
                 Закрывать
@@ -294,6 +340,8 @@ export default function NewFurnitureType() {
           myOpen={myOpen}
           myOnOpen={myOnOpen}
           myOnClose={myOnClose}
+          reload={reload}
+          setReload={setReload}
         />
 
         {/* UPDATE model name */}
@@ -337,6 +385,69 @@ export default function NewFurnitureType() {
           </ModalContent>
         </Modal>
 
+        {/* Delete model */}
+
+        <Modal
+          closeOnOverlayClick={false}
+          isOpen={deleteIsOpen}
+          onClose={deleteClose}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Вы уверены, что хотите удалить?</ModalHeader>
+            <ModalCloseButton />
+
+            <ModalFooter>
+              <Button
+                isLoading={deleteLoading}
+                onClick={() => {
+                  handleDeleteModel();
+                }}
+                colorScheme="blue"
+                mr={3}
+              >
+                Да
+              </Button>
+              <Button onClick={onClose}>Нет</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+
+        <Flex justifyContent={"space-between"} alignItems={"center"}>
+          <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
+            Вид мебели
+          </Heading>
+
+          <Menu>
+            <MenuButton
+              colorScheme="blue"
+              as={Button}
+              rightIcon={<ChevronDownIcon />}
+            >
+              Действия
+            </MenuButton>
+            <MenuList>
+              <MenuItem onClick={onOpen} icon={<AddIcon />}>
+                Добавить Вид мебели
+              </MenuItem>
+              <MenuItem onClick={myOnOpen} icon={<AddIcon />}>
+                Добавить модель
+              </MenuItem>
+
+              <InputGroup>
+                <InputLeftElement pointerEvents="none">
+                  <SearchIcon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  type="text"
+                  placeholder="Поиск по имени"
+                />
+              </InputGroup>
+            </MenuList>
+          </Menu>
+        </Flex>
+
         <TableContainer>
           <Table
             variant={"simple"}
@@ -348,7 +459,7 @@ export default function NewFurnitureType() {
                 <Th>Вид_мебели</Th>
                 <Th>Модель</Th>
                 <Th>Статус</Th>
-                <Th>Изменять</Th>
+                <Th>Действия</Th>
               </Tr>
             </Thead>
 
@@ -368,14 +479,31 @@ export default function NewFurnitureType() {
                       />
                     </Td>
                     <Td>
-                      <IconButton
-                        onClick={() => {
-                          updateOpen();
-                          setModel(model);
-                        }}
-                        colorScheme="yellow"
-                        icon={<EditIcon />}
-                      />
+                      <Menu>
+                        <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                          Действия
+                        </MenuButton>
+                        <MenuList>
+                          <MenuItem
+                            icon={<EditIcon />}
+                            onClick={() => {
+                              updateOpen();
+                              setModel(model);
+                            }}
+                          >
+                            Изменять
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              setModel(model);
+                              deleteOnOpen();
+                            }}
+                            icon={<DeleteIcon />}
+                          >
+                            Удалить
+                          </MenuItem>
+                        </MenuList>
+                      </Menu>
                     </Td>
                   </Tr>
                 ))
@@ -391,25 +519,27 @@ export default function NewFurnitureType() {
             </Tbody>
           </Table>
 
-          <DynamicPagination
-            totalCount={totalPages}
-            itemsPerPage={5}
-            pageSize={limit}
-            currentPage={page}
-            onPageChange={handlePageChange}
-          >
-            <Select
-              defaultValue={limit}
-              ml={4}
-              onChange={(e) => setLimit(e.target.value)}
-              placeholder="Choose"
-              w={100}
+          {searchValue.trim() === "" ? (
+            <DynamicPagination
+              totalCount={totalPages}
+              itemsPerPage={5}
+              pageSize={limit}
+              currentPage={page}
+              onPageChange={handlePageChange}
             >
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="30">30</option>
-            </Select>
-          </DynamicPagination>
+              <Select
+                defaultValue={limit}
+                ml={4}
+                onChange={(e) => setLimit(e.target.value)}
+                placeholder="Choose"
+                w={100}
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+              </Select>
+            </DynamicPagination>
+          ) : null}
         </TableContainer>
       </Layout>
     </>

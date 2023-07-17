@@ -118,8 +118,9 @@ function CheckUpModalDelivery({
         setLoading(false);
         setHook(hook + 1);
         handleReloadD2c();
-        console.log(response?.data);
+        onClose();
       })
+
       .catch((error) => {
         console.error(error);
         alert("Ощибка в сервере! Созвонитесь с разработчиком.");

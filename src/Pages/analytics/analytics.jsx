@@ -34,6 +34,7 @@ import { instance } from "../../config/axios.instance.config";
 import { CUIAutoComplete } from "chakra-ui-autocomplete";
 import accounting from "accounting";
 import { CheckCircleIcon } from "@chakra-ui/icons";
+import Autocomplete from "../../components/autocomplete/autocomplete";
 
 Chart.register(LinearScale, PointElement, LineElement, Title);
 
@@ -74,6 +75,7 @@ const Analytics = () => {
     showroom: "",
     start_date: "",
     end_date: "",
+    furniture_type: "",
   });
 
   const [selectSellers, setSelectSellers] = useState([]);
@@ -132,7 +134,6 @@ const Analytics = () => {
         sellers: selectSellers,
       })
       .then((res) => {
-        console.log(res, "res");
         setAnalyt({
           labels: res.data.labels,
           datasets: res.data.datasets,
@@ -145,7 +146,6 @@ const Analytics = () => {
         models: selectModels,
       })
       .then((res) => {
-        console.log(res, "res2");
         setAnalyt2({
           labels: res.data.labels,
           datasets: res.data.datasets,
@@ -166,10 +166,6 @@ const Analytics = () => {
   const sumMoney2 = analyt2.datasets
     .map((d) => d.data.reduce((a, b) => a + b, 0))
     .reduce((m, n) => m + n, 0);
-  console.log(models);
-
-  console.log(analyt2.datasets, "my data");
-  console.log(paramData2, "ppp");
 
   return (
     <>
@@ -265,7 +261,7 @@ const Analytics = () => {
                     }
                     placeholder="Все модели"
                   >
-                    {sellers?.map((s) => {
+                    {models?.map((s) => {
                       return (
                         <option key={s.id} value={s.id}>
                           {s.name}
@@ -394,7 +390,7 @@ const Analytics = () => {
                       );
                       setParamData2({
                         ...paramData2,
-                        model: "",
+                        furniture_type: e.target.value,
                       });
                     }}
                     placeholder="выбрать тип мебели"

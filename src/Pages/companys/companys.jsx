@@ -4,6 +4,16 @@ import {
   Button,
   Flex,
   Heading,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Modal,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Switch,
   Table,
   TableContainer,
@@ -18,6 +28,8 @@ import {
 import AddCompanyModal from "./components/add-company-modal";
 import { instance } from "../../config/axios.instance.config";
 import EditCompanyModal from "./components/edit-company-modal";
+import { ChevronDownIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { toast } from "react-toastify";
 
 const Companys = () => {
   const { onOpen, isOpen, onClose } = useDisclosure();
@@ -27,6 +39,14 @@ const Companys = () => {
     onClose: editClose,
   } = useDisclosure();
   const [reload, setReload] = useState(false);
+
+  const {
+    isOpen: deleteIsOpen,
+    onOpen: deleteOnOpen,
+    onClose: deleteClose,
+  } = useDisclosure();
+
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [companys, setCompanys] = useState([]);
   const [company, setCompany] = useState({});
@@ -38,6 +58,23 @@ const Companys = () => {
   }, [reload]);
 
   const { colorMode } = useColorMode();
+
+  const handleDeleteCompany = () => {
+    setDeleteLoading(true);
+    instance
+      .delete(`/company/${company.id}`)
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success(`${res.data}`);
+
+          setReload(!reload);
+        }
+      })
+      .finally(() => {
+        setDeleteLoading(false);
+        deleteClose();
+      });
+  };
 
   return (
     <>
@@ -55,6 +92,34 @@ const Companys = () => {
         reload={reload}
         setReload={setReload}
       />
+
+      {/* Delete modal */}
+
+      <Modal
+        closeOnOverlayClick={false}
+        isOpen={deleteIsOpen}
+        onClose={deleteClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Вы уверены, что хотите удалить?</ModalHeader>
+          <ModalCloseButton />
+
+          <ModalFooter>
+            <Button
+              isLoading={deleteLoading}
+              onClick={() => {
+                handleDeleteCompany();
+              }}
+              colorScheme="blue"
+              mr={3}
+            >
+              Да
+            </Button>
+            <Button onClick={onClose}>Нет</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       <Layout>
         <Flex justifyContent="space-between" alignItems="center" my={5}>
@@ -77,7 +142,7 @@ const Companys = () => {
                 <Th>Имя</Th>
                 <Th>Статусы</Th>
                 <Th>Активен</Th>
-                <Th>Изменять</Th>
+                <Th>Действия</Th>
               </Tr>
             </Thead>
 
@@ -96,15 +161,31 @@ const Companys = () => {
                       />
                     </Td>
                     <Td>
-                      <Button
-                        onClick={() => {
-                          setCompany(c);
-                          editOpen();
-                        }}
-                        colorScheme="yellow"
-                      >
-                        Изменять
-                      </Button>
+                      <Menu>
+                        <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                          Действия
+                        </MenuButton>
+                        <MenuList>
+                          <MenuItem
+                            icon={<EditIcon />}
+                            onClick={() => {
+                              editOpen();
+                              setCompany(c);
+                            }}
+                          >
+                            Изменять
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              setCompany(c);
+                              deleteOnOpen();
+                            }}
+                            icon={<DeleteIcon />}
+                          >
+                            Удалить
+                          </MenuItem>
+                        </MenuList>
+                      </Menu>
                     </Td>
                   </Tr>
                 );

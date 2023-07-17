@@ -6,9 +6,9 @@ import axios from "axios";
 import { BrowserRouter } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer as Toastify } from "react-toastify";
 import ModalForm from "./components/applyForm/applyForm";
-// axios.defaults.baseURL = "http://localhost:9090";
+// axios.defaults.baseURL = "http://64.226.90.160:3005";
 axios.defaults.baseURL = "https://fatkhullo.backend4devs.uz";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -16,8 +16,10 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <ModalProvider>
-        <ChakraProvider>
-          <ToastContainer autoClose={3000} />
+        <ChakraProvider
+          toastOptions={{ defaultOptions: { position: "top" } }}
+        >
+          <Toastify autoClose={3000} />
           <App />
         </ChakraProvider>
       </ModalProvider>

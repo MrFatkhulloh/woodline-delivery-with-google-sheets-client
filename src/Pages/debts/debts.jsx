@@ -1,12 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import Layout from "../../components/layout/layout";
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
   Button,
   Flex,
   FormControl,
@@ -27,8 +21,13 @@ import {
   Select,
   Spinner,
   Switch,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
   Table,
   TableContainer,
+  Tabs,
   Tbody,
   Td,
   Th,
@@ -42,7 +41,13 @@ import accounting from "accounting";
 import moment from "moment";
 import "moment/locale/ru";
 import DynamicPagination from "../../components/pagin/pagin";
-import { ChevronDownIcon } from "@chakra-ui/icons";
+import {
+  AddIcon,
+  ChevronDownIcon,
+  DeleteIcon,
+  EditIcon,
+  InfoIcon,
+} from "@chakra-ui/icons";
 import { toast } from "react-toastify";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
 
@@ -72,7 +77,15 @@ const Debts = () => {
   const [ord, setOrd] = useState();
   const [isChanged, setIsChanged] = useState();
   const [searchedPhone, setSearchedPhone] = useState("");
-  const [searchedData, setSearchedData] = useState([]);
+  const [dealMoreInfos, setDealMoreInfos] = useState();
+
+  const {
+    isOpen: deleteIsOpen,
+    onOpen: deleteOnOpen,
+    onClose: deleteClose,
+  } = useDisclosure();
+
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [addOrderLoading, setAddOrderLoading] = useState(false);
 
@@ -168,7 +181,7 @@ const Debts = () => {
   };
 
   useEffect(() => {
-    searchedPhone !== ""
+    searchedPhone.trim() !== ""
       ? instance
           .get(`/search-deals-dept/${searchedPhone.toString().trim()}`)
           .then((res) => {
@@ -183,41 +196,61 @@ const Debts = () => {
           });
   }, [reload, limit, page, searchedPhone]);
 
+  const handleDeleteApply = () => {
+    setDeleteLoading(true);
+    instance
+      .delete(`/deal/${deal.id}`)
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success(`${res.data}`);
+
+          setReload(!reload);
+        }
+      })
+      .finally(() => {
+        setDeleteLoading(false);
+        deleteClose();
+      });
+  };
+
+  useEffect(() => {
+    instance.get(`/dealId/${deal?.id}`).then((res) => {
+      setDealMoreInfos(res.data);
+    });
+  }, [deal]);
+
   return (
     <>
       <Modal size="6xl" isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>More Info</ModalHeader>
+          <ModalHeader>Подробное</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <Accordion allowToggle>
-              <AccordionItem>
-                <h2>
-                  <AccordionButton>
-                    <Box as="span" flex="1" textAlign="left">
-                      Orders
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel pb={4}>
+            <Tabs>
+              <TabList>
+                <Tab>Заказы</Tab>
+                <Tab>Платежи</Tab>
+              </TabList>
+
+              <TabPanels>
+                <TabPanel>
                   <TableContainer>
                     <Table variant="simple">
                       <Thead>
                         <Tr>
-                          <Th>Order id</Th>
-                          <Th>title</Th>
-                          <Th>Category</Th>
-                          <Th>sena</Th>
-                          <Th>kol-vo</Th>
-                          <Th>tissue</Th>
-                          <Th>percent</Th>
-                          <Th>is active</Th>
+                          <Th>ЗАКАЗА ID</Th>
+                          <Th>Заголовок</Th>
+                          <Th>КАТЕГОРИЯ</Th>
+                          <Th>Цена</Th>
+                          <Th>КОЛ-ВО</Th>
+                          <Th>ТКАНЬ</Th>
+                          <Th>ПРОЦЕНТ</Th>
+                          <Th>АКТИВЕН</Th>
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {deal?.orders?.map((o) => (
+                        {dealMoreInfos?.orders?.map((o) => (
                           <Tr>
                             <Td>{o.order_id}</Td>
                             <Td>{o.title}</Td>
@@ -250,30 +283,19 @@ const Debts = () => {
                       </Tbody>
                     </Table>
                   </TableContainer>
-                </AccordionPanel>
-              </AccordionItem>
-
-              <AccordionItem>
-                <h2>
-                  <AccordionButton>
-                    <Box as="span" flex="1" textAlign="left">
-                      Payments
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel pb={4}>
+                </TabPanel>
+                <TabPanel>
                   <TableContainer>
                     <Table variant="simple">
                       <Thead>
                         <Tr>
-                          <Th>payment type</Th>
-                          <Th>summa (sum)</Th>
-                          <Th>kurs $</Th>
+                          <Th>ТИП ПЛАТЕЖА</Th>
+                          <Th>СУММА (СУММ)</Th>
+                          <Th>КУРС $</Th>
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {deal?.payments?.map((p) => (
+                        {dealMoreInfos?.payments?.map((p) => (
                           <Tr>
                             <Td>{p.payment_type}</Td>
                             <Td>
@@ -289,9 +311,9 @@ const Debts = () => {
                       </Tbody>
                     </Table>
                   </TableContainer>
-                </AccordionPanel>
-              </AccordionItem>
-            </Accordion>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -299,14 +321,17 @@ const Debts = () => {
       <Modal isOpen={editRestIsOpen} onClose={editRestOnClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Edit rest</ModalHeader>
+          <ModalHeader>Изменить остаток</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <Input
-              onChange={(e) => setNewRest(e.target.value)}
-              type="number"
-              defaultValue={deal?.rest}
-            />
+            <FormControl>
+              <FormLabel>Введите значение для изменения</FormLabel>
+              <Input
+                onChange={(e) => setNewRest(e.target.value)}
+                type="number"
+                defaultValue={deal?.rest}
+              />
+            </FormControl>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -317,7 +342,7 @@ const Debts = () => {
               colorScheme="blue"
               mr={3}
             >
-              edit
+              Изменить
             </Button>
             <Button onClick={editRestOnClose}>Отмена</Button>
           </ModalFooter>
@@ -327,12 +352,12 @@ const Debts = () => {
       <Modal size={"2xl"} isOpen={addOrderIsOpen} onClose={addOrderOnClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Add order</ModalHeader>
+          <ModalHeader>Добавить заказ</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Flex wrap={"wrap"} gap={"10px"}>
               <FormControl width={"50%"} flexBasis={"300px"} flexGrow={1}>
-                <FormLabel>order id</FormLabel>
+                <FormLabel>3аказа ID</FormLabel>
 
                 <Input
                   onChange={(e) => {
@@ -346,7 +371,7 @@ const Debts = () => {
               </FormControl>
 
               <FormControl width={"50%"} flexBasis={"300px"} flexGrow={1}>
-                <FormLabel>category</FormLabel>
+                <FormLabel>Категории</FormLabel>
 
                 <Select
                   onChange={(e) => {
@@ -355,7 +380,7 @@ const Debts = () => {
                       cathegory: e.target.value,
                     });
                   }}
-                  placeholder="choose a ctg"
+                  placeholder="выберите категорию"
                 >
                   <option value="заказ">заказ</option>
                   <option value="продажа со склада">продажа со склада</option>
@@ -364,7 +389,7 @@ const Debts = () => {
               </FormControl>
 
               <FormControl width={"50%"} flexBasis={"300px"} flexGrow={1}>
-                <FormLabel>tissue</FormLabel>
+                <FormLabel>ткань</FormLabel>
 
                 <Input
                   onChange={(e) => {
@@ -378,7 +403,7 @@ const Debts = () => {
               </FormControl>
 
               <FormControl width={"50%"} flexBasis={"300px"} flexGrow={1}>
-                <FormLabel>title</FormLabel>
+                <FormLabel>Заголовок</FormLabel>
 
                 <Input
                   onChange={(e) => {
@@ -392,7 +417,7 @@ const Debts = () => {
               </FormControl>
 
               <FormControl width={"50%"} flexBasis={"300px"} flexGrow={1}>
-                <FormLabel>cost</FormLabel>
+                <FormLabel>Цена</FormLabel>
 
                 <Input
                   onChange={(e) => {
@@ -406,7 +431,7 @@ const Debts = () => {
               </FormControl>
 
               <FormControl width={"50%"} flexBasis={"300px"} flexGrow={1}>
-                <FormLabel>sale</FormLabel>
+                <FormLabel>Распродажа</FormLabel>
 
                 <Input
                   onChange={(e) => {
@@ -420,7 +445,7 @@ const Debts = () => {
               </FormControl>
 
               <FormControl width={"50%"} flexBasis={"300px"} flexGrow={1}>
-                <FormLabel>qty</FormLabel>
+                <FormLabel>Кол-во</FormLabel>
 
                 <Input
                   onChange={(e) => {
@@ -433,7 +458,7 @@ const Debts = () => {
                 />
               </FormControl>
               <FormControl width={"50%"} flexBasis={"300px"} flexGrow={1}>
-                <FormLabel>sum</FormLabel>
+                <FormLabel>Сумма</FormLabel>
 
                 <Input
                   onChange={(e) => {
@@ -447,11 +472,11 @@ const Debts = () => {
               </FormControl>
 
               <FormControl width={"50%"} flexBasis={"300px"} flexGrow={1}>
-                <FormLabel>furn type</FormLabel>
+                <FormLabel>Тип мебели</FormLabel>
 
                 <Select
                   onChange={(e) => setType(e.target.value)}
-                  placeholder="choose a ctg"
+                  placeholder="выбрать тип мебели"
                 >
                   {types?.map((t) => (
                     <option key={t.id} value={t.id}>
@@ -462,7 +487,7 @@ const Debts = () => {
               </FormControl>
 
               <FormControl width={"50%"} flexBasis={"300px"} flexGrow={1}>
-                <FormLabel>model</FormLabel>
+                <FormLabel>Модели</FormLabel>
 
                 <Select
                   onChange={(e) => {
@@ -472,7 +497,7 @@ const Debts = () => {
                     });
                   }}
                   isDisabled={models ? false : true}
-                  placeholder="choose a ctg"
+                  placeholder="выбрать модель"
                 >
                   {models?.models?.map((m) => (
                     <option key={m.id} value={m.id}>
@@ -492,9 +517,37 @@ const Debts = () => {
               colorScheme="blue"
               mr={3}
             >
-              add order
+              Добавить
             </Button>
             <Button onClick={addOrderOnClose}>Отмена</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Delete modal */}
+
+      <Modal
+        closeOnOverlayClick={false}
+        isOpen={deleteIsOpen}
+        onClose={deleteClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Вы уверены, что хотите удалить?</ModalHeader>
+          <ModalCloseButton />
+
+          <ModalFooter>
+            <Button
+              isLoading={deleteLoading}
+              onClick={() => {
+                handleDeleteApply();
+              }}
+              colorScheme="blue"
+              mr={3}
+            >
+              Да
+            </Button>
+            <Button onClick={onClose}>Нет</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -511,7 +564,7 @@ const Debts = () => {
             }}
             width={200}
             type="number"
-            placeholder="search by phone"
+            placeholder="Искать по тел."
           />
         </Flex>
 
@@ -523,13 +576,13 @@ const Debts = () => {
             <Thead>
               <Tr>
                 <Th>Дата</Th>
-                <Th>Nomer zdelke</Th>
-                <Th>Order id</Th>
-                <Th>Client</Th>
-                <Th>Client Number</Th>
-                <Th>Seller</Th>
-                <Th>Rest</Th>
-                <Th>Actions</Th>
+                <Th>Номер сделки</Th>
+                <Th>ID заказа</Th>
+                <Th>Клиент</Th>
+                <Th>Номер Клиента</Th>
+                <Th>Продавец</Th>
+                <Th>Остаток</Th>
+                <Th>Действия</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -551,29 +604,41 @@ const Debts = () => {
                         as={Button}
                         rightIcon={<ChevronDownIcon />}
                       >
-                        Actions
+                        Действия
                       </MenuButton>
                       <MenuList>
                         <MenuItem
+                          icon={<InfoIcon />}
                           onClick={() => {
+                            setDeal(d);
                             onOpen();
                           }}
                         >
-                          More info
+                          подробное
                         </MenuItem>
                         <MenuItem
-                          onClick={() => {
-                            editRestOpen();
-                          }}
-                        >
-                          edit rest
-                        </MenuItem>
-                        <MenuItem
+                          icon={<AddIcon />}
                           onClick={() => {
                             addOrderOpen();
                           }}
                         >
-                          Add order
+                          добавить заказ
+                        </MenuItem>
+                        <MenuItem
+                          icon={<EditIcon />}
+                          onClick={() => {
+                            editRestOpen();
+                          }}
+                        >
+                          изменить остаток
+                        </MenuItem>
+                        <MenuItem
+                          icon={<DeleteIcon />}
+                          onClick={() => {
+                            deleteOnOpen();
+                          }}
+                        >
+                          удалить
                         </MenuItem>
                       </MenuList>
                     </Menu>

@@ -4,7 +4,7 @@ const token = window.localStorage.getItem("token");
 
 export const instance = axios.create({
   baseURL: "https://fatkhullo.backend4devs.uz",
-  // baseURL: "http://localhost:9090",
+  // baseURL: "http://64.226.90.160:3005",
   headers: {
     "Content-Type": "application/json",
     token: `${token}`,
