@@ -44,7 +44,7 @@ const EditUserModal = ({
   const [companys, setCompanys] = useState([]);
 
   function removeNullKeys(obj) {
-    Object.keys(obj).forEach(function (key) {
+    Object.keys(obj)?.forEach(function (key) {
       if (obj[key] === "") {
         delete obj[key];
       } else if (typeof obj[key] === "object") {

@@ -113,6 +113,7 @@ function Provider({ children }) {
   });
 
   const [input, setInput] = useState("");
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     generateRandomNumber();
@@ -171,7 +172,7 @@ function Provider({ children }) {
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [reload]);
   useEffect(() => {
     const myUuidInUseEffect = uuidv4();
     generateRandomNumber();
@@ -249,6 +250,8 @@ function Provider({ children }) {
   return (
     <OpenModalContext.Provider
       value={{
+        reload,
+        setReload,
         isOpenModal,
         setIsOpenModal,
         setOpenApply,

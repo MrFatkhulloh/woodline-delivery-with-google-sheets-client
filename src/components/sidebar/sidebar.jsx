@@ -20,7 +20,15 @@ import {
   MenuList,
   MenuItem,
 } from "@chakra-ui/react";
-import { FiChevronDown, FiHome, FiMenu } from "react-icons/fi";
+import {
+  FiChevronDown,
+  FiDollarSign,
+  FiHome,
+  FiLayout,
+  FiMenu,
+  FiTruck,
+  FiUsers,
+} from "react-icons/fi";
 import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { NavLink, useLocation } from "react-router-dom";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
@@ -114,7 +122,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
           {...rest}
         >
           <Icon mr="4" fontSize="20">
-            <HomeIcon />
+            <FiHome />
           </Icon>
           Дом
         </Flex>
@@ -146,7 +154,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
           {...rest}
         >
           <Icon mr="4" fontSize="20">
-            <LocalShippingIcon />
+            <FiTruck />
           </Icon>
           Рейсы
         </Flex>
@@ -212,9 +220,40 @@ const SidebarContent = ({ onClose, ...rest }) => {
               {...rest}
             >
               <Icon mr="4" fontSize="20">
-                <ChairIcon />
+                <FiLayout />
               </Icon>
               Модели
+            </Flex>
+          </NavLink>
+          <NavLink to="/admin/category">
+            <Flex
+              alignItems="center"
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
+              role="group"
+              cursor="pointer"
+              bg={
+                pathname === "/admin/category"
+                  ? colorMode === "light"
+                    ? "blue.500"
+                    : "blue.200"
+                  : ""
+              }
+              color={
+                pathname === "/admin/category"
+                  ? colorMode === "light"
+                    ? "#fff"
+                    : "gray.800"
+                  : ""
+              }
+              {...rest}
+            >
+              <Icon mr="4" fontSize="20">
+                <FiLayout />
+              </Icon>
+              Вид мебели
             </Flex>
           </NavLink>
           <NavLink to="/admin/users">
@@ -243,7 +282,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
               {...rest}
             >
               <Icon mr="4" fontSize="20">
-                <SupervisorAccountIcon />
+                <FiUsers />
               </Icon>
               Пользователи
             </Flex>
@@ -274,7 +313,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
               {...rest}
             >
               <Icon mr="4" fontSize="20">
-                <RequestQuoteIcon />
+                <FiDollarSign />
               </Icon>
               Заявки
             </Flex>
@@ -304,9 +343,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
               }
               {...rest}
             >
-              <Icon mr="4" fontSize="20">
-                <HomeWorkIcon />
-              </Icon>
+              <Icon mr="4" fontSize="20"></Icon>
               Компании
             </Flex>
           </NavLink>
@@ -335,9 +372,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
               }
               {...rest}
             >
-              <Icon mr="4" fontSize="20">
-                <WalletIcon />
-              </Icon>
+              <Icon mr="4" fontSize="20"></Icon>
               Кошельки
             </Flex>
           </NavLink>
@@ -370,6 +405,93 @@ const SidebarContent = ({ onClose, ...rest }) => {
                 <CurrencyExchangeIcon />
               </Icon>
               Долги
+            </Flex>
+          </NavLink>
+          <NavLink to={"/producer"}>
+            <Flex
+              alignItems="center"
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
+              role="group"
+              cursor="pointer"
+              bg={
+                pathname === "/producer"
+                  ? colorMode === "light"
+                    ? "blue.500"
+                    : "blue.200"
+                  : ""
+              }
+              color={
+                pathname === "/producer"
+                  ? colorMode === "light"
+                    ? "#fff"
+                    : "gray.800"
+                  : ""
+              }
+              {...rest}
+            >
+              <Icon mr="4" fontSize="20" />
+              Продюсер
+            </Flex>
+          </NavLink>
+          <NavLink to={"/warehouse"}>
+            <Flex
+              alignItems="center"
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
+              role="group"
+              cursor="pointer"
+              bg={
+                pathname === "/warehouse"
+                  ? colorMode === "light"
+                    ? "blue.500"
+                    : "blue.200"
+                  : ""
+              }
+              color={
+                pathname === "/warehouse"
+                  ? colorMode === "light"
+                    ? "#fff"
+                    : "gray.800"
+                  : ""
+              }
+              {...rest}
+            >
+              <Icon mr="4" fontSize="20" />
+              Склад
+            </Flex>
+          </NavLink>
+          <NavLink to={"/main-warehouse"}>
+            <Flex
+              alignItems="center"
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
+              role="group"
+              cursor="pointer"
+              bg={
+                pathname === "/main-warehouse"
+                  ? colorMode === "light"
+                    ? "blue.500"
+                    : "blue.200"
+                  : ""
+              }
+              color={
+                pathname === "/main-warehouse"
+                  ? colorMode === "light"
+                    ? "#fff"
+                    : "gray.800"
+                  : ""
+              }
+              {...rest}
+            >
+              <Icon mr="4" fontSize="20" />
+              Главный склад
             </Flex>
           </NavLink>
         </>
@@ -465,6 +587,96 @@ const SidebarContent = ({ onClose, ...rest }) => {
             </Flex>
           </NavLink>
         </>
+      ) : role == "PRODUCER" ? (
+        <NavLink to={"/producer"}>
+          <Flex
+            alignItems="center"
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            bg={
+              pathname === "/producer"
+                ? colorMode === "light"
+                  ? "blue.500"
+                  : "blue.200"
+                : ""
+            }
+            color={
+              pathname === "/producer"
+                ? colorMode === "light"
+                  ? "#fff"
+                  : "gray.800"
+                : ""
+            }
+            {...rest}
+          >
+            <Icon mr="4" fontSize="20" />
+            Продюсер
+          </Flex>
+        </NavLink>
+      ) : role == "STOREKEEPER" ? (
+        <NavLink to={"/warehouse"}>
+          <Flex
+            alignItems="center"
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            bg={
+              pathname === "/warehouse"
+                ? colorMode === "light"
+                  ? "blue.500"
+                  : "blue.200"
+                : ""
+            }
+            color={
+              pathname === "/warehouse"
+                ? colorMode === "light"
+                  ? "#fff"
+                  : "gray.800"
+                : ""
+            }
+            {...rest}
+          >
+            <Icon mr="4" fontSize="20" />
+            Склад
+          </Flex>
+        </NavLink>
+      ) : role == "MAIN_STOREKEEPER" ? (
+        <NavLink to={"/main-warehouse"}>
+          <Flex
+            alignItems="center"
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            bg={
+              pathname === "/main-warehouse"
+                ? colorMode === "light"
+                  ? "blue.500"
+                  : "blue.200"
+                : ""
+            }
+            color={
+              pathname === "/main-warehouse"
+                ? colorMode === "light"
+                  ? "#fff"
+                  : "gray.800"
+                : ""
+            }
+            {...rest}
+          >
+            <Icon mr="4" fontSize="20" />
+            Главный склад
+          </Flex>
+        </NavLink>
       ) : null}
 
       <NavLink to="/analytics">
@@ -538,7 +750,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
         fontSize="2xl"
         fontWeight="bold"
       >
-        Woodline
+        woodline
       </Text>
 
       <Flex gap={"20px"} alignItems={"center"}>

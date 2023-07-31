@@ -567,7 +567,7 @@ const Debts = () => {
             type="number"
             placeholder="Искать по тел."
           />
-        </Flex>
+        </Flex> 
 
         <TableContainer>
           <Table
