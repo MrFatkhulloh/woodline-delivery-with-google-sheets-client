@@ -5,6 +5,7 @@ import {
   AlertIcon,
   Box,
   Button,
+  Checkbox,
   Flex,
   FormControl,
   FormLabel,
@@ -49,6 +50,7 @@ import {
   ChevronDownIcon,
   ExternalLinkIcon,
   SearchIcon,
+  ViewIcon,
 } from "@chakra-ui/icons";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
 import accounting from "accounting";
@@ -172,6 +174,7 @@ const Warehouse = () => {
     instance
       .put(`/order/${order?.order_id}?status=SOLD_AND_CHECKED`)
       .then((res) => {
+        console.log(res);
         if (res.status === 200) {
           toast.success("изменено успешно");
           setReload(!reload);
@@ -591,9 +594,9 @@ const Warehouse = () => {
                           onClick={() => {
                             handleCheckedOrder(p);
                           }}
-                          rightIcon={<CheckIcon />}
+                          leftIcon={<ViewIcon />}
                         >
-                          I saw
+                          Я видел
                         </Button>
                       </Td>
                     </Tr>
