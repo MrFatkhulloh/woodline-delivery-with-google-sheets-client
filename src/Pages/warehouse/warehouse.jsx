@@ -49,6 +49,7 @@ import {
   CheckIcon,
   ChevronDownIcon,
   ExternalLinkIcon,
+  InfoIcon,
   SearchIcon,
   ViewIcon,
 } from "@chakra-ui/icons";
@@ -58,7 +59,7 @@ import { toast } from "react-toastify";
 
 const Warehouse = () => {
   const { colorMode } = useColorMode();
-  const { types } = useContext(OpenModalContext);
+  const { types, token } = useContext(OpenModalContext);
   const {
     isOpen: addProductIsOpen,
     onOpen: addProductOnOpen,
@@ -108,24 +109,26 @@ const Warehouse = () => {
           });
   }, [reload, index]);
 
-  console.log(products);
-
   const handleCreateProduct = () => {
     setAddLoading(true);
-    let sum = Math.round(
-      (1 - Number(productData?.sale) / 100) *
-        productData?.cost *
-        productData?.qty
-    );
+
     instance
-      .post("/warehouse-products", {
-        ...productData,
-        sum,
-        cost: 0,
-        sale: 0,
-        qty: 1,
-        title: "",
-      })
+      .post(
+        "/warehouse-products",
+        {
+          ...productData,
+          sum: 0,
+          cost: 0,
+          sale: 0,
+          qty: 1,
+          title: "",
+        },
+        {
+          headers: {
+            token,
+          },
+        }
+      )
       .then((res) => {
         if (res.status === 200) {
           toast.success("Создан новый заказ");
@@ -170,16 +173,13 @@ const Warehouse = () => {
       });
   };
 
-  const handleCheckedOrder = (order) => {
-    instance
-      .put(`/order/${order?.order_id}?status=SOLD_AND_CHECKED`)
-      .then((res) => {
-        console.log(res);
-        if (res.status === 200) {
-          toast.success("изменено успешно");
-          setReload(!reload);
-        }
-      });
+  const handleCheckedOrder = (order, status) => {
+    instance.put(`/order/${order?.order_id}?status=${status}`).then((res) => {
+      if (res.status === 200) {
+        toast.success("изменено успешно");
+        setReload(!reload);
+      }
+    });
   };
 
   return (
@@ -399,7 +399,7 @@ const Warehouse = () => {
                       <Td>{p.order?.tissue}</Td>
                       <Td>{accounting.formatNumber(p.order?.cost, 0, " ")}</Td>
                       <Td>{p.order?.sale} %</Td>
-                      <Td>{p.order?.title}</Td>
+                      <Td whiteSpace={"pre-wrap"}>{p.order?.title}</Td>
                       <Td>
                         {accounting.formatNumber(p.order?.sum, 0, " ")} сум
                       </Td>
@@ -518,7 +518,7 @@ const Warehouse = () => {
                       <Td>{p.order?.tissue}</Td>
                       <Td>{accounting.formatNumber(p.order?.cost, 0, " ")}</Td>
                       <Td>{p.order?.sale} %</Td>
-                      <Td>{p.order?.title}</Td>
+                      <Td whiteSpace={"pre-wrap"}>{p.order?.title}</Td>
                       <Td>
                         {accounting.formatNumber(p.order?.sum, 0, " ")} сум
                       </Td>
@@ -585,14 +585,14 @@ const Warehouse = () => {
                       <Td>{p.order?.tissue}</Td>
                       <Td>{accounting.formatNumber(p.order?.cost, 0, " ")}</Td>
                       <Td>{p.order?.sale} %</Td>
-                      <Td>{p.order?.title}</Td>
+                      <Td whiteSpace={"pre-wrap"}>{p.order?.title}</Td>
                       <Td>
                         {accounting.formatNumber(p.order?.sum, 0, " ")} сум
                       </Td>
                       <Td>
                         <Button
                           onClick={() => {
-                            handleCheckedOrder(p);
+                            handleCheckedOrder(p, "SOLD_AND_CHECKED");
                           }}
                           leftIcon={<ViewIcon />}
                         >
@@ -642,7 +642,7 @@ const Warehouse = () => {
                       <Td>{p.order?.tissue}</Td>
                       <Td>{accounting.formatNumber(p.order?.cost, 0, " ")}</Td>
                       <Td>{p.order?.sale} %</Td>
-                      <Td>{p.order?.title}</Td>
+                      <Td whiteSpace={"pre-wrap"}>{p.order?.title}</Td>
                       <Td>
                         {accounting.formatNumber(p.order?.sum, 0, " ")} сум
                       </Td>
@@ -657,12 +657,11 @@ const Warehouse = () => {
                           <MenuList>
                             <MenuItem
                               onClick={() => {
-                                trOnOpen();
-                                setOrder(p);
+                                handleCheckedOrder(p, "RETURNED");
                               }}
-                              icon={<ExternalLinkIcon />}
+                              icon={<InfoIcon />}
                             >
-                              Трансферы
+                              Возврат
                             </MenuItem>
                           </MenuList>
                         </Menu>

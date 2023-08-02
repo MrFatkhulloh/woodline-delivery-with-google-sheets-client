@@ -254,7 +254,7 @@ const Debts = () => {
                         {dealMoreInfos?.orders?.map((o) => (
                           <Tr>
                             <Td>{o.order_id}</Td>
-                            <Td>{o.title}</Td>
+                            <Td whiteSpace={"pre-wrap"}>{o.title}</Td>
                             <Td>{o.cathegory}</Td>
                             <Td>{o.cost}</Td>
                             <Td>{o.qty}</Td>

@@ -98,7 +98,7 @@ const MainWarehouse = () => {
   } = useDisclosure();
 
   const [productData, setProductData] = useState();
-  const { types, courier } = useContext(OpenModalContext);
+  const { types, courier, token } = useContext(OpenModalContext);
   const [order, setOrder] = useState();
 
   const [transferLoading, setTransferLoading] = useState(false);
@@ -185,20 +185,24 @@ const MainWarehouse = () => {
 
   const handleCreateProduct = () => {
     setAddPrLoading(true);
-    let sum = Math.round(
-      (1 - Number(productData?.sale) / 100) *
-        productData?.cost *
-        productData?.qty
-    );
+
     instance
-      .post("/warehouse-products-only-admin", {
-        ...productData,
-        sum,
-        cost: 0,
-        sale: 0,
-        qty: 1,
-        title: "",
-      })
+      .post(
+        "/warehouse-products-only-admin",
+        {
+          ...productData,
+          sum: 0,
+          cost: 0,
+          sale: 0,
+          qty: 1,
+          title: "",
+        },
+        {
+          headers: {
+            token,
+          },
+        }
+      )
       .then((res) => {
         if (res.status === 200) {
           toast.success("Создан новый заказ");
@@ -539,7 +543,7 @@ const MainWarehouse = () => {
                         <Td>{ord?.order.model?.furniture_type?.name}</Td>
                         <Td>{ord?.order.model?.name}</Td>
                         <Td>{ord?.order?.tissue}</Td>
-                        <Td>{ord?.order?.title}</Td>
+                        <Td whiteSpace={"pre-wrap"}>{ord?.order?.title}</Td>
                         <Td>
                           <Checkbox
                             onChange={() => {
@@ -829,6 +833,7 @@ const MainWarehouse = () => {
                 <Thead>
                   <Tr>
                     <Th>ID</Th>
+                    <Th>Вид мебели</Th>
                     <Th>Модел</Th>
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
@@ -841,10 +846,11 @@ const MainWarehouse = () => {
                   {searchDealProducts?.map((p) => (
                     <Tr>
                       <Td>{p.order?.order_id}</Td>
+                      <Td>{p.order?.model?.furniture_type?.name}</Td>
                       <Td>{p.order?.model?.name}</Td>
                       <Td>{p.order?.qty}</Td>
                       <Td>{p.order?.tissue}</Td>
-                      <Td>{p.order?.title}</Td>
+                      <Td whiteSpace={"pre-wrap"}>{p.order?.title}</Td>
                       <Td>
                         <Alert
                           width={150}
@@ -936,6 +942,7 @@ const MainWarehouse = () => {
                 <Thead>
                   <Tr>
                     <Th>ID</Th>
+                    <Th>Вид мебели</Th>
                     <Th>Модел</Th>
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
@@ -949,9 +956,10 @@ const MainWarehouse = () => {
                     <Tr>
                       <Td>{p.order?.order_id}</Td>
                       <Td>{p.order?.model?.name}</Td>
+                      <Td>{p.order?.model?.furniture_type?.name}</Td>
                       <Td>{p.order?.qty}</Td>
                       <Td>{p.order?.tissue}</Td>
-                      <Td>{p.order?.title}</Td>
+                      <Td whiteSpace={"pre-wrap"}>{p.order?.title}</Td>
                       <Td>
                         <Alert
                           bgColor={
@@ -1098,6 +1106,7 @@ const MainWarehouse = () => {
               </Table>
             </TableContainer>
           </TabPanel>
+          <TabPanel>asdajsdlk</TabPanel>
         </TabPanels>
       </Tabs>
     </Layout>

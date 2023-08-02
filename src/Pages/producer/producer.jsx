@@ -57,7 +57,7 @@ const Producer = () => {
   } = useDisclosure();
   const [addLoading, setAddLoading] = useState(false);
   const [type, setType] = useState();
-  const { types } = useContext(OpenModalContext);
+  const { types, token } = useContext(OpenModalContext);
 
   const { colorMode } = useColorMode();
   const [reqIndex, setReqIndex] = useState(0);
@@ -100,20 +100,24 @@ const Producer = () => {
 
   const handleCreateProduct = () => {
     setAddLoading(true);
-    let sum = Math.round(
-      (1 - Number(productData?.sale) / 100) *
-        productData?.cost *
-        productData?.qty
-    );
+
     instance
-      .post("/warehouse-products-only-producer", {
-        ...productData,
-        sum,
-        cost: 0,
-        sale: 0,
-        qty: 1,
-        title: "",
-      })
+      .post(
+        "/warehouse-products-only-producer",
+        {
+          ...productData,
+          sum: 0,
+          cost: 0,
+          sale: 0,
+          qty: 1,
+          title: "",
+        },
+        {
+          headers: {
+            token,
+          },
+        }
+      )
       .then((res) => {
         if (res.status === 200) {
           toast.success("Создан новый заказ");
@@ -335,15 +339,16 @@ const Producer = () => {
                 </Text>
               </Flex>
             ) : (
-              <TableContainer>
+              <TableContainer overflowX="unset">
                 <Table
                   variant="simple"
                   background={colorMode === "light" ? "#fff" : ""}
                 >
-                  <Thead>
+                  <Thead position="sticky" top={0} zIndex="docked">
                     <Tr>
                       <Th>Дата</Th>
                       <Th>ID</Th>
+                      <Th>Вид мебели</Th>
                       <Th>модель</Th>
                       <Th>кол-во</Th>
                       <Th>ткань</Th>
@@ -360,10 +365,12 @@ const Producer = () => {
                               {moment(order.createdAt).locale("ru").format("L")}
                             </Td>
                             <Td>{order.order_id}</Td>
+                            <Td>{order.model?.furniture_type?.name}</Td>
+
                             <Td>{order.model?.name}</Td>
                             <Td>{order.qty}</Td>
                             <Td>{order.tissue}</Td>
-                            <Td>{order.title}</Td>
+                            <Td whiteSpace={"pre-wrap"}>{order.title}</Td>
                             <Td>
                               {moment(order.deal?.delivery_date)
                                 .locale("ru")
@@ -398,6 +405,10 @@ const Producer = () => {
               >
                 нужно отправить
               </Heading>
+
+              <Button onClick={addProductOnOpen} colorScheme="blue">
+                Добавить продукт
+              </Button>
             </Flex>
 
             {orders?.length === 0 ? (
@@ -423,6 +434,8 @@ const Producer = () => {
                     <Tr>
                       <Th>Дата создания</Th>
                       <Th>ID</Th>
+                      <Th>Вид мебели</Th>
+
                       <Th>модель</Th>
                       <Th>количество</Th>
                       <Th>ткань</Th>
@@ -439,10 +452,11 @@ const Producer = () => {
                               {moment(order.createdAt).locale("ru").format("L")}
                             </Td>
                             <Td>{order.order_id}</Td>
+                            <Td>{order.model?.furniture_type?.name}</Td>
                             <Td>{order.model?.name}</Td>
                             <Td>{order.qty}</Td>
                             <Td>{order.tissue}</Td>
-                            <Td>{order.title}</Td>
+                            <Td whiteSpace={"pre-wrap"}>{order.title}</Td>
                             <Td>
                               {moment(order.deal?.delivery_date)
                                 .locale("ru")
@@ -450,10 +464,14 @@ const Producer = () => {
                             </Td>
                             <Td>
                               <Select
+                                isDisabled={order.status === "CREATED"}
                                 defaultValue={order.status}
                                 width={200}
                                 onChange={(e) => handleChangeStatus(e, order)}
                               >
+                                {order.status === "CREATED" ? (
+                                  <option>на склад</option>
+                                ) : null}
                                 <option value={"ACCEPTED"}>принял ✅</option>
                                 <option value={"REJECTED"}>
                                   отклоненный ❌
@@ -501,6 +519,8 @@ const Producer = () => {
                     <Tr>
                       <Th>Дата создания</Th>
                       <Th>ID</Th>
+                      <Th>Вид мебели</Th>
+
                       <Th>модель</Th>
                       <Th>количество</Th>
                       <Th>ткань</Th>
@@ -517,10 +537,11 @@ const Producer = () => {
                               {moment(order.createdAt).locale("ru").format("L")}
                             </Td>
                             <Td>{order.order_id}</Td>
+                            <Td>{order.model?.furniture_type?.name}</Td>
                             <Td>{order.model?.name}</Td>
                             <Td>{order.qty}</Td>
                             <Td>{order.tissue}</Td>
-                            <Td>{order.title}</Td>
+                            <Td whiteSpace={"pre-wrap"}>{order.title}</Td>
                             <Td>
                               {moment(order.deal?.delivery_date)
                                 .locale("ru")

@@ -15,7 +15,7 @@ import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
-import "./header.css";
+
 
 export default function Simple() {
   const { role } = useContext(OpenModalContext);
