@@ -1,4 +1,4 @@
-import React, { ReactNode, useContext } from "react";
+import React, { useContext } from "react";
 import {
   IconButton,
   Box,
@@ -29,19 +29,93 @@ import {
   FiTruck,
   FiUsers,
 } from "react-icons/fi";
-import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
+import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { NavLink, useLocation } from "react-router-dom";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
-import HomeIcon from "@mui/icons-material/Home";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import ChairIcon from "@mui/icons-material/Chair";
-import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
-import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
-import HomeWorkIcon from "@mui/icons-material/HomeWork";
-import WalletIcon from "@mui/icons-material/Wallet";
+
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
-import "./sidebar.css";
+
+export const routes = [
+  {
+    path: "/",
+    name: "Дом",
+    icon: <FiHome />,
+    access_roles: ["SUPER_ADMIN", "DELIVERY_TELLER", "TELLER"],
+  },
+  {
+    path: "/my-orders",
+    name: "Рейсы",
+    icon: <FiTruck />,
+    access_roles: ["SUPER_ADMIN", "DELIVERY_TELLER", "TELLER", "ACCOUNTANT"],
+  },
+  {
+    path: "/admin/new-furniture-type",
+    name: "Модели",
+    icon: <FiLayout />,
+    access_roles: ["SUPER_ADMIN", "ADMIN"],
+  },
+  {
+    path: "/admin/category",
+    name: "Вид мебели",
+    icon: <FiLayout />,
+    access_roles: ["SUPER_ADMIN", "ADMIN"],
+  },
+  {
+    path: "/admin/users",
+    name: "Пользователи",
+    icon: <FiUsers />,
+    access_roles: ["SUPER_ADMIN"],
+  },
+  {
+    path: "/pay-salary",
+    name: "Заявки",
+    icon: <FiDollarSign />,
+    access_roles: ["SUPER_ADMIN", "ACCOUNTANT"],
+  },
+  {
+    path: "/companys",
+    name: "Компании",
+    icon: null,
+    access_roles: ["SUPER_ADMIN"],
+  },
+  {
+    path: "/wallets",
+    name: "Кошельки",
+    icon: null,
+    access_roles: ["ACCOUNTANT"],
+  },
+  {
+    path: "/debts",
+    name: "Долги",
+    icon: <CurrencyExchangeIcon />,
+    access_roles: ["SUPER_ADMIN", "ACCOUNTANT"],
+  },
+  {
+    path: "/producer",
+    name: "Продюсер",
+    icon: null,
+    access_roles: ["SUPER_ADMIN", "PRODUCER"],
+  },
+  {
+    path: "/warehouse",
+    name: "Склад",
+    icon: null,
+    access_roles: ["SUPER_ADMIN", "STOREKEEPER"],
+  },
+  {
+    path: "/main-warehouse",
+    name: "Главный склад",
+    icon: null,
+    access_roles: ["SUPER_ADMIN", "MAIN_STOREKEEPER"],
+  },
+  {
+    path: "/analytics",
+    name: "Аналитика",
+    icon: <AutoGraphIcon />,
+    access_roles: ["SUPER_ADMIN", "ACCOUNTANT"],
+  },
+];
 
 export default function SidebarWithHeader({ children }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -87,6 +161,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
       w={{ base: "full", md: 60 }}
       pos="fixed"
       h="full"
+      overflow={"auto"}
       {...rest}
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
@@ -96,74 +171,12 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
 
-      <NavLink to="/">
-        <Flex
-          alignItems="center"
-          align="center"
-          p="4"
-          mx="4"
-          borderRadius="lg"
-          role="group"
-          cursor="pointer"
-          bg={
-            pathname === "/"
-              ? colorMode === "light"
-                ? "blue.500"
-                : "blue.200"
-              : ""
-          }
-          color={
-            pathname === "/"
-              ? colorMode === "light"
-                ? "#fff"
-                : "gray.800"
-              : ""
-          }
-          {...rest}
-        >
-          <Icon mr="4" fontSize="20">
-            <FiHome />
-          </Icon>
-          Дом
-        </Flex>
-      </NavLink>
-
-      <NavLink to="/my-orders">
-        <Flex
-          alignItems="center"
-          align="center"
-          p="4"
-          mx="4"
-          borderRadius="lg"
-          role="group"
-          cursor="pointer"
-          bg={
-            pathname === "/my-orders"
-              ? colorMode === "light"
-                ? "blue.500"
-                : "blue.200"
-              : ""
-          }
-          color={
-            pathname === "/my-orders"
-              ? colorMode === "light"
-                ? "#fff"
-                : "gray.800"
-              : ""
-          }
-          {...rest}
-        >
-          <Icon mr="4" fontSize="20">
-            <FiTruck />
-          </Icon>
-          Рейсы
-        </Flex>
-      </NavLink>
-
-      {role == "ADMIN" ? (
-        <>
-          <NavLink to="/admin/new-furniture-type">
+      {routes
+        ?.filter((froute) => froute?.access_roles?.includes(role))
+        ?.map((route) => (
+          <NavLink to={route?.path}>
             <Flex
+              className={pathname === route.path ? "active" : ""}
               alignItems="center"
               align="center"
               p="4"
@@ -172,46 +185,14 @@ const SidebarContent = ({ onClose, ...rest }) => {
               role="group"
               cursor="pointer"
               bg={
-                pathname === "/admin/new-furniture-type"
+                pathname === route.path
                   ? colorMode === "light"
                     ? "blue.500"
                     : "blue.200"
                   : ""
               }
               color={
-                pathname === "/admin/new-furniture-type"
-                  ? colorMode === "light"
-                    ? "#fff"
-                    : "gray.800"
-                  : ""
-              }
-              {...rest}
-            >
-              <Icon mr="4" fontSize="20" />
-              Модели
-            </Flex>
-          </NavLink>
-        </>
-      ) : role == "SUPER_ADMIN" ? (
-        <>
-          <NavLink to="/admin/new-furniture-type">
-            <Flex
-              alignItems="center"
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              bg={
-                pathname === "/admin/new-furniture-type"
-                  ? colorMode === "light"
-                    ? "blue.500"
-                    : "blue.200"
-                  : ""
-              }
-              color={
-                pathname === "/admin/new-furniture-type"
+                pathname === route.path
                   ? colorMode === "light"
                     ? "#fff"
                     : "gray.800"
@@ -220,496 +201,12 @@ const SidebarContent = ({ onClose, ...rest }) => {
               {...rest}
             >
               <Icon mr="4" fontSize="20">
-                <FiLayout />
+                {route?.icon}
               </Icon>
-              Модели
+              {route?.name}
             </Flex>
           </NavLink>
-          <NavLink to="/admin/category">
-            <Flex
-              alignItems="center"
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              bg={
-                pathname === "/admin/category"
-                  ? colorMode === "light"
-                    ? "blue.500"
-                    : "blue.200"
-                  : ""
-              }
-              color={
-                pathname === "/admin/category"
-                  ? colorMode === "light"
-                    ? "#fff"
-                    : "gray.800"
-                  : ""
-              }
-              {...rest}
-            >
-              <Icon mr="4" fontSize="20">
-                <FiLayout />
-              </Icon>
-              Вид мебели
-            </Flex>
-          </NavLink>
-          <NavLink to="/admin/users">
-            <Flex
-              alignItems="center"
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              bg={
-                pathname === "/admin/users"
-                  ? colorMode === "light"
-                    ? "blue.500"
-                    : "blue.200"
-                  : ""
-              }
-              color={
-                pathname === "/admin/users"
-                  ? colorMode === "light"
-                    ? "#fff"
-                    : "gray.800"
-                  : ""
-              }
-              {...rest}
-            >
-              <Icon mr="4" fontSize="20">
-                <FiUsers />
-              </Icon>
-              Пользователи
-            </Flex>
-          </NavLink>
-          <NavLink to={"/pay-salary"}>
-            <Flex
-              alignItems="center"
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              bg={
-                pathname === "/pay-salary"
-                  ? colorMode === "light"
-                    ? "blue.500"
-                    : "blue.200"
-                  : ""
-              }
-              color={
-                pathname === "/pay-salary"
-                  ? colorMode === "light"
-                    ? "#fff"
-                    : "gray.800"
-                  : ""
-              }
-              {...rest}
-            >
-              <Icon mr="4" fontSize="20">
-                <FiDollarSign />
-              </Icon>
-              Заявки
-            </Flex>
-          </NavLink>
-          <NavLink to={"/companys"}>
-            <Flex
-              alignItems="center"
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              bg={
-                pathname === "/companys"
-                  ? colorMode === "light"
-                    ? "blue.500"
-                    : "blue.200"
-                  : ""
-              }
-              color={
-                pathname === "/companys"
-                  ? colorMode === "light"
-                    ? "#fff"
-                    : "gray.800"
-                  : ""
-              }
-              {...rest}
-            >
-              <Icon mr="4" fontSize="20"></Icon>
-              Компании
-            </Flex>
-          </NavLink>
-          <NavLink to={"/wallets"}>
-            <Flex
-              alignItems="center"
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              bg={
-                pathname === "/wallets"
-                  ? colorMode === "light"
-                    ? "blue.500"
-                    : "blue.200"
-                  : ""
-              }
-              color={
-                pathname === "/wallets"
-                  ? colorMode === "light"
-                    ? "#fff"
-                    : "gray.800"
-                  : ""
-              }
-              {...rest}
-            >
-              <Icon mr="4" fontSize="20"></Icon>
-              Кошельки
-            </Flex>
-          </NavLink>
-          <NavLink to={"/debts"}>
-            <Flex
-              alignItems="center"
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              bg={
-                pathname === "/debts"
-                  ? colorMode === "light"
-                    ? "blue.500"
-                    : "blue.200"
-                  : ""
-              }
-              color={
-                pathname === "/debts"
-                  ? colorMode === "light"
-                    ? "#fff"
-                    : "gray.800"
-                  : ""
-              }
-              {...rest}
-            >
-              <Icon mr="4" fontSize="20">
-                <CurrencyExchangeIcon />
-              </Icon>
-              Долги
-            </Flex>
-          </NavLink>
-          <NavLink to={"/producer"}>
-            <Flex
-              alignItems="center"
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              bg={
-                pathname === "/producer"
-                  ? colorMode === "light"
-                    ? "blue.500"
-                    : "blue.200"
-                  : ""
-              }
-              color={
-                pathname === "/producer"
-                  ? colorMode === "light"
-                    ? "#fff"
-                    : "gray.800"
-                  : ""
-              }
-              {...rest}
-            >
-              <Icon mr="4" fontSize="20" />
-              Продюсер
-            </Flex>
-          </NavLink>
-          <NavLink to={"/warehouse"}>
-            <Flex
-              alignItems="center"
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              bg={
-                pathname === "/warehouse"
-                  ? colorMode === "light"
-                    ? "blue.500"
-                    : "blue.200"
-                  : ""
-              }
-              color={
-                pathname === "/warehouse"
-                  ? colorMode === "light"
-                    ? "#fff"
-                    : "gray.800"
-                  : ""
-              }
-              {...rest}
-            >
-              <Icon mr="4" fontSize="20" />
-              Склад
-            </Flex>
-          </NavLink>
-          <NavLink to={"/main-warehouse"}>
-            <Flex
-              alignItems="center"
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              bg={
-                pathname === "/main-warehouse"
-                  ? colorMode === "light"
-                    ? "blue.500"
-                    : "blue.200"
-                  : ""
-              }
-              color={
-                pathname === "/main-warehouse"
-                  ? colorMode === "light"
-                    ? "#fff"
-                    : "gray.800"
-                  : ""
-              }
-              {...rest}
-            >
-              <Icon mr="4" fontSize="20" />
-              Главный склад
-            </Flex>
-          </NavLink>
-        </>
-      ) : role == "ACCOUNTANT" ? (
-        <>
-          <NavLink to={"/pay-salary"}>
-            <Flex
-              alignItems="center"
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              bg={
-                pathname === "/pay-salary"
-                  ? colorMode === "light"
-                    ? "blue.500"
-                    : "blue.200"
-                  : ""
-              }
-              color={
-                pathname === "/pay-salary"
-                  ? colorMode === "light"
-                    ? "#fff"
-                    : "gray.800"
-                  : ""
-              }
-              {...rest}
-            >
-              <Icon mr="4" fontSize="20" />
-              Заявки
-            </Flex>
-          </NavLink>
-          <NavLink to={"/wallets"}>
-            <Flex
-              alignItems="center"
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              bg={
-                pathname === "/wallets"
-                  ? colorMode === "light"
-                    ? "blue.500"
-                    : "blue.200"
-                  : ""
-              }
-              color={
-                pathname === "/wallets"
-                  ? colorMode === "light"
-                    ? "#fff"
-                    : "gray.800"
-                  : ""
-              }
-              {...rest}
-            >
-              <Icon mr="4" fontSize="20" />
-              Кошельки
-            </Flex>
-          </NavLink>
-          <NavLink to={"/debts"}>
-            <Flex
-              alignItems="center"
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              bg={
-                pathname === "/debts"
-                  ? colorMode === "light"
-                    ? "blue.500"
-                    : "blue.200"
-                  : ""
-              }
-              color={
-                pathname === "/debts"
-                  ? colorMode === "light"
-                    ? "#fff"
-                    : "gray.800"
-                  : ""
-              }
-              {...rest}
-            >
-              <Icon mr="4" fontSize="20">
-                <CurrencyExchangeIcon />
-              </Icon>
-              Долги
-            </Flex>
-          </NavLink>
-        </>
-      ) : role == "PRODUCER" ? (
-        <NavLink to={"/producer"}>
-          <Flex
-            alignItems="center"
-            align="center"
-            p="4"
-            mx="4"
-            borderRadius="lg"
-            role="group"
-            cursor="pointer"
-            bg={
-              pathname === "/producer"
-                ? colorMode === "light"
-                  ? "blue.500"
-                  : "blue.200"
-                : ""
-            }
-            color={
-              pathname === "/producer"
-                ? colorMode === "light"
-                  ? "#fff"
-                  : "gray.800"
-                : ""
-            }
-            {...rest}
-          >
-            <Icon mr="4" fontSize="20" />
-            Продюсер
-          </Flex>
-        </NavLink>
-      ) : role == "STOREKEEPER" ? (
-        <NavLink to={"/warehouse"}>
-          <Flex
-            alignItems="center"
-            align="center"
-            p="4"
-            mx="4"
-            borderRadius="lg"
-            role="group"
-            cursor="pointer"
-            bg={
-              pathname === "/warehouse"
-                ? colorMode === "light"
-                  ? "blue.500"
-                  : "blue.200"
-                : ""
-            }
-            color={
-              pathname === "/warehouse"
-                ? colorMode === "light"
-                  ? "#fff"
-                  : "gray.800"
-                : ""
-            }
-            {...rest}
-          >
-            <Icon mr="4" fontSize="20" />
-            Склад
-          </Flex>
-        </NavLink>
-      ) : role == "MAIN_STOREKEEPER" ? (
-        <NavLink to={"/main-warehouse"}>
-          <Flex
-            alignItems="center"
-            align="center"
-            p="4"
-            mx="4"
-            borderRadius="lg"
-            role="group"
-            cursor="pointer"
-            bg={
-              pathname === "/main-warehouse"
-                ? colorMode === "light"
-                  ? "blue.500"
-                  : "blue.200"
-                : ""
-            }
-            color={
-              pathname === "/main-warehouse"
-                ? colorMode === "light"
-                  ? "#fff"
-                  : "gray.800"
-                : ""
-            }
-            {...rest}
-          >
-            <Icon mr="4" fontSize="20" />
-            Главный склад
-          </Flex>
-        </NavLink>
-      ) : null}
-
-      <NavLink to="/analytics">
-        <Flex
-          alignItems="center"
-          align="center"
-          p="4"
-          mx="4"
-          borderRadius="lg"
-          role="group"
-          bg={
-            pathname === "/analytics"
-              ? colorMode === "light"
-                ? "blue.500"
-                : "blue.200"
-              : ""
-          }
-          color={
-            pathname === "/analytics"
-              ? colorMode === "light"
-                ? "#fff"
-                : "gray.800"
-              : ""
-          }
-          cursor="pointer"
-          {...rest}
-        >
-          <Icon mr="4" fontSize="20">
-            <AutoGraphIcon />
-          </Icon>
-          Аналитика
-        </Flex>
-      </NavLink>
+        ))}
     </Box>
   );
 };

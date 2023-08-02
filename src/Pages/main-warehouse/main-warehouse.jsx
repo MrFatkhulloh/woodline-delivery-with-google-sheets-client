@@ -244,6 +244,7 @@ const MainWarehouse = () => {
   // console.log("mmm  ", searchDealProducts[0]?.order?.deal);
 
   console.log(myCopyData);
+  console.log(searchDealProducts);
   return (
     <Layout>
       {/* ADD WAREHOUSE MODAL */}
@@ -849,10 +850,10 @@ const MainWarehouse = () => {
                           width={150}
                           borderRadius={"md"}
                           size={"sm"}
-                          status={"success"}
+                          status={"info"}
                         >
                           <AlertIcon />
-                          {"Готовa"}
+                          {"к отправке"}
                         </Alert>
                       </Td>
                       <Td>
