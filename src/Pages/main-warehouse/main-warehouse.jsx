@@ -252,6 +252,7 @@ const MainWarehouse = () => {
   return (
     <Layout>
       {/* ADD WAREHOUSE MODAL */}
+      
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>

@@ -220,7 +220,7 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
         >
           <Thead>
             <Tr>
-              <Th>ID_______</Th>
+              <Th>ИД </Th>
               <Th>вид мебели</Th>
               <Th>модель</Th>
               <Th>ткань</Th>
@@ -261,7 +261,7 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
           +
         </Button>
         <Button colorScheme="green" onClick={handleSubmit}>
-          submit
+        Отправить 
         </Button>
       </Flex>
     </>

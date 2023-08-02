@@ -52,6 +52,7 @@ import {
   InfoIcon,
   SearchIcon,
   ViewIcon,
+  
 } from "@chakra-ui/icons";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
 import accounting from "accounting";
@@ -79,13 +80,21 @@ const Warehouse = () => {
   const [index, setIndex] = useState(0);
   const [order, setOrder] = useState();
   const [companyId, setCompanyId] = useState("");
-
   const [companys, setCompanys] = useState([]);
+  const [returnedProduct, setReturnedProduct] = useState({});
+  const [returnedModal, setReturnedModal] = useState(false);
+  const [searchProductData, setSearchProductData] = useState("")
 
   useEffect(() => {
     instance.get("/warehouse-all").then((res) => {
       setCompanys(res.data);
     });
+
+    instance
+      .get(`/warehouse-products-search?search=${dealSearch}`)
+      .then((res) => {
+        // setSearchDealProducts(res.data);
+      });
   }, [reload]);
 
   useEffect(() => {
@@ -181,7 +190,7 @@ const Warehouse = () => {
       }
     });
   };
-
+// console.log(returnedProduct)
   return (
     <Layout>
       {/* ADD PRODUCT MODAL */}
@@ -318,6 +327,52 @@ const Warehouse = () => {
         </ModalContent>
       </Modal>
 
+
+{/* RETURNED MODAL */}
+
+<Modal isOpen={returnedModal} onClose={setReturnedModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Вы уверены, что хотите вернуть его?</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody display={"flex"} flexDirection={"column"} gap={"15px"}>
+
+            <Box boxShadow={"xs"} p={4} rounded="md">
+              <List spacing={3}>
+                <ListItem>ID ЗАКАЗA: {returnedProduct?.order?.order_id}</ListItem>
+                <ListItem>МОДЕЛ: {returnedProduct?.order?.model?.name}</ListItem>
+                <ListItem>КОЛ-ВО: {returnedProduct?.order?.qty} </ListItem>
+                <ListItem>
+                  ЦЕНА: {accounting.formatNumber(returnedProduct?.order?.cost, 0, " ")}{" "}
+                  сум
+                </ListItem>
+                <ListItem>РАСПРОДАЖА: {returnedProduct?.order?.sale} %</ListItem>
+                <ListItem>ЗАГОЛОВОК: {returnedProduct?.order?.title}</ListItem>
+                <ListItem>
+                  СУММА: {accounting.formatNumber(returnedProduct?.order?.sum, 0, " ")}{" "}
+                  сум
+                </ListItem>
+              </List>
+            </Box>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              isLoading={transferLoading}
+              onClick={handleTransferProduct}
+              colorScheme="blue"
+              mr={3}
+            >
+              Подтверждать
+            </Button>
+            <Button onClick={()=>{
+              setReturnedModal(false)
+            }} variant="ghost" colorScheme="red">
+            Отмена
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <Tabs onChange={(index) => setIndex(index)} isFitted>
         <TabList>
           <Tab fontSize={{ "2xl": "2xl", xl: "xl", md: "", sm: "" }}>
@@ -433,11 +488,13 @@ const Warehouse = () => {
                           <MenuButton
                             as={Button}
                             rightIcon={<ChevronDownIcon />}
+                            onClick={console.log(p.order?.status)}
                           >
                             Actions
                           </MenuButton>
                           <MenuList>
                             <MenuItem
+                            isDisabled={ p.order?.status==="SOLD_AND_CHECKED"}
                               onClick={() => {
                                 trOnOpen();
                                 setOrder(p);
@@ -446,6 +503,39 @@ const Warehouse = () => {
                             >
                               Трансферы
                             </MenuItem>
+                            
+                             <MenuItem
+                             isDisabled={p.order?.status==="ACTIVE" || p.order?.status==="SOLD_AND_CHECKED"}
+                              onClick={() => {
+                                handleCheckedOrder(p, "ACTIVE");
+
+                              }}
+                              icon={<CheckIcon />}
+                            > 
+                              Готова 
+                            </MenuItem> 
+                            <MenuItem
+                            isDisabled={p.order?.status==="DEFECTED" || p.order?.status==="SOLD_AND_CHECKED" }
+                              onClick={() => {
+                                handleCheckedOrder(p, "DEFECTED");
+
+                              }}
+                              icon={<InfoIcon />}
+                            > 
+                              Брак  
+                            </MenuItem> 
+                            <MenuItem
+                            isDisabled={ p.order?.status==="RETURNED" || p.order?.status==="DEFECTED" || p.order?.status==="ACTIVE"}
+                              onClick={() => {
+                                handleCheckedOrder(p, "DELIVERED");
+
+                              }}
+                              icon={<InfoIcon />}
+                            > 
+                              Доставлена    
+                            </MenuItem> 
+                        
+                      
                           </MenuList>
                         </Menu>
                       </Td>
@@ -657,7 +747,9 @@ const Warehouse = () => {
                           <MenuList>
                             <MenuItem
                               onClick={() => {
-                                handleCheckedOrder(p, "RETURNED");
+                                // handleCheckedOrder(p, "RETURNED");
+                                setReturnedProduct(p)
+                                setReturnedModal(true)
                               }}
                               icon={<InfoIcon />}
                             >
