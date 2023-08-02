@@ -27,7 +27,7 @@ const AddCompanyModal = ({ isOpen, onClose, reload, setReload }) => {
   function trimObjectValues(obj) {
     let values = Object.values(obj);
 
-    Object.keys(obj).forEach((key, index) => {
+    Object.keys(obj)?.forEach((key, index) => {
       obj[key] = values[index].trim();
     });
 

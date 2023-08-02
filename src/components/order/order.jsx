@@ -221,7 +221,6 @@ function OrderTable() {
     const foundCourier = courier.find((c) => c?.id == value);
     if (!foundCourier) return;
     setSelectedCourier2(foundCourier);
-    console.log(foundCourier);
   };
 
   const handleMinus = (index) => {
@@ -364,10 +363,14 @@ function OrderTable() {
     <>
       <Spacer />
 
-      <Tabs>
+      <Tabs isFitted>
         <TabList>
-          <Tab>доставка на склад</Tab>
-          <Tab>доставка к клиенту</Tab>
+          <Tab fontSize={{ "2xl": "2xl", xl: "xl", md: "", sm: "" }}>
+            доставка на склад
+          </Tab>
+          <Tab fontSize={{ "2xl": "2xl", xl: "xl", md: "", sm: "" }}>
+            доставка к клиенту
+          </Tab>
         </TabList>
 
         <TabPanels>

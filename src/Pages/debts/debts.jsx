@@ -214,9 +214,10 @@ const Debts = () => {
   };
 
   useEffect(() => {
-    instance.get(`/dealId/${deal?.id}`).then((res) => {
-      setDealMoreInfos(res.data);
-    });
+    deal !== undefined &&
+      instance.get(`/dealId/${deal?.id}`).then((res) => {
+        setDealMoreInfos(res.data);
+      });
   }, [deal]);
 
   return (
@@ -253,7 +254,7 @@ const Debts = () => {
                         {dealMoreInfos?.orders?.map((o) => (
                           <Tr>
                             <Td>{o.order_id}</Td>
-                            <Td>{o.title}</Td>
+                            <Td whiteSpace={"pre-wrap"}>{o.title}</Td>
                             <Td>{o.cathegory}</Td>
                             <Td>{o.cost}</Td>
                             <Td>{o.qty}</Td>
@@ -566,7 +567,7 @@ const Debts = () => {
             type="number"
             placeholder="Искать по тел."
           />
-        </Flex>
+        </Flex> 
 
         <TableContainer>
           <Table

@@ -119,6 +119,8 @@ export default function NewFurnitureType() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [reload, setReload] = useState(false);
   const [addFTypeLoading, setAddFTypeLoading] = useState(false);
+  const [companys, setCompanys] = useState([]);
+  const [compId, setCompId] = useState("");
 
   const [searchValue, setSearchValue] = useState("");
 
@@ -142,6 +144,12 @@ export default function NewFurnitureType() {
             console.error(error);
           });
   }, [page, limit, updateLoading, reload, searchValue]);
+
+  useEffect(() => {
+    instance.get("/company").then((res) => {
+      setCompanys(res.data);
+    });
+  }, []);
 
   const checkType = (name) => {
     const foundType = types.find((e) => e.name == name);
@@ -226,10 +234,11 @@ export default function NewFurnitureType() {
   const handleUpdateSubmit = () => {
     setUpdateLoading(true);
     instance
-      .put(`/model/${model.id}`, { name: newModelName })
+      .put(`/model/${model.id}`, { name: newModelName, company_id: compId })
       .then((res) => {
         if (res.status === 200) {
           toast.success("Updated model name");
+          console.log(model, compId);
           setReload(!reload);
         }
       })
@@ -367,6 +376,20 @@ export default function NewFurnitureType() {
                   type="text"
                 />
               </FormControl>
+
+              <FormControl mt={4}>
+                <FormLabel>изменить компанию</FormLabel>
+
+                <Select
+                  defaultValue={model?.company_id}
+                  onChange={(e) => setCompId(e.target.value)}
+                  placeholder="выбрать компанию"
+                >
+                  {companys?.map((company) => (
+                    <option value={company?.id}>{company.name}</option>
+                  ))}
+                </Select>
+              </FormControl>
             </ModalBody>
 
             <ModalFooter>
@@ -408,14 +431,14 @@ export default function NewFurnitureType() {
               >
                 Да
               </Button>
-              <Button onClick={onClose}>Нет</Button>
+              <Button onClick={deleteClose}>Нет</Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
 
         <Flex justifyContent={"space-between"} alignItems={"center"}>
           <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
-            Вид мебели
+            Модели
           </Heading>
 
           <Menu>
@@ -440,7 +463,7 @@ export default function NewFurnitureType() {
                 </InputLeftElement>
                 <Input
                   onChange={(e) => setSearchValue(e.target.value)}
-                  type="text"
+                  type="search"
                   placeholder="Поиск по имени"
                 />
               </InputGroup>
