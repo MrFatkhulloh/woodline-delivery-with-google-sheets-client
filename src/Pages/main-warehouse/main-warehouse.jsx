@@ -61,6 +61,7 @@ import {
   SearchIcon,
 } from "@chakra-ui/icons";
 import copy from "copy-to-clipboard";
+import { InputLabel, Typography } from "@mui/material";
 
 const MainWarehouse = () => {
   const { colorMode } = useColorMode();
@@ -102,6 +103,7 @@ const MainWarehouse = () => {
   const [order, setOrder] = useState();
 
   const [transferLoading, setTransferLoading] = useState(false);
+  const [returnedLoading, setReturnedLoading] = useState(false);
 
   const [users, setUsers] = useState([]);
 
@@ -111,8 +113,13 @@ const MainWarehouse = () => {
 
   const [addLoading, setAddLoading] = useState(false);
 
-  const [companyId, setCompanyId] = useState("");
+  const [returnedModal, setReturnedModal] = useState(false);
 
+  const [returnedProdectWarehouseId, setReturnedProdectWarehouseId] =
+    useState("");
+  const [companyId, setCompanyId] = useState("");
+  const [returnedProduct, setReturnedProduct] = useState({});
+  const [deliveredProducts, setDeliveredProducts] = useState([]);
   const [searchDealProducts, setSearchDealProducts] = useState([]);
   const [dealSearch, setDealSearch] = useState("");
   const [product, setProduct] = useState();
@@ -141,7 +148,13 @@ const MainWarehouse = () => {
     instance.get("/warehouse-products").then((res) => {
       setProducts(res.data);
     });
-  }, [reload]);
+
+    instance
+      .get(`/warehouse-products-by-status?status=DELIVERED`)
+      .then((res) => {
+        setDeliveredProducts(res.data);
+      });
+  }, [reload,deliveredProducts]);
 
   useEffect(() => {
     instance
@@ -245,14 +258,36 @@ const MainWarehouse = () => {
       });
   };
 
+  const handleReturnedProduct = () => {
+    setReturnedLoading(true);
+    instance
+      .put(`/warehouse-product-returned/${returnedProduct?.order?.id}`, {
+        warehouse_id: returnedProdectWarehouseId,
+      })
+      .then((res) => {
+        toast.success("Successfully returned product");
+        setReturnedModal(false);
+      })
+      .finally(() => {
+        setReturnedLoading(false);
+      })
+      .catch((err) => {
+        setReturnedModal(false);
+        toast.error("Error Returned Product");
+        console.log(err);
+      });
+  };
   // console.log("mmm  ", searchDealProducts[0]?.order?.deal);
 
-  console.log(myCopyData);
-  console.log(searchDealProducts);
+  // console.log(myCopyData);
+  console.log(returnedProdectWarehouseId);
+  console.log(returnedProduct?.order?.id);
+  console.log(returnedProduct);
+
   return (
     <Layout>
       {/* ADD WAREHOUSE MODAL */}
-      
+
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -788,6 +823,90 @@ const MainWarehouse = () => {
         </ModalContent>
       </Modal>
 
+      {/* RETURNED MODAL */}
+
+      <Modal isOpen={returnedModal} onClose={setReturnedModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Вы уверены, что хотите вернуть его?</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody display={"flex"} flexDirection={"column"} gap={"15px"}>
+            <Box boxShadow={"xs"} p={4} rounded="md">
+              <List spacing={3}>
+                <ListItem>
+                  ID ЗАКАЗA: {returnedProduct?.order?.order_id}
+                </ListItem>
+                <ListItem>
+                  МОДЕЛ: {returnedProduct?.order?.model?.name}
+                </ListItem>
+                <ListItem>КОЛ-ВО: {returnedProduct?.order?.qty} </ListItem>
+                <ListItem>
+                  ЦЕНА:{" "}
+                  {accounting.formatNumber(
+                    returnedProduct?.order?.cost,
+                    0,
+                    " "
+                  )}{" "}
+                  сум
+                </ListItem>
+                <ListItem>
+                  РАСПРОДАЖА: {returnedProduct?.order?.sale} %
+                </ListItem>
+                <ListItem>ЗАГОЛОВОК: {returnedProduct?.order?.title}</ListItem>
+                <ListItem>
+                  СУММА:{" "}
+                  {accounting.formatNumber(returnedProduct?.order?.sum, 0, " ")}
+                  сум
+                </ListItem>
+              </List>
+              <FormControl sx={{ my: 4 }}>
+                <Select
+                  id="demo-simple-select"
+                  label="Филиал"
+                  placeholder="Выберите филиал"
+                  onChange={(e) => {
+                    // setReturnedProdectId(returnedProduct.id);
+                    // setReturnedProdectWarehouseId(e.target.value);
+                  }}
+                >
+                  {warehouses?.map((w) => {
+                    if (returnedProduct.warehouse_id !== w.id) {
+                      return (
+                        <option key={w.id} value={w.id}>
+                          {w.name}
+                        </option>
+                      );
+                    }
+                  })}
+                </Select>
+              </FormControl>
+            </Box>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              isLoading={returnedLoading}
+              onClick={() => {
+                handleReturnedProduct();
+              }}
+              colorScheme="blue"
+              mr={3}
+            >
+              Подтверждать
+            </Button>
+            <Button
+              onClick={() => {
+                setReturnedModal(false);
+              }}
+              variant="ghost"
+              colorScheme="red"
+            >
+              Отмена
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       <Tabs isFitted>
         <TabList>
           <Tab fontSize={{ "2xl": "2xl", xl: "xl", md: "", sm: "" }}>
@@ -1107,7 +1226,89 @@ const MainWarehouse = () => {
               </Table>
             </TableContainer>
           </TabPanel>
-          <TabPanel>asdajsdlk</TabPanel>
+          <TabPanel>
+            <Flex justifyContent="space-between" alignItems="center" my={5}>
+              <Heading
+                fontSize={{ base: "18px", md: "26px", lg: "32px" }}
+                my={5}
+              >
+                Доставленныe
+              </Heading>
+            </Flex>
+
+            <TableContainer>
+              <Table
+                variant="simple"
+                background={colorMode === "light" ? "#fff" : ""}
+              >
+                <Thead>
+                  <Tr>
+                    <Th>ID</Th>
+                    <Th>Модел</Th>
+                    <Th>Складъ</Th>
+                    <Th>кол-во</Th>
+                    <Th>ткань</Th>
+                    <Th>цена</Th>
+                    <Th>распродажа</Th>
+                    <Th>заголовок</Th>
+                    <Th>сумма</Th>
+                    <Th>actions</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {deliveredProducts?.map((p) => {
+                    const warehouse = warehouses.find(
+                      (warehouse) => warehouse.id == p?.warehouse_id
+                    );
+
+                    return (
+                      <Tr key={p.id}>
+                        <Td>{p.order?.order_id}</Td>
+                        <Td>{p.order?.model?.name}</Td>
+
+                        <Td>{warehouse?.name}</Td>
+                        <Td>{p.order?.qty}</Td>
+                        <Td>{p.order?.tissue}</Td>
+                        <Td>
+                          {accounting.formatNumber(p.order?.cost, 0, " ")}
+                        </Td>
+                        <Td>{p.order?.sale} %</Td>
+                        <Td whiteSpace={"pre-wrap"}>{p.order?.title}</Td>
+                        <Td>
+                          {accounting.formatNumber(p.order?.sum, 0, " ")} сум
+                        </Td>
+                        <Td>
+                          <Menu>
+                            <MenuButton
+                              as={Button}
+                              rightIcon={<ChevronDownIcon />}
+                            >
+                              Actions
+                            </MenuButton>
+                            <MenuList>
+                              <MenuItem
+                                onClick={() => {
+                                  // handleCheckedOrder(p, "RETURNED");
+                                  setReturnedProdectWarehouseId(
+                                    p?.warehouse_id
+                                  );
+                                  setReturnedProduct(p);
+                                  setReturnedModal(true);
+                                }}
+                                icon={<InfoIcon />}
+                              >
+                                Возврат
+                              </MenuItem>
+                            </MenuList>
+                          </Menu>
+                        </Td>
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            </TableContainer>
+          </TabPanel>
         </TabPanels>
       </Tabs>
     </Layout>
