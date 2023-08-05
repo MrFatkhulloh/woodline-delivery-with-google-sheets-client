@@ -2,6 +2,9 @@ import {
   Button,
   Flex,
   Heading,
+  Input,
+  InputGroup,
+  InputLeftElement,
   Menu,
   MenuButton,
   MenuItem,
@@ -30,7 +33,13 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { OpenModalContext } from "../../../Contexts/ModalContext/ModalContext";
 import EditUserModal from "./EditUserModal";
-import { ChevronDownIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import {
+  AddIcon,
+  ChevronDownIcon,
+  DeleteIcon,
+  EditIcon,
+  SearchIcon,
+} from "@chakra-ui/icons";
 import { toast } from "react-toastify";
 import { instance } from "../../../config/axios.instance.config";
 import DynamicPagination from "../../../components/pagin/pagin";
@@ -76,6 +85,8 @@ export default function AdminLinkList() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [count, setCount] = useState();
+  const [searchValue, setSearchValue] = useState("");
+  const [searchedUsers, setSearchedUsers] = useState([]);
 
   const handleActive = (activeIndex) => {
     const newUsers = users.map((user, index) => {
@@ -131,6 +142,13 @@ export default function AdminLinkList() {
         console.error(error);
       });
   }, [reload, page, limit]);
+
+  useEffect(() => {
+    searchValue !== "" &&
+      instance.get(`/search-seller?search=${searchValue}`).then((res) => {
+        setSearchedUsers(res.data);
+      });
+  }, [searchValue]);
 
   const { colorMode } = useColorMode();
 
@@ -199,9 +217,27 @@ export default function AdminLinkList() {
           <Heading fontSize={{ base: "18px", md: "26px", lg: "32px" }} my={5}>
             Пользователи
           </Heading>
-          <Button colorScheme="blue" onClick={onOpen}>
-            Добавить пользователя
-          </Button>
+
+          <Menu>
+            <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+              Действия
+            </MenuButton>
+            <MenuList>
+              <MenuItem onClick={onOpen} icon={<AddIcon />}>
+                Добавить пользователя
+              </MenuItem>
+              <InputGroup>
+                <InputLeftElement pointerEvents="none">
+                  <SearchIcon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  type="search"
+                  placeholder="Поиск"
+                />
+              </InputGroup>
+            </MenuList>
+          </Menu>
         </Flex>
         <TableContainer>
           <Table
@@ -221,7 +257,7 @@ export default function AdminLinkList() {
               </Tr>
             </Thead>
             <Tbody>
-              {users?.map((e, i) => (
+              {(searchedUsers ?? users)?.map((e, i) => (
                 <Tr key={i}>
                   <Td>{i + 1}</Td>
                   <Td>{e.name}</Td>

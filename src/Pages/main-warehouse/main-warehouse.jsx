@@ -154,7 +154,7 @@ const MainWarehouse = () => {
       .then((res) => {
         setDeliveredProducts(res.data);
       });
-  }, [reload,deliveredProducts]);
+  }, [reload, deliveredProducts]);
 
   useEffect(() => {
     instance
@@ -277,12 +277,8 @@ const MainWarehouse = () => {
         console.log(err);
       });
   };
-  // console.log("mmm  ", searchDealProducts[0]?.order?.deal);
-
-  // console.log(myCopyData);
-  console.log(returnedProdectWarehouseId);
-  console.log(returnedProduct?.order?.id);
-  console.log(returnedProduct);
+  
+  console.log(products);
 
   return (
     <Layout>
@@ -1077,8 +1073,8 @@ const MainWarehouse = () => {
                   {products?.map((p) => (
                     <Tr>
                       <Td>{p.order?.order_id}</Td>
-                      <Td>{p.order?.model?.name}</Td>
                       <Td>{p.order?.model?.furniture_type?.name}</Td>
+                      <Td>{p.order?.model?.name}</Td>
                       <Td>{p.order?.qty}</Td>
                       <Td>{p.order?.tissue}</Td>
                       <Td whiteSpace={"pre-wrap"}>{p.order?.title}</Td>
