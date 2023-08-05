@@ -17,6 +17,7 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
+import { routes } from "../sidebar/sidebar";
 
 export default function LoginModal() {
   const { state, setState } = useContext(OpenModalContext);
@@ -24,8 +25,7 @@ export default function LoginModal() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const [disable, setDisable] = useState(true)
-  
+  const [disable, setDisable] = useState(true);
 
   const handleSubmit = (e) => {
     if (name !== "" && password !== "") {
@@ -44,10 +44,12 @@ export default function LoginModal() {
             window.localStorage.setItem("role", response.data?.token.role);
             window.localStorage.setItem("name", response.data?.token.name);
 
-            console.log(response);
+            let foundAccessRoute = routes?.find((fr) =>
+              fr.access_roles.includes(response.data?.token.role)
+            );
 
             // window.location.href = "/";
-            navigate("/");
+            navigate(foundAccessRoute?.path);
             setState(state + 1);
             // window.location.reload();
           } else {
@@ -58,7 +60,6 @@ export default function LoginModal() {
           console.error(error);
         });
     } else {
-
     }
   };
 

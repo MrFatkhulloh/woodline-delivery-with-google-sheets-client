@@ -253,7 +253,7 @@ function D2cOrderTable({ selectedCourier, setSelectedCourier }) {
         >
           <Thead>
             <Tr>
-              <Th>ID_______</Th>
+              <Th>ИД</Th>
               <Th>Остаток</Th>
               <Th>оплатили</Th>
               <Th>примечание</Th>
@@ -294,7 +294,7 @@ function D2cOrderTable({ selectedCourier, setSelectedCourier }) {
           +
         </Button>
         <Button colorScheme="green" onClick={chOnOpen}>
-          {"submit"}
+          {"Отправить "}
         </Button>
       </Flex>
     </>
