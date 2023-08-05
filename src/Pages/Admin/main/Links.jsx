@@ -257,7 +257,7 @@ export default function AdminLinkList() {
               </Tr>
             </Thead>
             <Tbody>
-              {(searchedUsers ?? users)?.map((e, i) => (
+              {users?.map((e, i) => (
                 <Tr key={i}>
                   <Td>{i + 1}</Td>
                   <Td>{e.name}</Td>
