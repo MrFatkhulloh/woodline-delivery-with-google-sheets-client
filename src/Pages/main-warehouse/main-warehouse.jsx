@@ -154,7 +154,7 @@ const MainWarehouse = () => {
       .then((res) => {
         setDeliveredProducts(res.data);
       });
-  }, [reload,deliveredProducts]);
+  }, [reload, deliveredProducts]);
 
   useEffect(() => {
     instance
@@ -208,7 +208,6 @@ const MainWarehouse = () => {
           cost: 0,
           sale: 0,
           qty: 1,
-          title: "",
         },
         {
           headers: {
@@ -277,12 +276,6 @@ const MainWarehouse = () => {
         console.log(err);
       });
   };
-  // console.log("mmm  ", searchDealProducts[0]?.order?.deal);
-
-  // console.log(myCopyData);
-  console.log(returnedProdectWarehouseId);
-  console.log(returnedProduct?.order?.id);
-  console.log(returnedProduct);
 
   return (
     <Layout>
@@ -475,6 +468,13 @@ const MainWarehouse = () => {
                 </Select>
               </FormControl>
             </Box>
+
+            <Textarea
+              onChange={(e) =>
+                setProductData({ ...productData, title: e.target.value })
+              }
+              placeholder="Заголовок..."
+            />
           </ModalBody>
 
           <ModalFooter>
@@ -1069,6 +1069,7 @@ const MainWarehouse = () => {
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
                     <Th>заголовок</Th>
+                    <Th>Склад</Th>
                     <Th>Статус</Th>
                     <Th>actions</Th>
                   </Tr>
@@ -1077,11 +1078,14 @@ const MainWarehouse = () => {
                   {products?.map((p) => (
                     <Tr>
                       <Td>{p.order?.order_id}</Td>
-                      <Td>{p.order?.model?.name}</Td>
                       <Td>{p.order?.model?.furniture_type?.name}</Td>
+                      <Td>{p.order?.model?.name}</Td>
                       <Td>{p.order?.qty}</Td>
                       <Td>{p.order?.tissue}</Td>
                       <Td whiteSpace={"pre-wrap"}>{p.order?.title}</Td>
+                      <Td>
+                        {warehouses?.find((w) => w.id === p.warehouse_id)?.name}
+                      </Td>
                       <Td>
                         <Alert
                           bgColor={

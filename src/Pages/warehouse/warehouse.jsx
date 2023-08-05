@@ -90,14 +90,13 @@ const Warehouse = () => {
       setCompanys(res.data);
     });
 
-
     // For search results
     instance
       .get(`/warehouse-products-search?search=${searchProductData}`)
       .then((res) => {
         setSearchData(res.data);
       });
-  }, [reload,searchProductData]);
+  }, [reload, searchProductData]);
 
   useEffect(() => {
     index === 0
@@ -132,7 +131,6 @@ const Warehouse = () => {
           cost: 0,
           sale: 0,
           qty: 1,
-          title: "",
         },
         {
           headers: {
@@ -192,8 +190,7 @@ const Warehouse = () => {
       }
     });
   };
-  // console.log(returnedProduct)
-  console.log(searchData)
+
   return (
     <Layout>
       {/* ADD PRODUCT MODAL */}
@@ -255,6 +252,13 @@ const Warehouse = () => {
                 type="text"
               />
             </FormControl>
+
+            <Textarea
+              onChange={(e) =>
+                setProductData({ ...productData, title: e.target.value })
+              }
+              placeholder="Заголовок..."
+            />
           </ModalBody>
 
           <ModalFooter>

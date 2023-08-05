@@ -110,7 +110,6 @@ const Producer = () => {
           cost: 0,
           sale: 0,
           qty: 1,
-          title: "",
         },
         {
           headers: {
@@ -273,6 +272,13 @@ const Producer = () => {
                 type="text"
               />
             </FormControl>
+
+            <Textarea
+              onChange={(e) =>
+                setProductData({ ...productData, title: e.target.value })
+              }
+              placeholder="Заголовок..."
+            />
           </ModalBody>
 
           <ModalFooter>
