@@ -208,7 +208,6 @@ const MainWarehouse = () => {
           cost: 0,
           sale: 0,
           qty: 1,
-          title: "",
         },
         {
           headers: {
@@ -277,8 +276,6 @@ const MainWarehouse = () => {
         console.log(err);
       });
   };
-  
-  console.log(products);
 
   return (
     <Layout>
@@ -471,6 +468,13 @@ const MainWarehouse = () => {
                 </Select>
               </FormControl>
             </Box>
+
+            <Textarea
+              onChange={(e) =>
+                setProductData({ ...productData, title: e.target.value })
+              }
+              placeholder="Заголовок..."
+            />
           </ModalBody>
 
           <ModalFooter>
@@ -1065,6 +1069,7 @@ const MainWarehouse = () => {
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
                     <Th>заголовок</Th>
+                    <Th>Склад</Th>
                     <Th>Статус</Th>
                     <Th>actions</Th>
                   </Tr>
@@ -1078,6 +1083,9 @@ const MainWarehouse = () => {
                       <Td>{p.order?.qty}</Td>
                       <Td>{p.order?.tissue}</Td>
                       <Td whiteSpace={"pre-wrap"}>{p.order?.title}</Td>
+                      <Td>
+                        {warehouses?.find((w) => w.id === p.warehouse_id)?.name}
+                      </Td>
                       <Td>
                         <Alert
                           bgColor={
