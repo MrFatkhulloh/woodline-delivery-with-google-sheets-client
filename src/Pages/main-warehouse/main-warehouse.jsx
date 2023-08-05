@@ -396,7 +396,7 @@ const MainWarehouse = () => {
 
             <Box display={"flex"} gap={"20px"}>
               <FormControl>
-                <FormLabel>warehouse</FormLabel>
+                <FormLabel>Склад</FormLabel>
 
                 <Select
                   onChange={(e) =>
@@ -405,7 +405,7 @@ const MainWarehouse = () => {
                       warehouse_id: e.target.value,
                     })
                   }
-                  placeholder="choose..."
+                  placeholder="выбирать..."
                 >
                   {warehouses?.map((w) => (
                     <option key={w.id} value={w.id}>
@@ -416,24 +416,26 @@ const MainWarehouse = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel>status</FormLabel>
+                <FormLabel>Статус</FormLabel>
 
                 <Select
                   onChange={(e) =>
                     setProductData({ ...productData, status: e.target.value })
                   }
-                  placeholder="choose..."
+                  placeholder="выбирать..."
                 >
-                  <option value={"NEW"}>NEW</option>
-                  <option value={"ACTIVE"}>ACTIVE</option>
-                  <option value={"VIEWED_STOREKEEPER"}>
+                  <option value={"NEW"}>Новый</option>
+                  <option value={"ACTIVE"}>Готово</option>
+                  <option value={"DEFECTED"}>Брак</option>
+                  <option value={"RETURNED"}>Возврат</option>
+                  <option value={"SOLD_AND_CHECKED"}>К отправке</option>
+                  <option value={"DELIVERED"}>Доставлено</option>
+                  <option disabled={true} value={"VIEWED_STOREKEEPER"}>
                     VIEWED_STOREKEEPER
                   </option>
-                  <option value={"READY_TO_DELIVERY"}>READY_TO_DELIVERY</option>
-                  <option value={"DEFECTED"}>DEFECTED</option>
-                  <option value={"RETURNED"}>RETURNED</option>
-                  <option value={"SOLD_AND_CHECKED"}>SOLD_AND_CHECKED</option>
-                  <option value={"DELIVERED"}>DELIVERED</option>
+                  <option disabled={true} value={"READY_TO_DELIVERY"}>
+                    READY_TO_DELIVERY
+                  </option>
                 </Select>
               </FormControl>
             </Box>
@@ -838,7 +840,7 @@ const MainWarehouse = () => {
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
                     <Th>заголовок</Th>
-                    <Th>status</Th>
+                    <Th>Статус</Th>
                     <Th>actions</Th>
                   </Tr>
                 </Thead>
@@ -947,7 +949,7 @@ const MainWarehouse = () => {
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
                     <Th>заголовок</Th>
-                    <Th>status</Th>
+                    <Th>Статус</Th>
                     <Th>actions</Th>
                   </Tr>
                 </Thead>
