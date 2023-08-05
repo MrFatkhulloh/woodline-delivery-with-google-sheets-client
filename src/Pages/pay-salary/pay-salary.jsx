@@ -36,7 +36,6 @@ import accounting from "accounting";
 import moment from "moment";
 import "moment/locale/ru";
 import DynamicPagination from "../../components/pagin/pagin";
-import Pagination from "../../components/pagination/p";
 import {
   CheckIcon,
   ChevronDownIcon,

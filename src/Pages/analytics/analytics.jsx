@@ -3,17 +3,13 @@ import Layout from "../../components/layout/layout";
 import {
   Flex,
   Grid as ChakraGrid,
-  Heading,
   Input,
   Select,
-  useColorMode,
   Stat,
   StatLabel,
   StatNumber,
   StatHelpText,
   Alert,
-  FormControl,
-  FormLabel,
   Tabs,
   TabList,
   Tab,
@@ -22,6 +18,8 @@ import {
   List,
   ListItem,
   ListIcon,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import Chart, {
   LineElement,
@@ -31,10 +29,10 @@ import Chart, {
 } from "chart.js/auto";
 import { Line } from "react-chartjs-2";
 import { instance } from "../../config/axios.instance.config";
-import { CUIAutoComplete } from "chakra-ui-autocomplete";
 import accounting from "accounting";
 import { CheckCircleIcon } from "@chakra-ui/icons";
-import Autocomplete from "../../components/autocomplete/autocomplete";
+import MultipleAutocomplete from "../../components/autocomplete/autocomplete";
+import DateRangePicker from "../../components/customdatepicker/customdatepicker";
 
 Chart.register(LinearScale, PointElement, LineElement, Title);
 
@@ -55,10 +53,15 @@ const Analytics = () => {
     labels: [],
     datasets: [],
   });
+  const [analyt3, setAnalyt3] = useState({
+    labels: [],
+    datasets: [],
+  });
   const [models, setModels] = useState([]);
   const [sellers, setSellers] = useState([]);
   const [companys, setCompanys] = useState([]);
   const [furnTypes, setFurnTypes] = useState([]);
+  const [wallets, setWallets] = useState([]);
 
   const [reqType, setReqType] = useState("costs");
 
@@ -78,8 +81,16 @@ const Analytics = () => {
     furniture_type: "",
   });
 
+  const [paramData3, setParamData3] = useState({
+    company: "",
+    wallet: "",
+    startDate: "",
+    endDate: "",
+  });
+
   const [selectSellers, setSelectSellers] = useState([]);
   const [selectModels, setSelectModels] = useState([]);
+  const [selectSellers3, setSelectSellers3] = useState([]);
 
   function removeEmptyValues(obj) {
     for (let key in obj) {
@@ -91,21 +102,8 @@ const Analytics = () => {
     return obj;
   }
 
-  const { colorMode } = useColorMode();
   const [pickerItems, setPickerItems] = useState([]);
   const [pickerItems2, setPickerItems2] = useState([]);
-
-  const handleSelectedItemsChange = (selectedItems) => {
-    if (selectedItems) {
-      setSelectSellers(selectedItems);
-    }
-  };
-
-  const handleSelectedItemsChange2 = (selectedItems) => {
-    if (selectedItems) {
-      setSelectModels(selectedItems);
-    }
-  };
 
   useEffect(() => {
     setPickerItems(
@@ -159,21 +157,57 @@ const Analytics = () => {
     instance.get("/sellers").then((res) => setSellers(res.data));
   }, [paramData, paramData2, selectSellers, selectModels, reqType]);
 
-  const sumMoney = analyt.datasets
+  useEffect(() => {
+    instance
+      .patch("/payment-statistics", {
+        ...removeEmptyValues(paramData3),
+        sellers: selectSellers3,
+      })
+      .then((res) => {
+        setAnalyt3({
+          labels: res.data.labels,
+          datasets: res.data.datasets,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    instance.get("wallet").then((res) => setWallets(res.data));
+  }, [selectSellers3, paramData3]);
+
+  useEffect(() => {
+    instance.patch("/average-profit-client").then((res) => {
+      console.log("my res", res);
+    });
+  }, []);
+
+  const sumMoney2 = analyt2.datasets
     .map((d) => d.data.reduce((a, b) => a + b, 0))
     .reduce((m, n) => m + n, 0);
 
-  const sumMoney2 = analyt2.datasets
+  const sumMoney3 = analyt3?.datasets
+    .map((d) => d.data.reduce((a, b) => a + b, 0))
+    .reduce((m, n) => m + n, 0);
+
+  const sumMoney = analyt.datasets
     .map((d) => d.data.reduce((a, b) => a + b, 0))
     .reduce((m, n) => m + n, 0);
 
   return (
     <>
       <Layout>
-        <Tabs>
+        <Tabs isFitted>
           <TabList>
-            <Tab>Аналитика для продавцов</Tab>
-            <Tab>Аналитика для моделей</Tab>
+            <Tab fontSize={{ "2xl": "2xl", xl: "xl", md: "", sm: "" }}>
+              Аналитика для продавцов
+            </Tab>
+            <Tab fontSize={{ "2xl": "2xl", xl: "xl", md: "", sm: "" }}>
+              Аналитика для моделей
+            </Tab>
+            <Tab fontSize={{ "2xl": "2xl", xl: "xl", md: "", sm: "" }}>
+              Аналитика для кассы
+            </Tab>
           </TabList>
 
           <TabPanels>
@@ -278,50 +312,24 @@ const Analytics = () => {
                     <option value="counts">Кол-во</option>
                   </Select>
 
-                  <Input
-                    onBlur={(e) => e.type === "date"}
-                    onChange={(e) =>
+                  <DateRangePicker
+                    onChange={(dates) => {
                       setParamData({
                         ...paramData,
-                        start_date: new Date(e.target.value).getTime(),
-                      })
-                    }
-                    type="date"
-                    placeholder="start date"
+                        start_date: dates[0] ?? "",
+                        end_date: dates[1] ?? "",
+                      });
+                    }}
+                    value={[paramData.start_date, paramData.end_date]}
                   />
 
-                  <Input
-                    onChange={(e) =>
-                      setParamData({
-                        ...paramData,
-                        end_date: new Date(e.target.value).getTime(),
-                      })
-                    }
-                    type="date"
-                    placeholder="end date"
-                  />
-
-                  <CUIAutoComplete
-                    toggleButtonStyleProps={{
-                      bg: colorMode === "dark" ? "gray" : "",
+                  <MultipleAutocomplete
+                    placeholder={"продавцы"}
+                    value={selectSellers}
+                    onChange={(selected) => {
+                      setSelectSellers(selected);
                     }}
-                    listStyleProps={{
-                      bg: colorMode === "dark" ? "#2D3748" : "",
-                      color: colorMode === "dark" ? "white" : "black",
-                      _focus: {
-                        overflow: "auto",
-                      },
-                    }}
-                    listItemStyleProps={{
-                      _hover: {
-                        color: colorMode === "dark" ? "black" : "",
-                      },
-                    }}
-                    placeholder="seller"
-                    items={pickerItems}
-                    onSelectedItemsChange={(changes) =>
-                      handleSelectedItemsChange(changes.selectedItems)
-                    }
+                    options={pickerItems}
                   />
                 </ChakraGrid>
               </Flex>
@@ -404,27 +412,13 @@ const Analytics = () => {
                     })}
                   </Select>
 
-                  <CUIAutoComplete
-                    toggleButtonStyleProps={{
-                      bg: colorMode === "dark" ? "gray" : "",
+                  <MultipleAutocomplete
+                    placeholder={"модели"}
+                    value={selectModels}
+                    options={pickerItems2}
+                    onChange={(selected) => {
+                      setSelectModels(selected);
                     }}
-                    listStyleProps={{
-                      bg: colorMode === "dark" ? "#2D3748" : "",
-                      color: colorMode === "dark" ? "white" : "black",
-                      _focus: {
-                        overflow: "auto",
-                      },
-                    }}
-                    listItemStyleProps={{
-                      _hover: {
-                        color: colorMode === "dark" ? "black" : "",
-                      },
-                    }}
-                    placeholder="Модели"
-                    items={pickerItems2}
-                    onSelectedItemsChange={(changes) =>
-                      handleSelectedItemsChange2(changes.selectedItems)
-                    }
                   />
 
                   <Select
@@ -435,26 +429,15 @@ const Analytics = () => {
                     <option value="counts">Кол-во</option>
                   </Select>
 
-                  <Input
-                    onChange={(e) =>
+                  <DateRangePicker
+                    onChange={(dates) => {
                       setParamData2({
                         ...paramData2,
-                        start_date: new Date(e.target.value).getTime(),
-                      })
-                    }
-                    type="date"
-                    placeholder="start date"
-                  />
-
-                  <Input
-                    onChange={(e) =>
-                      setParamData2({
-                        ...paramData2,
-                        end_date: new Date(e.target.value).getTime(),
-                      })
-                    }
-                    type="date"
-                    placeholder="end date"
+                        start_date: dates[0] ?? "",
+                        end_date: dates[1] ?? "",
+                      });
+                    }}
+                    value={[paramData2.start_date, paramData2.end_date]}
                   />
 
                   <Select
@@ -475,6 +458,99 @@ const Analytics = () => {
               </Flex>
 
               <Line data={analyt2} options={options} />
+            </TabPanel>
+            <TabPanel>
+              <Alert status="success" variant="left-accent">
+                <Stat>
+                  <StatLabel>
+                    {reqType === "counts" ? "Общее количество" : "Общая сумма"}
+                  </StatLabel>
+                  <StatNumber>
+                    {accounting.formatNumber(sumMoney3, 0, " ")}{" "}
+                    {reqType === "counts" ? "Шт" : "Сум"}
+                  </StatNumber>
+                  <StatHelpText>
+                    {analyt3.labels[0]} -{" "}
+                    {analyt3.labels[analyt3.labels.length - 1]}
+                  </StatHelpText>
+
+                  <List spacing={3}>
+                    {analyt3.datasets.map((a) => {
+                      return (
+                        <ListItem>
+                          <ListIcon as={CheckCircleIcon} color="green.500" />
+                          {a.label}:{" "}
+                          {accounting.formatNumber(
+                            a.data.reduce((n1, n2) => n1 + n2, 0),
+                            0,
+                            " "
+                          )}{" "}
+                          {reqType === "counts" ? "Шт" : "Сум"}
+                        </ListItem>
+                      );
+                    })}
+                  </List>
+                </Stat>
+              </Alert>
+
+              <Flex
+                justifyContent={"space-between"}
+                alignItems={"center"}
+                my={5}
+              >
+                <ChakraGrid
+                  templateColumns={{
+                    base: "repeat(2, 1fr)",
+                    md: "repeat(3, 1fr)",
+                    lg: "repeat(4, 1fr)",
+                  }}
+                  gap={{ sm: "10px", md: "10px" }}
+                >
+                  <Select
+                    onChange={(e) =>
+                      setParamData3({ ...paramData3, company: e.target.value })
+                    }
+                    placeholder="Все компании"
+                  >
+                    {companys?.map((c) => {
+                      return <option value={c.id}>{c.name}</option>;
+                    })}
+                  </Select>
+
+                  <Select
+                    onChange={(e) => {
+                      setParamData3({ ...paramData3, wallet: e.target.value });
+                    }}
+                    placeholder="кошельки"
+                  >
+                    {wallets?.map((w) => (
+                      <option value={w.id}>{w.name}</option>
+                    ))}
+                  </Select>
+
+                  <MultipleAutocomplete
+                    placeholder={"продавцы"}
+                    value={selectSellers3}
+                    options={pickerItems}
+                    onChange={(selected) => {
+                      setSelectSellers3(selected);
+                    }}
+                  />
+
+                  <DateRangePicker
+                    onChange={(dates) => {
+                      setParamData3({
+                        ...paramData3,
+                        startDate: dates[0] ?? "",
+                        endDate: dates[1] ?? "",
+                      });
+                    }}
+                    value={[paramData3.startDate, paramData3.endDate]}
+                  />
+                </ChakraGrid>
+              </Flex>
+
+              <Line data={analyt3} options={options} />
             </TabPanel>
           </TabPanels>
         </Tabs>
