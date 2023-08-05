@@ -170,6 +170,9 @@ const EditUserModal = ({
               <option value="SELLER">Продавец</option>
               <option value="COURIER">Доставщик</option>
               <option value="DELIVERY_TELLER">Кассир отдел доставки</option>
+              <option value="PRODUCER">Предпрениматель</option>
+              <option value="STOREKEEPER">Кладовщик</option>
+              <option value="MAIN_STOREKEEPER">Главный кладовщик</option>
             </Select>
           </FormControl>
         </ModalBody>
