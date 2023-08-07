@@ -70,6 +70,8 @@ const Warehouse = () => {
     onOpen: trOnOpen,
     onClose: trOnClose,
   } = useDisclosure();
+
+
   const [products, setProducts] = useState([]);
   const [type, setType] = useState();
   const [productData, setProductData] = useState();
@@ -278,7 +280,6 @@ const Warehouse = () => {
       </Modal>
 
       {/* TRANSFER MODAL */}
-
       <Modal isOpen={trIsOpen} onClose={trOnClose}>
         <ModalOverlay />
         <ModalContent>
@@ -335,7 +336,6 @@ const Warehouse = () => {
       </Modal>
 
       {/* RETURNED MODAL */}
-
       <Modal isOpen={returnedModal} onClose={setReturnedModal}>
         <ModalOverlay />
         <ModalContent>

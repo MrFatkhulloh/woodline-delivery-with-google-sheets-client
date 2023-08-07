@@ -154,7 +154,7 @@ const MainWarehouse = () => {
       .then((res) => {
         setDeliveredProducts(res.data);
       });
-  }, [reload, deliveredProducts]);
+  }, [reload,deliveredProducts]);
 
   useEffect(() => {
     instance
@@ -208,6 +208,7 @@ const MainWarehouse = () => {
           cost: 0,
           sale: 0,
           qty: 1,
+          title: "",
         },
         {
           headers: {
@@ -276,6 +277,7 @@ const MainWarehouse = () => {
         console.log(err);
       });
   };
+
 
   return (
     <Layout>
@@ -425,7 +427,7 @@ const MainWarehouse = () => {
 
             <Box display={"flex"} gap={"20px"}>
               <FormControl>
-                <FormLabel>Склад</FormLabel>
+                <FormLabel>warehouse</FormLabel>
 
                 <Select
                   onChange={(e) =>
@@ -434,7 +436,7 @@ const MainWarehouse = () => {
                       warehouse_id: e.target.value,
                     })
                   }
-                  placeholder="выбирать..."
+                  placeholder="choose..."
                 >
                   {warehouses?.map((w) => (
                     <option key={w.id} value={w.id}>
@@ -445,36 +447,27 @@ const MainWarehouse = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel>Статус</FormLabel>
+                <FormLabel>status</FormLabel>
 
                 <Select
                   onChange={(e) =>
                     setProductData({ ...productData, status: e.target.value })
                   }
-                  placeholder="выбирать..."
+                  placeholder="choose..."
                 >
-                  <option value={"NEW"}>Новый</option>
-                  <option value={"ACTIVE"}>Готово</option>
-                  <option value={"DEFECTED"}>Брак</option>
-                  <option value={"RETURNED"}>Возврат</option>
-                  <option value={"SOLD_AND_CHECKED"}>К отправке</option>
-                  <option value={"DELIVERED"}>Доставлено</option>
-                  <option disabled={true} value={"VIEWED_STOREKEEPER"}>
+                  <option value={"NEW"}>NEW</option>
+                  <option value={"ACTIVE"}>ACTIVE</option>
+                  <option value={"VIEWED_STOREKEEPER"}>
                     VIEWED_STOREKEEPER
                   </option>
-                  <option disabled={true} value={"READY_TO_DELIVERY"}>
-                    READY_TO_DELIVERY
-                  </option>
+                  <option value={"READY_TO_DELIVERY"}>READY_TO_DELIVERY</option>
+                  <option value={"DEFECTED"}>DEFECTED</option>
+                  <option value={"RETURNED"}>RETURNED</option>
+                  <option value={"SOLD_AND_CHECKED"}>SOLD_AND_CHECKED</option>
+                  <option value={"DELIVERED"}>DELIVERED</option>
                 </Select>
               </FormControl>
             </Box>
-
-            <Textarea
-              onChange={(e) =>
-                setProductData({ ...productData, title: e.target.value })
-              }
-              placeholder="Заголовок..."
-            />
           </ModalBody>
 
           <ModalFooter>
@@ -960,7 +953,7 @@ const MainWarehouse = () => {
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
                     <Th>заголовок</Th>
-                    <Th>Статус</Th>
+                    <Th>status</Th>
                     <Th>actions</Th>
                   </Tr>
                 </Thead>
@@ -1069,8 +1062,7 @@ const MainWarehouse = () => {
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
                     <Th>заголовок</Th>
-                    <Th>Склад</Th>
-                    <Th>Статус</Th>
+                    <Th>status</Th>
                     <Th>actions</Th>
                   </Tr>
                 </Thead>
@@ -1078,14 +1070,11 @@ const MainWarehouse = () => {
                   {products?.map((p) => (
                     <Tr>
                       <Td>{p.order?.order_id}</Td>
-                      <Td>{p.order?.model?.furniture_type?.name}</Td>
                       <Td>{p.order?.model?.name}</Td>
+                      <Td>{p.order?.model?.furniture_type?.name}</Td>
                       <Td>{p.order?.qty}</Td>
                       <Td>{p.order?.tissue}</Td>
                       <Td whiteSpace={"pre-wrap"}>{p.order?.title}</Td>
-                      <Td>
-                        {warehouses?.find((w) => w.id === p.warehouse_id)?.name}
-                      </Td>
                       <Td>
                         <Alert
                           bgColor={
