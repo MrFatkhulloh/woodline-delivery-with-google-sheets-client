@@ -185,10 +185,11 @@ const Warehouse = () => {
   const handleCheckedOrder = (order, status) => {
     instance.put(`/order/${order?.order_id}?status=${status}`).then((res) => {
       if (res.status === 200) {
+        console.log(res);
         toast.success("изменено успешно");
         setReload(!reload);
       }
-    });
+    })
   };
 
   return (

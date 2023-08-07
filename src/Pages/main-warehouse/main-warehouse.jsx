@@ -154,7 +154,7 @@ const MainWarehouse = () => {
       .then((res) => {
         setDeliveredProducts(res.data);
       });
-  }, [reload, deliveredProducts]);
+  }, [reload]);
 
   useEffect(() => {
     instance
