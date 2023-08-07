@@ -156,13 +156,14 @@ const MainWarehouse = () => {
     instance.get("/warehouse").then((res) => setWarehouses(res.data));
 
     instance.get("/warehouse-products").then((res) => {
-      setProducts(res.data);
+      // console.log(res)
+      setProducts(res.data.products);
     });
 
     instance
       .get(`/warehouse-products-by-status?status=DELIVERED`)
       .then((res) => {
-        setDeliveredProducts(res.data);
+        setDeliveredProducts(res.data.products);
       });
   }, [reload]);
   useEffect(() => {
