@@ -59,6 +59,7 @@ import {
   ExternalLinkIcon,
   InfoIcon,
   SearchIcon,
+  EditIcon,
 } from "@chakra-ui/icons";
 import copy from "copy-to-clipboard";
 import { InputLabel, Typography } from "@mui/material";
@@ -98,6 +99,12 @@ const MainWarehouse = () => {
     onClose: copyOnClose,
   } = useDisclosure();
 
+  const {
+    isOpen: editProductIsOpen,
+    onOpen: editProductOpen,
+    onClose: editProductClose,
+  } = useDisclosure();
+
   const [productData, setProductData] = useState();
   const { types, courier, token } = useContext(OpenModalContext);
   const [order, setOrder] = useState();
@@ -127,6 +134,9 @@ const MainWarehouse = () => {
   const [isCopied, setIsCopied] = useState(false);
   const [myCopyData, setMyCopyData] = useState();
   const [copiedData, setCopiedData] = useState();
+  const [putOrderId, setPutOrderId] = useState("");
+  const [putOrder, setPutOrder] = useState({});
+
   const [isChecked, setIsChecked] = useState([
     {
       id: "",
@@ -154,8 +164,7 @@ const MainWarehouse = () => {
       .then((res) => {
         setDeliveredProducts(res.data);
       });
-  }, [reload,deliveredProducts]);
-
+  }, [reload]);
   useEffect(() => {
     instance
       .get(`/warehouse-products-search-deal?search=${dealSearch}`)
@@ -208,7 +217,6 @@ const MainWarehouse = () => {
           cost: 0,
           sale: 0,
           qty: 1,
-          title: "",
         },
         {
           headers: {
@@ -278,11 +286,25 @@ const MainWarehouse = () => {
       });
   };
 
+  const handePutProduct = async () => {
+    instance
+      .put(`/order-update/${putOrderId}`, {
+        title: putOrder?.title,
+        model_id: putOrder?.model_id,
+        tissue: putOrder?.tissue,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          editProductClose();
+          toast.success("изменено успешно");
+          setReload(!reload);
+        }
+      });
+  };
 
   return (
     <Layout>
       {/* ADD WAREHOUSE MODAL */}
-
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -365,7 +387,6 @@ const MainWarehouse = () => {
       </Modal>
 
       {/* ADD PRODUCT MODAL */}
-
       <Modal isOpen={addProductIsOpen} onClose={addProductOnClose}>
         <ModalOverlay />
         <ModalContent>
@@ -427,7 +448,7 @@ const MainWarehouse = () => {
 
             <Box display={"flex"} gap={"20px"}>
               <FormControl>
-                <FormLabel>warehouse</FormLabel>
+                <FormLabel>Склад</FormLabel>
 
                 <Select
                   onChange={(e) =>
@@ -436,7 +457,7 @@ const MainWarehouse = () => {
                       warehouse_id: e.target.value,
                     })
                   }
-                  placeholder="choose..."
+                  placeholder="выбирать..."
                 >
                   {warehouses?.map((w) => (
                     <option key={w.id} value={w.id}>
@@ -447,27 +468,36 @@ const MainWarehouse = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel>status</FormLabel>
+                <FormLabel>Статус</FormLabel>
 
                 <Select
                   onChange={(e) =>
                     setProductData({ ...productData, status: e.target.value })
                   }
-                  placeholder="choose..."
+                  placeholder="выбирать..."
                 >
-                  <option value={"NEW"}>NEW</option>
-                  <option value={"ACTIVE"}>ACTIVE</option>
-                  <option value={"VIEWED_STOREKEEPER"}>
+                  <option value={"NEW"}>Новый</option>
+                  <option value={"ACTIVE"}>Готово</option>
+                  <option value={"DEFECTED"}>Брак</option>
+                  <option value={"RETURNED"}>Возврат</option>
+                  <option value={"SOLD_AND_CHECKED"}>К отправке</option>
+                  <option value={"DELIVERED"}>Доставлено</option>
+                  <option disabled={true} value={"VIEWED_STOREKEEPER"}>
                     VIEWED_STOREKEEPER
                   </option>
-                  <option value={"READY_TO_DELIVERY"}>READY_TO_DELIVERY</option>
-                  <option value={"DEFECTED"}>DEFECTED</option>
-                  <option value={"RETURNED"}>RETURNED</option>
-                  <option value={"SOLD_AND_CHECKED"}>SOLD_AND_CHECKED</option>
-                  <option value={"DELIVERED"}>DELIVERED</option>
+                  <option disabled={true} value={"READY_TO_DELIVERY"}>
+                    READY_TO_DELIVERY
+                  </option>
                 </Select>
               </FormControl>
             </Box>
+
+            <Textarea
+              onChange={(e) =>
+                setProductData({ ...productData, title: e.target.value })
+              }
+              placeholder="Заголовок..."
+            />
           </ModalBody>
 
           <ModalFooter>
@@ -487,7 +517,6 @@ const MainWarehouse = () => {
       </Modal>
 
       {/* TRANSFER PRODUCT MODAL */}
-
       <Modal isOpen={trIsOpen} onClose={trOnClose}>
         <ModalOverlay />
         <ModalContent>
@@ -544,7 +573,6 @@ const MainWarehouse = () => {
       </Modal>
 
       {/* PODAT MODAL */}
-
       <Modal size={"4xl"} isOpen={podatIsOpen} onClose={podatOnClose}>
         <ModalOverlay />
         <ModalContent>
@@ -633,7 +661,6 @@ const MainWarehouse = () => {
       </Modal>
 
       {/* COPY MODAL */}
-
       <Modal scrollBehavior="inside" isOpen={copyIsOpen} onClose={copyOnClose}>
         <ModalOverlay />
         <ModalContent>
@@ -819,7 +846,6 @@ const MainWarehouse = () => {
       </Modal>
 
       {/* RETURNED MODAL */}
-
       <Modal isOpen={returnedModal} onClose={setReturnedModal}>
         <ModalOverlay />
         <ModalContent>
@@ -902,6 +928,89 @@ const MainWarehouse = () => {
         </ModalContent>
       </Modal>
 
+      {/* EDIT MODAL */}
+      <Modal isOpen={editProductIsOpen} onClose={editProductClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Редактировать продукт</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody display={"flex"} flexDirection={"column"} gap={"15px"}>
+            <FormControl>
+              <FormLabel>заголовок</FormLabel>
+              <Input
+                defaultValue={putOrder.title}
+                onChange={(e) =>
+                  setPutOrder({ ...putOrder, title: e.target.value })
+                }
+              />
+            </FormControl>
+
+            <Box display={"flex"} gap={"20px"}>
+              <FormControl>
+                <FormLabel>вид мебели</FormLabel>
+                <Select
+                  onChange={(e) => setType(e.target.value)}
+                  placeholder="выбрать вид мебель"
+                >
+                  {types?.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.name}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl>
+                <FormLabel>модели</FormLabel>
+                <Select
+                  defaultValue={putOrder?.model?.name}
+                  onChange={(e) =>
+                    setPutOrder({ ...putOrder, model_id: e.target.value })
+                  }
+                  isDisabled={!type ? true : false}
+                  placeholder="выбрать модель"
+                >
+                  {types
+                    ?.find((ft) => ft.id === type)
+                    ?.models.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.name}
+                      </option>
+                    ))}
+                </Select>
+              </FormControl>
+            </Box>
+            <FormControl>
+              <FormLabel>введите название ткани</FormLabel>
+              <Input
+                defaultValue={putOrder.tissue}
+                onChange={(e) =>
+                  setPutOrder({ ...putOrder, tissue: e.target.value })
+                }
+                type="text"
+              />
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              isLoading={addLoading}
+              onClick={handePutProduct}
+              colorScheme="blue"
+              mr={3}
+            >
+              Готова
+            </Button>
+            <Button
+              onClick={() => {
+                editProductClose();
+              }}
+              variant="ghost"
+            >
+              Закрывать
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <Tabs isFitted>
         <TabList>
           <Tab fontSize={{ "2xl": "2xl", xl: "xl", md: "", sm: "" }}>
@@ -953,7 +1062,7 @@ const MainWarehouse = () => {
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
                     <Th>заголовок</Th>
-                    <Th>status</Th>
+                    <Th>Статус</Th>
                     <Th>actions</Th>
                   </Tr>
                 </Thead>
@@ -1062,7 +1171,8 @@ const MainWarehouse = () => {
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
                     <Th>заголовок</Th>
-                    <Th>status</Th>
+                    <Th>Склад</Th>
+                    <Th>Статус</Th>
                     <Th>actions</Th>
                   </Tr>
                 </Thead>
@@ -1070,11 +1180,14 @@ const MainWarehouse = () => {
                   {products?.map((p) => (
                     <Tr>
                       <Td>{p.order?.order_id}</Td>
-                      <Td>{p.order?.model?.name}</Td>
                       <Td>{p.order?.model?.furniture_type?.name}</Td>
+                      <Td>{p.order?.model?.name}</Td>
                       <Td>{p.order?.qty}</Td>
                       <Td>{p.order?.tissue}</Td>
                       <Td whiteSpace={"pre-wrap"}>{p.order?.title}</Td>
+                      <Td>
+                        {warehouses?.find((w) => w.id === p.warehouse_id)?.name}
+                      </Td>
                       <Td>
                         <Alert
                           bgColor={
@@ -1132,6 +1245,26 @@ const MainWarehouse = () => {
                             Actions
                           </MenuButton>
                           <MenuList>
+                            <MenuItem
+                              isDisabled={
+                                p.order?.status === "SOLD_AND_CHECKED" ||
+                                p.order?.status === "DELIVERED" ||
+                                p.order?.status === "RETURNED" ||
+                                p.order?.status === "BOOKED" ||
+                                p.order?.status === "SOLD" ||
+                                p.order?.status === "CREATED"
+                                  ? true
+                                  : false
+                              }
+                              onClick={() => {
+                                editProductOpen();
+                                setPutOrder(p?.order);
+                                setPutOrderId(p?.order?.id);
+                              }}
+                              icon={<EditIcon />}
+                            >
+                              Редактировать
+                            </MenuItem>
                             <MenuItem
                               isDisabled={
                                 p.order?.status === "SOLD_AND_CHECKED"
