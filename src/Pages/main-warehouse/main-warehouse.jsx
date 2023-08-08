@@ -63,8 +63,20 @@ import {
 } from "@chakra-ui/icons";
 import copy from "copy-to-clipboard";
 import { InputLabel, Typography } from "@mui/material";
+import DynamicPagination from "../../components/pagin/pagin";
 
 const MainWarehouse = () => {
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [count, setCount] = useState();
+
+  const [page3, setPage3] = useState(1);
+  const [limit3, setLimit3] = useState(10);
+  const [count3, setCount3] = useState();
+  const [page4, setPage4] = useState(1);
+  const [limit4, setLimit4] = useState(10);
+  const [count4, setCount4] = useState();
+
   const { colorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [warehouses, setWarehouses] = useState([]);
@@ -129,6 +141,14 @@ const MainWarehouse = () => {
   const [deliveredProducts, setDeliveredProducts] = useState([]);
   const [searchDealProducts, setSearchDealProducts] = useState([]);
   const [dealSearch, setDealSearch] = useState("");
+
+  const [searchProductsData, setSearchProductsData] = useState([]);
+  const [productsSearch, setProductsSearch] = useState("");
+
+  const [searchDeliveredProductsData, setSearchDeliveredProductsData] =
+    useState([]);
+  const [deliveredProductsSearch, setDeliveredProductsSearch] = useState("");
+
   const [product, setProduct] = useState();
   const [checkedList, setCheckedList] = useState([]);
   const [isCopied, setIsCopied] = useState(false);
@@ -153,26 +173,50 @@ const MainWarehouse = () => {
       setUsers(res.data);
     });
 
-    instance.get("/warehouse").then((res) => setWarehouses(res.data));
-
-    instance.get("/warehouse-products").then((res) => {
-      // console.log(res)
-      setProducts(res.data.products);
+    instance.get(`/warehouse`).then((res) => {
+      setWarehouses(res.data);
     });
 
     instance
-      .get(`/warehouse-products-by-status?status=DELIVERED`)
+      .get(
+        `/warehouse-products?search=${productsSearch}&page=${page3}&limit=${limit3}`
+      )
       .then((res) => {
-        setDeliveredProducts(res.data.products);
+        // console.log(res)
+        setSearchProductsData(res.data.products);
+        // setProducts(res.data.products);
+        setCount3(res.data.totalAmount);
       });
-  }, [reload]);
+
+    instance
+      .get(
+        `/warehouse-products-by-status?status=DELIVERED&search=${deliveredProductsSearch}&page=${page4}&limit=${limit4}`
+      )
+      .then((res) => {
+        // console.log(res);
+        setSearchDeliveredProductsData(res.data.products);
+        setCount4(res.data.totalAmount);
+      });
+  }, [
+    reload,
+    limit3,
+    page3,
+    page4,
+    limit4,
+    productsSearch,
+    deliveredProductsSearch,
+  ]);
   useEffect(() => {
     instance
-      .get(`/warehouse-products-search-deal?search=${dealSearch}`)
+      .get(
+        `/warehouse-products-search-deal?search=${dealSearch}&page=${page}&limit=${limit}`
+      )
       .then((res) => {
+        // console.log(res)
         setSearchDealProducts(res.data);
+        setCount(res.data?.length);
       });
-  }, [dealSearch]);
+  }, [dealSearch, page, limit]);
 
   useEffect(() => {
     product?.order?.deal_id &&
@@ -301,6 +345,16 @@ const MainWarehouse = () => {
           setReload(!reload);
         }
       });
+  };
+  const handlePageChange = (p) => {
+    setPage(p);
+  };
+
+  const handlePageChange3 = (p) => {
+    setPage3(p);
+  };
+  const handlePageChange4 = (p) => {
+    setPage4(p);
   };
 
   return (
@@ -1102,6 +1156,29 @@ const MainWarehouse = () => {
                 </Tbody>
               </Table>
             </TableContainer>
+            {count < 10 ? (
+              ""
+            ) : (
+              <DynamicPagination
+                totalCount={count}
+                itemsPerPage={5}
+                pageSize={limit}
+                currentPage={page}
+                onPageChange={handlePageChange}
+              >
+                <Select
+                  defaultValue={limit}
+                  ml={4}
+                  onChange={(e) => setLimit(e.target.value)}
+                  placeholder="Choose"
+                  w={100}
+                >
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                </Select>
+              </DynamicPagination>
+            )}
           </TabPanel>
           <TabPanel>
             <Flex justifyContent="space-between" alignItems="center" my={5}>
@@ -1147,16 +1224,38 @@ const MainWarehouse = () => {
             </TableContainer>
           </TabPanel>
           <TabPanel>
-            <Flex justifyContent="space-between" alignItems="center" my={5}>
+            <Flex
+              justifyContent="space-between"
+              flexWrap="wrap"
+              alignItems="center"
+              my={5}
+            >
               <Heading
                 fontSize={{ base: "18px", md: "26px", lg: "32px" }}
                 my={5}
               >
                 Продукты
               </Heading>
-              <Button onClick={addProductOnOpen} colorScheme="blue">
-                добавить продукт
-              </Button>
+              <Flex
+                w={400}
+                justifyContent="space-between"
+                alignItems="center"
+                flexWrap="wrap"
+              >
+                <InputGroup sx={{ maxWidth: "220px", width: "100%" }} my={2}>
+                  <InputLeftElement pointerEvents="none">
+                    <SearchIcon color="gray.300" />
+                  </InputLeftElement>
+                  <Input
+                    onChange={(e) => setProductsSearch(e.target.value)}
+                    type="search"
+                    placeholder="Поиск по ID заказа"
+                  />
+                </InputGroup>
+                <Button onClick={addProductOnOpen} colorScheme="blue">
+                  добавить продукт
+                </Button>
+              </Flex>
             </Flex>
 
             <TableContainer>
@@ -1178,7 +1277,7 @@ const MainWarehouse = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {products?.map((p) => (
+                  {searchProductsData?.map((p) => (
                     <Tr>
                       <Td>{p.order?.order_id}</Td>
                       <Td>{p.order?.model?.furniture_type?.name}</Td>
@@ -1354,6 +1453,29 @@ const MainWarehouse = () => {
                 </Tbody>
               </Table>
             </TableContainer>
+            {count3 < 10 ? (
+              ""
+            ) : (
+              <DynamicPagination
+                totalCount={count3}
+                itemsPerPage={5}
+                pageSize={limit3}
+                currentPage={page3}
+                onPageChange={handlePageChange3}
+              >
+                <Select
+                  defaultValue={limit3}
+                  ml={4}
+                  onChange={(e) => setLimit3(e.target.value)}
+                  placeholder="Choose"
+                  w={100}
+                >
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                </Select>
+              </DynamicPagination>
+            )}
           </TabPanel>
           <TabPanel>
             <Flex justifyContent="space-between" alignItems="center" my={5}>
@@ -1363,6 +1485,18 @@ const MainWarehouse = () => {
               >
                 Доставленныe
               </Heading>
+              <InputGroup w={250}>
+                <InputLeftElement pointerEvents="none">
+                  <SearchIcon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  onChange={(e) => {
+                    setDeliveredProductsSearch(e.target.value);
+                  }}
+                  type="search"
+                  placeholder="Поиск по ID заказа"
+                />
+              </InputGroup>
             </Flex>
 
             <TableContainer>
@@ -1385,7 +1519,7 @@ const MainWarehouse = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {deliveredProducts?.map((p) => {
+                  {searchDeliveredProductsData?.map((p) => {
                     const warehouse = warehouses.find(
                       (warehouse) => warehouse.id == p?.warehouse_id
                     );
@@ -1437,6 +1571,29 @@ const MainWarehouse = () => {
                 </Tbody>
               </Table>
             </TableContainer>
+            {count4 < 10 ? (
+              ""
+            ) : (
+              <DynamicPagination
+                totalCount={count4}
+                itemsPerPage={5}
+                pageSize={limit4}
+                currentPage={page4}
+                onPageChange={handlePageChange4}
+              >
+                <Select
+                  defaultValue={setLimit4}
+                  ml={4}
+                  onChange={(e) => setLimit4(e.target.value)}
+                  placeholder="Choose"
+                  w={100}
+                >
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                </Select>
+              </DynamicPagination>
+            )}
           </TabPanel>
         </TabPanels>
       </Tabs>
