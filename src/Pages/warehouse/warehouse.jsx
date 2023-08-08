@@ -56,6 +56,7 @@ import {
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
 import accounting from "accounting";
 import { toast } from "react-toastify";
+import DynamicPagination from "../../components/pagin/pagin";
 
 const Warehouse = () => {
   const { colorMode } = useColorMode();
@@ -70,6 +71,19 @@ const Warehouse = () => {
     onOpen: trOnOpen,
     onClose: trOnClose,
   } = useDisclosure();
+
+  const [limit, setLimit] = useState(10);
+  const [count, setCount] = useState();
+  const [page, setPage] = useState(1);
+  const [limit2, setLimit2] = useState(10);
+  const [count2, setCount2] = useState();
+  const [page2, setPage2] = useState(1);
+  const [limit1, setLimit1] = useState(10);
+  const [count1, setCount1] = useState();
+  const [page1, setPage1] = useState(1);
+  const [limit3, setLimit3] = useState(10);
+  const [count3, setCount3] = useState();
+  const [page3, setPage3] = useState(1);
   const [products, setProducts] = useState([]);
   const [type, setType] = useState();
   const [productData, setProductData] = useState();
@@ -92,32 +106,49 @@ const Warehouse = () => {
 
     // For search results
     instance
-      .get(`/warehouse-products-search?search=${searchProductData}`)
+      .get(
+        `/warehouse-products-search?search=${searchProductData}&page=${page}&limit=${limit}`
+      )
       .then((res) => {
-        setSearchData(res.data);
+        console.log(res.data);
+        setSearchData(res.data.products);
+        console.log(res.data);
+        setCount(res.data.totalAmount);
       });
-  }, [reload, searchProductData]);
+  }, [reload, searchProductData, page, limit]);
 
   useEffect(() => {
     index === 0
       ? instance
-          .get("/warehouse-products-by-status?status=PRODUCTS")
-          .then((res) => setProducts(res.data))
+          .get(`/warehouse-products-by-status?status=PRODUCTS`)
+          .then((res) => {
+            setProducts(res.data.products);
+            // console.log(res);
+          })
       : index === 2
-      ? instance.get("/warehouse-products-by-status").then((res) => {
-          setProducts(res.data);
-        })
+      ? instance
+          .get(`/warehouse-products-by-status?page=${page2}&limit=${limit2}`)
+          .then((res) => {
+            setProducts(res.data.products);
+            setCount2(res.data.totalAmount);
+            console.log(res);
+          })
       : instance
           .get(
             `/warehouse-products-by-status?status=${
               index === 1 ? "TRANSFERED" : "DELIVERED"
-            }`
+            }&page=${index === 1 ? page1 : page3}&limit=${index === 1 ? limit1 : limit3}`
           )
           .then((res) => {
-            console.log(res);
-            setProducts(res.data);
+            if(index===1){
+              setCount1(res.data.totalAmount)
+            }else{
+              setCount3(res.data.totalAmount)
+            }
+            setProducts(res.data.products);
+            // console.log(res);
           });
-  }, [reload, index]);
+  }, [reload, index, page2, limit2, limit1, limit3, page1, page3]);
 
   const handleCreateProduct = () => {
     setAddLoading(true);
@@ -189,7 +220,18 @@ const Warehouse = () => {
         toast.success("изменено успешно");
         setReload(!reload);
       }
-    })
+    });
+  };
+
+  const handlePageChange = (p) => {
+    setPage(p);
+  };
+  const handlePageChange2 = (p) => {
+    setPage2(p);
+  };  const handlePageChange1 = (p) => {
+    setPage1(p);
+  };  const handlePageChange3 = (p) => {
+    setPage3(p);
   };
 
   return (
@@ -279,7 +321,6 @@ const Warehouse = () => {
       </Modal>
 
       {/* TRANSFER MODAL */}
-
       <Modal isOpen={trIsOpen} onClose={trOnClose}>
         <ModalOverlay />
         <ModalContent>
@@ -336,7 +377,6 @@ const Warehouse = () => {
       </Modal>
 
       {/* RETURNED MODAL */}
-
       <Modal isOpen={returnedModal} onClose={setReturnedModal}>
         <ModalOverlay />
         <ModalContent>
@@ -516,7 +556,6 @@ const Warehouse = () => {
                           <MenuButton
                             as={Button}
                             rightIcon={<ChevronDownIcon />}
-                            onClick={console.log(p.order?.status)}
                           >
                             Actions
                           </MenuButton>
@@ -579,6 +618,26 @@ const Warehouse = () => {
                 </Tbody>
               </Table>
             </TableContainer>
+            <DynamicPagination
+              totalCount={count}
+              itemsPerPage={5}
+              pageSize={limit}
+              currentPage={page}
+              onPageChange={handlePageChange}
+            >
+              <Select
+                defaultValue={limit}
+                ml={4}
+                onChange={(e) => setLimit(e.target.value)}
+                placeholder="Choose"
+                w={100}
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+              </Select>
+            </DynamicPagination>
+  
           </TabPanel>
           <TabPanel>
             <Flex justifyContent="space-between" alignItems="center" my={5}>
@@ -671,7 +730,27 @@ const Warehouse = () => {
                   ))}
                 </Tbody>
               </Table>
+ 
             </TableContainer>
+            <DynamicPagination
+                totalCount={count1}
+                itemsPerPage={5}
+                pageSize={limit1}
+                currentPage={page1}
+                onPageChange={handlePageChange1}
+              >
+                <Select
+                  defaultValue={limit1}
+                  ml={4}
+                  onChange={(e) => setLimit1(e.target.value)}
+                  placeholder="Choose"
+                  w={100}
+                >
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                </Select>
+              </DynamicPagination>
           </TabPanel>
           <TabPanel>
             <Flex justifyContent="space-between" alignItems="center" my={5}>
@@ -728,7 +807,27 @@ const Warehouse = () => {
                   ))}
                 </Tbody>
               </Table>
+       
             </TableContainer>
+            <DynamicPagination
+                totalCount={count2}
+                itemsPerPage={5}
+                pageSize={limit2}
+                currentPage={page2}
+                onPageChange={handlePageChange2}
+              >
+                <Select
+                  defaultValue={limit2}
+                  ml={4}
+                  onChange={(e) => setLimit2(e.target.value)}
+                  placeholder="Choose"
+                  w={100}
+                >
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                </Select>
+              </DynamicPagination>
           </TabPanel>
           <TabPanel>
             <Flex justifyContent="space-between" alignItems="center" my={5}>
@@ -798,6 +897,25 @@ const Warehouse = () => {
                 </Tbody>
               </Table>
             </TableContainer>
+            <DynamicPagination
+                totalCount={count3}
+                itemsPerPage={5}
+                pageSize={limit3}
+                currentPage={page3}
+                onPageChange={handlePageChange3}
+              >
+                <Select
+                  defaultValue={limit3}
+                  ml={4}
+                  onChange={(e) => setLimit3(e.target.value)}
+                  placeholder="Choose"
+                  w={100}
+                >
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                </Select>
+              </DynamicPagination>
           </TabPanel>
         </TabPanels>
       </Tabs>
