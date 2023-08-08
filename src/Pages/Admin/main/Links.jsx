@@ -134,7 +134,6 @@ export default function AdminLinkList() {
         },
       })
       .then((response) => {
-        // console.log(response);
         setUsers(response.data.sellers);
         setCount(response.data.totalAmount);
       })
