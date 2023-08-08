@@ -72,6 +72,7 @@ const Warehouse = () => {
     onClose: trOnClose,
   } = useDisclosure();
 
+  // Pagination statse
   const [limit, setLimit] = useState(10);
   const [count, setCount] = useState();
   const [page, setPage] = useState(1);
@@ -84,6 +85,7 @@ const Warehouse = () => {
   const [limit3, setLimit3] = useState(10);
   const [count3, setCount3] = useState();
   const [page3, setPage3] = useState(1);
+
   const [products, setProducts] = useState([]);
   const [type, setType] = useState();
   const [productData, setProductData] = useState();
@@ -96,9 +98,16 @@ const Warehouse = () => {
   const [companys, setCompanys] = useState([]);
   const [returnedProduct, setReturnedProduct] = useState({});
   const [returnedModal, setReturnedModal] = useState(false);
+
+  // Search data States
   const [searchData, setSearchData] = useState([]);
   const [searchProductData, setSearchProductData] = useState("");
-
+  const [searchTranferedData, setSearchTransferedData] = useState([]);
+  const [transferSearch, setTransferSearch] = useState("");
+  const [searchDeliveredData, setSearchDeliveredData] = useState([]);
+  const [deliveredSearch, setDeliveredSearch] = useState("");
+  const [searchAplicatinsData, setSearchAplicationsData] = useState([]);
+  const [aplicationsSearch, setAplicationsSearch] = useState("");
   useEffect(() => {
     instance.get("/warehouse-all").then((res) => {
       setCompanys(res.data);
@@ -110,9 +119,9 @@ const Warehouse = () => {
         `/warehouse-products-search?search=${searchProductData}&page=${page}&limit=${limit}`
       )
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         setSearchData(res.data.products);
-        console.log(res.data);
+        // console.log(res.data);
         setCount(res.data.totalAmount);
       });
   }, [reload, searchProductData, page, limit]);
@@ -127,29 +136,46 @@ const Warehouse = () => {
           })
       : index === 2
       ? instance
-          .get(`/warehouse-products-by-status?page=${page2}&limit=${limit2}`)
+          .get(
+            `/warehouse-products-by-status?page=${page2}&limit=${limit2}&search=${aplicationsSearch}`
+          )
           .then((res) => {
-            setProducts(res.data.products);
-            setCount2(res.data.totalAmount);
-            console.log(res);
+            setSearchAplicationsData(res.data.products);
+            setCount2(res?.data?.totalAmount);
           })
       : instance
           .get(
             `/warehouse-products-by-status?status=${
               index === 1 ? "TRANSFERED" : "DELIVERED"
-            }&page=${index === 1 ? page1 : page3}&limit=${index === 1 ? limit1 : limit3}`
+            }&page=${index === 1 ? page1 : page3}&limit=${
+              index === 1 ? limit1 : limit3
+            }&search=${index === 1 ? transferSearch : deliveredSearch}`
           )
           .then((res) => {
       
-            if(index===1){
-              setCount1(res.data.totalAmount)
-            }else{
-              setCount3(res.data.totalAmount)
+            if (index === 1) {
+              setCount1(res.data.totalAmount);
+              setSearchTransferedData(res.data.products);
+            } else {
+              setCount3(res.data.totalAmount);
+              setSearchDeliveredData(res.data.products);
             }
-            setProducts(res.data.products);
+            // console.log(res);
       
           });
-  }, [reload, index, page2, limit2, limit1, limit3, page1, page3]);
+  }, [
+    reload,
+    index,
+    page2,
+    limit2,
+    limit1,
+    limit3,
+    page1,
+    page3,
+    transferSearch,
+    deliveredSearch,
+    aplicationsSearch,
+  ]);
 
   const handleCreateProduct = () => {
     setAddLoading(true);
@@ -230,9 +256,11 @@ const Warehouse = () => {
   };
   const handlePageChange2 = (p) => {
     setPage2(p);
-  };  const handlePageChange1 = (p) => {
+  };
+  const handlePageChange1 = (p) => {
     setPage1(p);
-  };  const handlePageChange3 = (p) => {
+  };
+  const handlePageChange3 = (p) => {
     setPage3(p);
     
   };
@@ -621,26 +649,30 @@ const Warehouse = () => {
                 </Tbody>
               </Table>
             </TableContainer>
-            <DynamicPagination
-              totalCount={count}
-              itemsPerPage={5}
-              pageSize={limit}
-              currentPage={page}
-              onPageChange={handlePageChange}
-            >
-              <Select
-                defaultValue={limit}
-                ml={4}
-                onChange={(e) => setLimit(e.target.value)}
-                placeholder="Choose"
-                w={100}
+
+            {count < 10 ? (
+              ""
+            ) : (
+              <DynamicPagination
+                totalCount={count}
+                itemsPerPage={5}
+                pageSize={limit}
+                currentPage={page}
+                onPageChange={handlePageChange}
               >
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="30">30</option>
-              </Select>
-            </DynamicPagination>
-  
+                <Select
+                  defaultValue={limit}
+                  ml={4}
+                  onChange={(e) => setLimit(e.target.value)}
+                  placeholder="Choose"
+                  w={100}
+                >
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                </Select>
+              </DynamicPagination>
+            )}
           </TabPanel>
           <TabPanel>
             <Flex justifyContent="space-between" alignItems="center" my={5}>
@@ -650,7 +682,18 @@ const Warehouse = () => {
               >
                 Трансферы
               </Heading>
-
+              <InputGroup w={250}>
+                <InputLeftElement pointerEvents="none">
+                  <SearchIcon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  onChange={(e) => {
+                    setTransferSearch(e.target.value);
+                  }}
+                  type="search"
+                  placeholder="Поиск по ID заказа"
+                />
+              </InputGroup>
               {/* <Menu>
                 <MenuButton
                   colorScheme="blue"
@@ -697,7 +740,7 @@ const Warehouse = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {products?.map((p) => (
+                  {searchTranferedData?.map((p) => (
                     <Tr>
                       <Td>{p.order?.order_id}</Td>
                       <Td>{p.order?.model?.name}</Td>
@@ -733,9 +776,12 @@ const Warehouse = () => {
                   ))}
                 </Tbody>
               </Table>
- 
             </TableContainer>
-            <DynamicPagination
+
+            {count1 < 10 ? (
+              ""
+            ) : (
+              <DynamicPagination
                 totalCount={count1}
                 itemsPerPage={5}
                 pageSize={limit1}
@@ -754,6 +800,7 @@ const Warehouse = () => {
                   <option value="30">30</option>
                 </Select>
               </DynamicPagination>
+            )}
           </TabPanel>
           <TabPanel>
             <Flex justifyContent="space-between" alignItems="center" my={5}>
@@ -763,6 +810,16 @@ const Warehouse = () => {
               >
                 Заявки
               </Heading>
+              <InputGroup w={250}>
+                <InputLeftElement pointerEvents="none">
+                  <SearchIcon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  onChange={(e) => setAplicationsSearch(e.target.value)}
+                  type="search"
+                  placeholder="Поиск по ID заказа"
+                />
+              </InputGroup>
             </Flex>
 
             <TableContainer>
@@ -784,7 +841,7 @@ const Warehouse = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {products?.map((p) => (
+                  {searchAplicatinsData?.map((p) => (
                     <Tr>
                       <Td>{p.order?.order_id}</Td>
                       <Td>{p.order?.model?.name}</Td>
@@ -810,9 +867,12 @@ const Warehouse = () => {
                   ))}
                 </Tbody>
               </Table>
-       
             </TableContainer>
-            <DynamicPagination
+
+            {count2 < 10 ? (
+              ""
+            ) : (
+              <DynamicPagination
                 totalCount={count2}
                 itemsPerPage={5}
                 pageSize={limit2}
@@ -831,6 +891,7 @@ const Warehouse = () => {
                   <option value="30">30</option>
                 </Select>
               </DynamicPagination>
+            )}
           </TabPanel>
           <TabPanel>
             <Flex justifyContent="space-between" alignItems="center" my={5}>
@@ -840,6 +901,16 @@ const Warehouse = () => {
               >
                 Доставленныe
               </Heading>
+              <InputGroup w={250}>
+                <InputLeftElement pointerEvents="none">
+                  <SearchIcon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  onChange={(e) => setDeliveredSearch(e.target.value)}
+                  type="search"
+                  placeholder="Поиск по ID заказа"
+                />
+              </InputGroup>
             </Flex>
 
             <TableContainer>
@@ -861,7 +932,7 @@ const Warehouse = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {products?.map((p) => (
+                  {searchDeliveredData?.map((p) => (
                     <Tr>
                       <Td>{p.order?.order_id}</Td>
                       <Td>{p.order?.model?.name}</Td>
@@ -900,7 +971,10 @@ const Warehouse = () => {
                 </Tbody>
               </Table>
             </TableContainer>
-            <DynamicPagination
+            {count3 < 10 ? (
+              ""
+            ) : (
+              <DynamicPagination
                 totalCount={count3}
                 itemsPerPage={5}
                 pageSize={limit3}
@@ -919,6 +993,7 @@ const Warehouse = () => {
                   <option value="30">30</option>
                 </Select>
               </DynamicPagination>
+            )}
           </TabPanel>
         </TabPanels>
       </Tabs>
