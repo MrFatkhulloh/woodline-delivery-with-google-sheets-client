@@ -140,13 +140,14 @@ const Warehouse = () => {
             }&page=${index === 1 ? page1 : page3}&limit=${index === 1 ? limit1 : limit3}`
           )
           .then((res) => {
+      
             if(index===1){
               setCount1(res.data.totalAmount)
             }else{
               setCount3(res.data.totalAmount)
             }
             setProducts(res.data.products);
-            // console.log(res);
+      
           });
   }, [reload, index, page2, limit2, limit1, limit3, page1, page3]);
 
@@ -221,6 +222,7 @@ const Warehouse = () => {
         setReload(!reload);
       }
     });
+    
   };
 
   const handlePageChange = (p) => {
@@ -232,6 +234,7 @@ const Warehouse = () => {
     setPage1(p);
   };  const handlePageChange3 = (p) => {
     setPage3(p);
+    
   };
 
   return (
