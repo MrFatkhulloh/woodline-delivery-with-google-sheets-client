@@ -59,11 +59,14 @@ import {
   ExternalLinkIcon,
   InfoIcon,
   SearchIcon,
+  DownloadIcon,
   EditIcon,
 } from "@chakra-ui/icons";
 import copy from "copy-to-clipboard";
 import { InputLabel, Typography } from "@mui/material";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import DynamicPagination from "../../components/pagin/pagin";
+import axios from "axios";
 
 const MainWarehouse = () => {
   const [page, setPage] = useState(1);
@@ -117,6 +120,12 @@ const MainWarehouse = () => {
     onClose: editProductClose,
   } = useDisclosure();
 
+  const {
+    isOpen: downloadModalIsOpen,
+    onOpen: edownloadModalOpen,
+    onClose: downloadModalClose,
+  } = useDisclosure();
+
   const [productData, setProductData] = useState();
   const { types, courier, token } = useContext(OpenModalContext);
   const [order, setOrder] = useState();
@@ -156,7 +165,8 @@ const MainWarehouse = () => {
   const [copiedData, setCopiedData] = useState();
   const [putOrderId, setPutOrderId] = useState("");
   const [putOrder, setPutOrder] = useState({});
-
+  const [downloadWarehouseId, setDownloadWarehouseId] = useState("");
+  const [dowloadLoading, setDownloadLoading] = useState(false);
   const [isChecked, setIsChecked] = useState([
     {
       id: "",
@@ -355,6 +365,28 @@ const MainWarehouse = () => {
   };
   const handlePageChange4 = (p) => {
     setPage4(p);
+  };
+
+  // Download data type exel
+  const handleDownload = () => {
+    setDownloadLoading(true);
+    instance
+      .get(`/warehouse-products-to-excel?warehouse=${downloadWarehouseId}`, {
+        responseType: "blob",
+      })
+      .then((response) => {
+        const url = URL.createObjectURL(new Blob([response.data]));
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "file.xlsx";
+        a.click();
+        URL.revokeObjectURL(url);
+      })
+      .finally(() => {
+        setDownloadLoading(false);
+        downloadModalClose()
+      })
+      .catch((error) => console.error("Error downloading the file:", error));
   };
 
   return (
@@ -1066,6 +1098,42 @@ const MainWarehouse = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      {/* DOWNLOAD MODAL */}
+      <Modal isOpen={downloadModalIsOpen} onClose={downloadModalClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Информация о складе</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody display="flex" flexDirection="column" gap="15px">
+            <FormControl>
+              <FormLabel>Выберите склад</FormLabel>
+              <Select onChange={(e) => setDownloadWarehouseId(e.target.value)} placeholder="Choose warehouse">
+                {warehouses?.map((w) => (
+                  <option key={w.id} value={w.id}>
+                    {w.name}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              isLoading={dowloadLoading}
+              onClick={handleDownload}
+              colorScheme="teal"
+              mr={3}
+            >
+              Скачать
+            </Button>
+            <Button onClick={downloadModalClose} variant="ghost">
+              Закрывать
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       <Tabs isFitted>
         <TabList>
           <Tab fontSize={{ "2xl": "2xl", xl: "xl", md: "", sm: "" }}>
@@ -1237,7 +1305,7 @@ const MainWarehouse = () => {
                 Продукты
               </Heading>
               <Flex
-                w={400}
+                w={460}
                 justifyContent="space-between"
                 alignItems="center"
                 flexWrap="wrap"
@@ -1254,6 +1322,14 @@ const MainWarehouse = () => {
                 </InputGroup>
                 <Button onClick={addProductOnOpen} colorScheme="blue">
                   добавить продукт
+                </Button>
+                <Button
+                  colorScheme="teal"
+                  onClick={() => {
+                    edownloadModalOpen();
+                  }}
+                >
+                  <SaveAltIcon />
                 </Button>
               </Flex>
             </Flex>
