@@ -114,7 +114,6 @@ const Warehouse = () => {
             }`
           )
           .then((res) => {
-            console.log(res);
             setProducts(res.data);
           });
   }, [reload, index]);
@@ -189,7 +188,7 @@ const Warehouse = () => {
         toast.success("изменено успешно");
         setReload(!reload);
       }
-    })
+    });
   };
 
   return (
