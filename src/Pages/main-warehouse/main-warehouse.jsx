@@ -355,7 +355,7 @@ const MainWarehouse = () => {
           addProductOnClose();
         }
       })
-      .finally(() => setAddLoading(false))
+      .finally(() => setAddPrLoading(false))
       .catch((err) => {
         console.log(err);
         if (err.message === "Network Error") {

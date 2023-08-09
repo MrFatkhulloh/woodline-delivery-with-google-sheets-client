@@ -152,6 +152,7 @@ const Warehouse = () => {
             }&search=${index === 1 ? transferSearch : deliveredSearch}`
           )
           .then((res) => {
+      
             if (index === 1) {
               setCount1(res.data.totalAmount);
               setSearchTransferedData(res.data.products);
@@ -160,6 +161,7 @@ const Warehouse = () => {
               setSearchDeliveredData(res.data.products);
             }
             // console.log(res);
+      
           });
   }, [
     reload,
@@ -246,6 +248,7 @@ const Warehouse = () => {
         setReload(!reload);
       }
     });
+    
   };
 
   const handlePageChange = (p) => {
@@ -259,6 +262,7 @@ const Warehouse = () => {
   };
   const handlePageChange3 = (p) => {
     setPage3(p);
+    
   };
 
   return (
