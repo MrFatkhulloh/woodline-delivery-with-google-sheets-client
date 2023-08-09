@@ -122,6 +122,9 @@ export default function NewFurnitureType() {
   const [companys, setCompanys] = useState([]);
   const [compId, setCompId] = useState("");
 
+  const [modelPrice, setModelPrice] = useState(0);
+  const [modelSale, setModelSale] = useState(0);
+
   const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
@@ -234,11 +237,16 @@ export default function NewFurnitureType() {
   const handleUpdateSubmit = () => {
     setUpdateLoading(true);
     instance
-      .put(`/model/${model.id}`, { name: newModelName, company_id: compId })
+      .put(`/model/${model.id}`, {
+        name: newModelName,
+        company_id: compId,
+        price: modelPrice,
+        sale: modelSale,
+      })
       .then((res) => {
         if (res.status === 200) {
           toast.success("Updated model name");
-          console.log(model, compId);
+
           setReload(!reload);
         }
       })
@@ -264,6 +272,8 @@ export default function NewFurnitureType() {
         deleteClose();
       });
   };
+
+  console.log(model);
 
   return (
     <>
@@ -383,12 +393,33 @@ export default function NewFurnitureType() {
                 <Select
                   defaultValue={model?.company_id}
                   onChange={(e) => setCompId(e.target.value)}
+                  Модели
                   placeholder="выбрать компанию"
                 >
                   {companys?.map((company) => (
                     <option value={company?.id}>{company.name}</option>
                   ))}
                 </Select>
+              </FormControl>
+
+              <FormControl mt={4}>
+                <FormLabel>изменить цена</FormLabel>
+
+                <Input
+                  onClick={(e) => setModelPrice(e.target.value)}
+                  defaultValue={model?.price}
+                  type="number"
+                />
+              </FormControl>
+
+              <FormControl mt={4}>
+                <FormLabel>изменить распродажа</FormLabel>
+
+                <Input
+                  defaultValue={model?.sale}
+                  onClick={(e) => setModelSale(e.target.value)}
+                  type="number"
+                />
               </FormControl>
             </ModalBody>
 
