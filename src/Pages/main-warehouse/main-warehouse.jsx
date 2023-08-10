@@ -345,7 +345,7 @@ const MainWarehouse = () => {
     instance
       .put(`/order-update/${putOrderId}`, {
         title: putOrder?.title,
-        model_id: putOrder?.model_id,
+        model: putOrder?.model_id,
         tissue: putOrder?.tissue,
       })
       .then((res) => {
