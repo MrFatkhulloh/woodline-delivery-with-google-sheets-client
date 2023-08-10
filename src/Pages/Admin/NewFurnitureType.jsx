@@ -393,7 +393,7 @@ export default function NewFurnitureType() {
                 <Select
                   defaultValue={model?.company_id}
                   onChange={(e) => setCompId(e.target.value)}
-                  Модели
+                  
                   placeholder="выбрать компанию"
                 >
                   {companys?.map((company) => (
