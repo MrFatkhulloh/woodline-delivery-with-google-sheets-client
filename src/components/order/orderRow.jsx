@@ -7,6 +7,7 @@ import {
   Tr,
   Box,
   Tooltip,
+  useDisclosure,
 } from "@chakra-ui/react";
 import accounting from "accounting";
 import { useContext, useEffect, useState } from "react";
@@ -23,6 +24,7 @@ function OrderRow({
   allModels,
   handleMinus,
   handleDeliveryChange,
+  onOpen,
 }) {
   const [models, setModels] = useState(modelOptions);
   const filterModels = (selectType) => {
@@ -32,7 +34,23 @@ function OrderRow({
   return (
     <Tr>
       <Td>
-        {e.cathegory == "заказ" ? (
+        <Button
+          onClick={() => {
+            onOpen();
+            // handleSelectModel(i);
+            // if (e?.order?.id) {
+            //   setFoundOrders([e?.order]);
+            // }
+          }}
+        >
+          Выберите ID
+          {/* <Text>
+            {e?.order?.id
+              ? "\n" + e?.order?.model?.name + " - " + e?.order?.tissue
+              : ""}
+          </Text> */}
+        </Button>
+        {/* {e.cathegory == "заказ" ? (
           <Input
             type="text"
             placeholder={"авто"}
@@ -61,7 +79,7 @@ function OrderRow({
               handleChange(event, event.target.id, "orderId");
             }}
           />
-        )}
+        )} */}
       </Td>
       <Td>
         {" "}
@@ -283,16 +301,16 @@ function D2COrderRow({
         />
       </Td>
 
-          <Td>
-            <Input 
-              w={"200px"}
-              type="number"
-              id={e.id}
-              onChange={(event) => {
-                handleDeliveryChange(event, event.target.id, "trip_id")
-              }}
-            />
-          </Td>
+      <Td>
+        <Input
+          w={"200px"}
+          type="number"
+          id={e.id}
+          onChange={(event) => {
+            handleDeliveryChange(event, event.target.id, "trip_id");
+          }}
+        />
+      </Td>
 
       <Td>
         <Input

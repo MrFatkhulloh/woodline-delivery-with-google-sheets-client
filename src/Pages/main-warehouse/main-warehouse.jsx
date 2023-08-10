@@ -440,10 +440,11 @@ const MainWarehouse = () => {
   };
 
   const handePutProduct = async () => {
+    console.log(putOrder?.model_id);
     instance
       .put(`/order-update/${putOrderId}`, {
         title: putOrder?.title,
-        model_id: putOrder?.model_id,
+        model: putOrder?.model_id,
         tissue: putOrder?.tissue,
       })
       .then((res) => {
@@ -687,6 +688,17 @@ const MainWarehouse = () => {
 
           <ModalFooter>
             <Button
+              isDisabled={
+                productData?.order_id?.length &&
+                type?.length &&
+                productData?.model_id?.length &&
+                productData?.tissue?.length &&
+                productData?.warehouse_id?.length &&
+                productData?.status?.length &&
+                productData?.title?.length
+                  ? false
+                  : true
+              }
               isLoading={addPrLoading}
               onClick={handleCreateProduct}
               colorScheme="blue"
@@ -694,7 +706,13 @@ const MainWarehouse = () => {
             >
               Создавать
             </Button>
-            <Button onClick={addProductOnClose} variant="ghost">
+            <Button
+              onClick={() => {
+                addProductOnClose();
+                setProductData();
+              }}
+              variant="ghost"
+            >
               Закрывать
             </Button>
           </ModalFooter>

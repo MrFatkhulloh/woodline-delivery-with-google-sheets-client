@@ -283,6 +283,15 @@ const Producer = () => {
 
           <ModalFooter>
             <Button
+              isDisabled={
+                productData?.order_id?.length &&
+                type?.length &&
+                productData?.model_id?.length &&
+                productData?.tissue?.length &&
+                productData?.title?.length
+                  ? false
+                  : true
+              }
               isLoading={addLoading}
               onClick={handleCreateProduct}
               colorScheme="blue"
@@ -290,7 +299,13 @@ const Producer = () => {
             >
               Создавать
             </Button>
-            <Button onClick={addProductOnClose} variant="ghost">
+            <Button
+              onClick={() => {
+                addProductOnClose();
+                setProductData();
+              }}
+              variant="ghost"
+            >
               Закрывать
             </Button>
           </ModalFooter>
