@@ -34,23 +34,53 @@ function OrderRow({
   return (
     <Tr>
       <Td>
-        <Button
+        {e.cathegory == "заказ" ? (
+          <Input
+            type="text"
+            placeholder={"авто"}
+            value={e.orderId}
+            disabled={true}
+            id={e.id}
+            onChange={(event) =>
+              handleChange(event, event.target.id, "orderId")
+            }
+            onBlur={(event) => {
+              handleChange(event, event.target.id, "orderId");
+            }}
+          />
+        ) : (
+          <Input
+            maxLength={7}
+            w={"200px"}
+            type="text"
+            placeholder={e.cathegory == "заказ" ? "авто" : "id"}
+            value={e.orderId}
+            id={e.id}
+            onChange={(event) =>
+              handleChange(event, event.target.id, "orderId")
+            }
+            onBlur={(event) => {
+              handleChange(event, event.target.id, "orderId");
+            }}
+          />
+        )}
+        {/* <Button
           onClick={() => {
             onOpen();
-            // handleSelectModel(i);
-            // if (e?.order?.id) {
-            //   setFoundOrders([e?.order]);
-            // }
+            handleSelectModel(i);
+            if (e?.order?.id) {
+              setFoundOrders([e?.order]);
+            }
           }}
         >
           Выберите ID
-          {/* <Text>
+          <Text>
             {e?.order?.id
               ? "\n" + e?.order?.model?.name + " - " + e?.order?.tissue
               : ""}
-          </Text> */}
+          </Text>
         </Button>
-        {/* {e.cathegory == "заказ" ? (
+        {e.cathegory == "заказ" ? (
           <Input
             type="text"
             placeholder={"авто"}

@@ -43,7 +43,7 @@ import {
 } from "@chakra-ui/icons";
 import axios from "axios";
 
-function SearchModal({
+function Search2Modal({
   isOpen,
   onClose,
   onOpen,
@@ -191,7 +191,7 @@ function SearchModal({
                   onChange={(event) => setSearchBy(event.target.value)}
                 >
                   <option value={"order_id"}>ID</option>
-                  <option value={"deal_id"}>номер сделки </option>
+                  <option value={"deal_id"}>дело ид</option>
                   <option value={"name"}>имя клиента</option>
                   <option value={"phone"}>Телефон</option>
                   <option value={"model"}>Модель</option>
@@ -314,4 +314,4 @@ function SearchModal({
   );
 }
 
-export default SearchModal;
+export default Search2Modal;

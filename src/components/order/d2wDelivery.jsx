@@ -34,6 +34,7 @@ import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
 import UserInfo from "../userInfo/userInfo";
 import { D2COrderRow, OrderRow } from "./orderRow";
 import { SearchIcon } from "@chakra-ui/icons";
+import Search2Modal from "../search/search2";
 
 function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
   const {
@@ -229,150 +230,7 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
 
   return (
     <>
-      {/* search Modal */}
-      <Modal size="2xl" isOpen={modalIsOpen} onClose={modalOnClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Искать</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Flex
-              justifyContent={"space-between"}
-              alignItems={"center"}
-              gap={"15px"}
-              mb={"15px"}
-            >
-              <FormControl>
-                <Select
-                  // defaultValue={searchBy}
-                  placeholder="Искать по:"
-                  // onChange={(event) => setSearchBy(event.target.value)}
-                >
-                  <option value={"order_id"}>ID</option>
-                  <option value={"name"}>имя клиента</option>
-                  <option value={"phone"}>Телефон</option>
-                  <option value={"model"}>Модель</option>
-                  <option value={"tissue"}>Ткань</option>
-                  <option value={"rest"}>Остаток</option>
-                </Select>
-              </FormControl>
 
-              <Flex gap={2}>
-                <Input
-                  placeholder="Поиск"
-                  w={"100%"}
-                  // onChange={(event) => setSearchKey(event.target.value)}
-                />
-                <IconButton
-                  aria-label="Search database"
-                  icon={<SearchIcon />}
-                  // icon={!loading ? <SearchIcon /> : <Spinner />}
-                  onClick={(event) => {
-                    // setIndexSelected(999999999);
-                    // handleSearch(searchKey);
-                  }}
-                />
-              </Flex>
-            </Flex>
-            <Divider />
-            <Flex wrap={"wrap"} overflow={"auto"} gap={"20px"} height={"400px"}>
-              {/* {foundOrders?.length ? (
-                foundOrders.map((foundOrder, orderIndex) => (
-                  <Card
-                    width={"100%"}
-                    maxWidth={"280px"}
-                    variant={"outline"}
-                    key={orderIndex}
-                  >
-                    <CardHeader p={2}>
-                      <Heading size="md">{foundOrder?.order_id}</Heading>
-                    </CardHeader>
-                    <CardBody>
-                      <Text maxWidth={300}>
-                        <span style={{ fontWeight: "bold" }}>Имя:</span>{" "}
-                        {foundOrder?.deal?.client?.name}
-                      </Text>
-                      <Text maxWidth={300}>
-                        <span style={{ fontWeight: "bold" }}>Телефон:</span>{" "}
-                        {foundOrder?.deal?.client?.phone}
-                      </Text>
-                      <Text maxWidth={300}>
-                        <span style={{ fontWeight: "bold" }}>Модель:</span>{" "}
-                        {foundOrder?.model?.name}
-                      </Text>
-                      <Text maxWidth={300}>
-                        <span style={{ fontWeight: "bold" }}>Ткань:</span>{" "}
-                        {foundOrder?.tissue}
-                      </Text>
-                      <Text maxWidth={300}>
-                        <span style={{ fontWeight: "bold" }}>Остаток:</span>{" "}
-                        {foundOrder?.deal?.rest
-                          ? accounting.formatNumber(
-                              foundOrder?.deal?.rest,
-                              0,
-                              " "
-                            ) + " sum"
-                          : "not found!"}
-                      </Text>
-                    </CardBody>
-                    <CardFooter>
-                      <IconButton
-                        aria-label="Search database"
-                        // icon={
-                        //   indexSelected == orderIndex ? (
-                        //     <CheckIcon />
-                        //   ) : (
-                        //     <AddIcon />
-                        //   )
-                        // }
-                        onClick={() => {
-                          // setIndexSelected(orderIndex);
-                          // setFoundOrders(foundOrders);
-                        }}
-                      />
-                    </CardFooter>
-                  </Card>
-                ))
-              ) : (
-                <Flex alignItems={"center"} justifyContent={"center"}>
-                  <Heading textAlign={"center"}>
-                    Пока нечего не найдено 😐 побробуйте искать 🔎 заново
-                  </Heading>
-                </Flex>
-              )} */}
-              <Flex alignItems={"center"} justifyContent={"center"}>
-                <Heading textAlign={"center"}>
-                  Пока нечего не найдено 😐 побробуйте искать 🔎 заново
-                </Heading>
-              </Flex>
-            </Flex>
-            <Flex
-              alignItems={"center"}
-              justifyContent={"space-between"}
-              my={5}
-              mx={5}
-              className="footer_buttons"
-            ></Flex>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button
-              // isDisabled={indexSelected > 1000}
-              colorScheme="blue"
-              // spinner={<Spinner color="white" />}
-              mr={3}
-              onClick={() => {
-                // handleSubmit();
-              }}
-            >
-              Сохранить
-            </Button>
-            <Button variant="ghost" onClick={modalOnClose}>
-              Отмена
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
 
       {/* ============= */}
       <UserInfo
@@ -382,6 +240,15 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
         selectedCourier={selectedCourier}
       />
 
+{/* <Search2Modal
+        onClose={onClose}
+        isOpen={isOpen}
+        onOpen={onOpen}
+        // selectedCourier={selectedCourier}
+        // rowIndex={deliveryIndex}
+        // foundOrders={foundOrders}
+        // setFoundOrders={setFoundOrders}
+      /> */}
       <TableContainer>
         <Table
           variant="simple"

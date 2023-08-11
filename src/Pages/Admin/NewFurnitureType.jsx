@@ -58,6 +58,7 @@ import {
   Search2Icon,
   SearchIcon,
 } from "@chakra-ui/icons";
+import { accounting } from "accounting";
 
 const ModelRow = ({ element, handleChange, setReady }) => {
   const [modelHas, setModelHas] = useState(false);
@@ -124,6 +125,7 @@ export default function NewFurnitureType() {
 
   const [modelPrice, setModelPrice] = useState(0);
   const [modelSale, setModelSale] = useState(0);
+  const [modelCode, setModelCode] = useState("");
 
   const [searchValue, setSearchValue] = useState("");
 
@@ -140,6 +142,7 @@ export default function NewFurnitureType() {
             },
           })
           .then((response) => {
+            // console.log(response.data.models);
             setModels(response.data.models);
             setTotalPages(response.data.totalAmount);
           })
@@ -242,6 +245,7 @@ export default function NewFurnitureType() {
         company_id: compId,
         price: modelPrice,
         sale: modelSale,
+        code: modelCode,
       })
       .then((res) => {
         if (res.status === 200) {
@@ -273,7 +277,7 @@ export default function NewFurnitureType() {
       });
   };
 
-  console.log(model);
+
 
   return (
     <>
@@ -393,7 +397,6 @@ export default function NewFurnitureType() {
                 <Select
                   defaultValue={model?.company_id}
                   onChange={(e) => setCompId(e.target.value)}
-                  
                   placeholder="выбрать компанию"
                 >
                   {companys?.map((company) => (
@@ -406,9 +409,17 @@ export default function NewFurnitureType() {
                 <FormLabel>изменить цена</FormLabel>
 
                 <Input
-                  onClick={(e) => setModelPrice(e.target.value)}
+                  onChange={(e) => {
+                    e.target.value = accounting.formatNumber(
+                      e.target.value,
+                      0,
+                      " "
+                    );
+                    setModelPrice(accounting.unformat(+e.target.value));
+                    console.log(accounting.unformat(e.target.value));
+                  }}
                   defaultValue={model?.price}
-                  type="number"
+                  type="text"
                 />
               </FormControl>
 
@@ -417,8 +428,17 @@ export default function NewFurnitureType() {
 
                 <Input
                   defaultValue={model?.sale}
-                  onClick={(e) => setModelSale(e.target.value)}
+                  onChange={(e) => setModelSale(e.target.value)}
                   type="number"
+                />
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel>код </FormLabel>
+
+                <Input
+                  defaultValue={model?.code}
+                  onChange={(e) => setModelCode(e.target.value)}
+                  type="text"
                 />
               </FormControl>
             </ModalBody>

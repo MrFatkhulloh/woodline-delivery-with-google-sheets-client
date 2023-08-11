@@ -41,7 +41,7 @@ const UserInfo = ({ onClose, isOpen, onOpen, selectedCourier }) => {
   };
 
   const handleSubmit = () => {
-    console.log(deliveryRow);
+    // console.log(deliveryRow);
     if (loading) return;
     setLoading(true);
 
