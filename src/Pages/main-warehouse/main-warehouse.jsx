@@ -21,7 +21,9 @@ import {
   Menu,
   MenuButton,
   MenuItem,
+  MenuItemOption,
   MenuList,
+  MenuOptionGroup,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -35,12 +37,14 @@ import {
   TabPanel,
   TabPanels,
   Table,
+  TableCaption,
   TableContainer,
   Tabs,
   Tbody,
   Td,
   Text,
   Textarea,
+  Tfoot,
   Th,
   Thead,
   Tooltip,
@@ -67,7 +71,7 @@ import { InputLabel, Typography } from "@mui/material";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import DynamicPagination from "../../components/pagin/pagin";
 import axios from "axios";
-
+import TuneIcon from "@mui/icons-material/Tune";
 const MainWarehouse = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -86,7 +90,7 @@ const MainWarehouse = () => {
   const [companys, setCompanys] = useState([]);
   const [products, setProducts] = useState([]);
 
-  const [type, setType] = useState();
+  const [type, setType] = useState("");
 
   const [addPrLoading, setAddPrLoading] = useState(false);
 
@@ -122,11 +126,55 @@ const MainWarehouse = () => {
 
   const {
     isOpen: downloadModalIsOpen,
-    onOpen: edownloadModalOpen,
+    onOpen: downloadModalOpen,
     onClose: downloadModalClose,
   } = useDisclosure();
 
+  const {
+    isOpen: moreProductIsOpen,
+    onOpen: mordeProductOpen,
+    onClose: mordeProductClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: confrimWarehouseIsOpen,
+    onOpen: confrimWarehouseOpen,
+    onClose: confrimWarehouseClose,
+  } = useDisclosure();
+
+  const [empty, setEmpty] = useState(false);
   const [productData, setProductData] = useState();
+  const [moreProductData, setMoreProductData] = useState({
+    model_id: "",
+    order_id: "",
+    status: "",
+    tissue: "",
+    title: "",
+  });
+  const [checkMoreProductData, setCheckMoreProductData] = useState({
+    model_id: false,
+    order_id: false,
+    status: false,
+    tissue: false,
+    title: false,
+    type: false,
+  });
+  const [allMoreProductData, setAllMoreProductData] = useState([]);
+  const [oneWarehouseForAllMoreProducts, setOneWarehouseForAllMoreProducts] =
+    useState("");
+  const [moreProductLoading, setMoreProductLoading] = useState(false);
+
+  const handleAddMoreProductFunc = () => {
+    setAllMoreProductData((prevData) => [...prevData, moreProductData]);
+    setMoreProductData({
+      model_id: "",
+      order_id: "",
+      status: "",
+      tissue: "",
+      title: "",
+    });
+    setType("");
+  };
   const { types, courier, token } = useContext(OpenModalContext);
   const [order, setOrder] = useState();
 
@@ -157,7 +205,10 @@ const MainWarehouse = () => {
   const [searchDeliveredProductsData, setSearchDeliveredProductsData] =
     useState([]);
   const [deliveredProductsSearch, setDeliveredProductsSearch] = useState("");
-
+  const [filterProductWarehouse, setFilterProductWarehouse] = useState([]);
+  const [filterProductWarehouseData, setFilterProductWarehouseData] = useState(
+    []
+  );
   const [product, setProduct] = useState();
   const [checkedList, setCheckedList] = useState([]);
   const [isCopied, setIsCopied] = useState(false);
@@ -184,12 +235,15 @@ const MainWarehouse = () => {
     });
 
     instance.get(`/warehouse`).then((res) => {
+      // console.log(res)
       setWarehouses(res.data);
     });
 
     instance
       .get(
-        `/warehouse-products?search=${productsSearch}&page=${page3}&limit=${limit3}`
+        `/warehouse-products?search=${productsSearch}&page=${page3}&limit=${limit3}&warehouse=${
+          filterProductWarehouse === "all" ? "" : filterProductWarehouse
+        }`
       )
       .then((res) => {
         // console.log(res)
@@ -215,6 +269,7 @@ const MainWarehouse = () => {
     limit4,
     productsSearch,
     deliveredProductsSearch,
+    filterProductWarehouse,
   ]);
   useEffect(() => {
     instance
@@ -234,6 +289,19 @@ const MainWarehouse = () => {
         .get(`/get-for-mainstorekeeper-by-deal-id/${product?.order?.deal_id}`)
         .then((res) => setMyCopyData(res.data));
   }, [product]);
+
+  const handleClearMoreProductMOdalData = () => {
+    setMoreProductData({
+      model_id: "",
+      order_id: "",
+      status: "",
+      tissue: "",
+      title: "",
+    });
+    setType("");
+    setOneWarehouseForAllMoreProducts("");
+    setAllMoreProductData([]);
+  };
 
   const handleCreateWarehouse = () => {
     setAddLoading(true);
@@ -298,6 +366,36 @@ const MainWarehouse = () => {
       });
   };
 
+  const handleMoreProduct = () => {
+    // console.log({
+    //   products: allMoreProductData,
+    //   warehouse_id: oneWarehouseForAllMoreProducts,
+    // });
+    setMoreProductLoading(true);
+    instance
+      .post("/bulck-create-warehouse-products", {
+        products: allMoreProductData,
+        warehouse_id: oneWarehouseForAllMoreProducts,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success("Создан");
+          setReload(!reload);
+          mordeProductClose();
+          handleClearMoreProductMOdalData();
+        }
+      })
+      .finally(() => setMoreProductLoading(false))
+      .catch((err) => {
+        console.log(err);
+        if (err.message === "Network Error") {
+          toast.error(
+            "пожалуйста, проверьте свой интернет или повторите попытку"
+          );
+        }
+      });
+  };
+
   const handleTransferProduct = () => {
     setTransferLoading(true);
 
@@ -342,6 +440,7 @@ const MainWarehouse = () => {
   };
 
   const handePutProduct = async () => {
+    console.log(putOrder?.model_id);
     instance
       .put(`/order-update/${putOrderId}`, {
         title: putOrder?.title,
@@ -381,14 +480,14 @@ const MainWarehouse = () => {
         a.download = "file.xlsx";
         a.click();
         URL.revokeObjectURL(url);
-      })
-      .finally(() => {
         setDownloadLoading(false);
-        downloadModalClose()
+        downloadModalClose();
       })
       .catch((error) => console.error("Error downloading the file:", error));
   };
-
+  // console.log(moreProductData);
+  // console.log(allMoreProductData);
+  // console.log(warehouses);
   return (
     <Layout>
       {/* ADD WAREHOUSE MODAL */}
@@ -589,6 +688,17 @@ const MainWarehouse = () => {
 
           <ModalFooter>
             <Button
+              isDisabled={
+                productData?.order_id?.length &&
+                type?.length &&
+                productData?.model_id?.length &&
+                productData?.tissue?.length &&
+                productData?.warehouse_id?.length &&
+                productData?.status?.length &&
+                productData?.title?.length
+                  ? false
+                  : true
+              }
               isLoading={addPrLoading}
               onClick={handleCreateProduct}
               colorScheme="blue"
@@ -596,7 +706,340 @@ const MainWarehouse = () => {
             >
               Создавать
             </Button>
-            <Button onClick={addProductOnClose} variant="ghost">
+            <Button
+              onClick={() => {
+                addProductOnClose();
+                setProductData();
+              }}
+              variant="ghost"
+            >
+              Закрывать
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* CONFIRM WAREHOUSE FOR MORE PRODUCTS MODAL */}
+      <Modal isOpen={confrimWarehouseIsOpen} onClose={confrimWarehouseClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Выберите склад</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody display={"flex"} flexDirection={"column"} gap={"15px"}>
+            <Box display={"flex"} gap={"20px"}>
+              <FormControl>
+                <FormLabel>Склад</FormLabel>
+                <Select
+                  required
+                  onChange={(e) =>
+                    setOneWarehouseForAllMoreProducts(e.target.value)
+                  }
+                  placeholder="выбирать..."
+                >
+                  {warehouses?.map((w) => (
+                    <option key={w.id} value={w.id}>
+                      {w.name}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              isDisabled={oneWarehouseForAllMoreProducts?.length ? false : true}
+              onClick={confrimWarehouseClose}
+              colorScheme="teal"
+              mr={3}
+            >
+              Подтверждать
+            </Button>
+            <Button
+              onClick={() => {
+                confrimWarehouseClose();
+                setOneWarehouseForAllMoreProducts("");
+              }}
+              variant="ghost"
+            >
+              Закрывать
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* ADD MORE PRODUCT MODAL */}
+      <Modal isOpen={moreProductIsOpen} onClose={mordeProductClose} size="5xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Box sx={{ width: "400px" }}>
+              <ModalHeader>Добавить несколько продуктов</ModalHeader>
+
+              <ModalBody
+                display={"flex"}
+                flexDirection={"column"}
+                gap={"15px"}
+                sx={{ mb: 5 }}
+              >
+                <FormControl>
+                  <FormLabel>введите ID заказа</FormLabel>
+                  <Input
+                    value={moreProductData.order_id}
+                    onChange={(e) => {
+                      setMoreProductData({
+                        ...moreProductData,
+                        order_id: e.target.value.trim(),
+                      });
+                      setCheckMoreProductData({
+                        ...checkMoreProductData,
+                        order_id: true,
+                      });
+                    }}
+                    type="number"
+                  />
+                </FormControl>
+
+                <Box display={"flex"} gap={"20px"}>
+                  <FormControl>
+                    <FormLabel>вид мебели</FormLabel>
+                    <Select
+                      value={type}
+                      onChange={(e) => {
+                        setType(e.target.value);
+                        setCheckMoreProductData({
+                          ...checkMoreProductData,
+                          type: true,
+                        });
+                      }}
+                      placeholder="выбрать вид мебель"
+                    >
+                      {types?.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.name}
+                        </option>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>модели</FormLabel>
+                    <Select
+                      value={moreProductData.model_id}
+                      onChange={(e) => {
+                        setMoreProductData({
+                          ...moreProductData,
+                          model_id: e.target.value,
+                        });
+                        setCheckMoreProductData({
+                          ...checkMoreProductData,
+                          model_id: true,
+                        });
+                      }}
+                      isDisabled={!type ? true : false}
+                      placeholder="выбрать модель"
+                    >
+                      {types
+                        ?.find((ft) => ft.id === type)
+                        ?.models.map((m) => (
+                          <option key={m.id} value={m.id}>
+                            {m.name}
+                          </option>
+                        ))}
+                    </Select>
+                  </FormControl>
+                </Box>
+                <FormControl>
+                  <FormLabel>введите название ткани</FormLabel>
+                  <Input
+                    value={moreProductData.tissue}
+                    onChange={(e) => {
+                      setMoreProductData({
+                        ...moreProductData,
+                        tissue: e.target.value.trim(),
+                      });
+                      setCheckMoreProductData({
+                        ...checkMoreProductData,
+                        tissue: true,
+                      });
+                    }}
+                    type="text"
+                  />
+                </FormControl>
+
+                <Box display={"flex"} gap={"20px"}>
+                  <FormControl>
+                    <FormLabel>Статус</FormLabel>
+
+                    <Select
+                      value={moreProductData.status}
+                      onChange={(e) => {
+                        setMoreProductData({
+                          ...moreProductData,
+                          status: e.target.value,
+                        });
+                        setCheckMoreProductData({
+                          ...checkMoreProductData,
+                          status: true,
+                        });
+                      }}
+                      placeholder="выбирать..."
+                    >
+                      <option value={"NEW"}>Новый</option>
+                      <option value={"ACTIVE"}>Готово</option>
+                      <option value={"DEFECTED"}>Брак</option>
+                      <option value={"RETURNED"}>Возврат</option>
+                      <option value={"SOLD_AND_CHECKED"}>К отправке</option>
+                      <option value={"DELIVERED"}>Доставлено</option>
+                      <option disabled={true} value={"VIEWED_STOREKEEPER"}>
+                        VIEWED_STOREKEEPER
+                      </option>
+                      <option disabled={true} value={"READY_TO_DELIVERY"}>
+                        READY_TO_DELIVERY
+                      </option>
+                    </Select>
+                  </FormControl>
+                </Box>
+
+                <Textarea
+                  value={moreProductData.title}
+                  onChange={(e) => {
+                    setMoreProductData({
+                      ...moreProductData,
+                      title: e.target.value.trim(),
+                    });
+                    setCheckMoreProductData({
+                      ...checkMoreProductData,
+                      title: true,
+                    });
+                  }}
+                  placeholder="Заголовок..."
+                />
+
+                <Button
+                  isDisabled={
+                    moreProductData?.order_id.length &&
+                    moreProductData?.model_id.length &&
+                    moreProductData?.tissue.length &&
+                    moreProductData?.status.length &&
+                    moreProductData?.title.length
+                      ? false
+                      : true
+                  }
+                  onClick={() => {
+                    handleAddMoreProductFunc();
+                  }}
+                  colorScheme="teal"
+                  width="100%"
+                  variant="outline"
+                >
+                  Добавить продукт +
+                </Button>
+              </ModalBody>
+            </Box>
+            <Box>
+              <ModalHeader sx={{ display: "flex" }}>
+                Складъ:
+                <Text
+                  sx={{
+                    marginLeft: "10px",
+                    color: oneWarehouseForAllMoreProducts?.length
+                      ? "cyan"
+                      : "grey",
+                  }}
+                >
+                  {warehouses?.map((w) => {
+                    let wName;
+                    if (w.id === oneWarehouseForAllMoreProducts) wName = w.name;
+                    if (oneWarehouseForAllMoreProducts?.length) {
+                      return wName;
+                    }
+                  })}
+                  {!oneWarehouseForAllMoreProducts?.length && "Не выбран"}
+                </Text>
+              </ModalHeader>
+              <ModalBody>
+                <TableContainer
+                  width={"550px"}
+                  height={"500px"}
+                  overflowY={"auto"}
+                  overflowX={"auto"}
+                >
+                  <Table variant="simple">
+                    <Thead>
+                      <Tr>
+                        <Th>Но</Th>
+                        <Th>ID заказа</Th>
+                        <Th>Заголовок</Th>
+                        <Th>Модель</Th>
+                        <Th>Ткань</Th>
+                        <Th>Статус</Th>
+                      </Tr>
+                    </Thead>
+
+                    <Tbody>
+                      {allMoreProductData?.length ? (
+                        allMoreProductData?.map((p, i) => {
+                          let mName;
+                          types?.map((t) => {
+                            t?.models?.map((m) => {
+                              if (m?.id === p?.model_id) mName = m?.name;
+                            });
+                          });
+
+                          return (
+                            <Tr key={i}>
+                              <Td>{i + 1}</Td>
+                              <Td>{p?.order_id}</Td>
+                              <Td>{p?.title}</Td>
+                              <Td>{mName}</Td>
+                              <Td>{p?.tissue}</Td>
+
+                              <Td>{p?.status}</Td>
+                            </Tr>
+                          );
+                        })
+                      ) : (
+                        <Tr></Tr>
+                      )}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+              </ModalBody>
+            </Box>
+          </Box>
+          <Divider />
+          <ModalFooter sx={{ mt: 5 }}>
+            {oneWarehouseForAllMoreProducts?.length ? (
+              <Button
+                isDisabled={allMoreProductData?.length ? false : true}
+                isLoading={moreProductLoading}
+                onClick={() => {
+                  handleMoreProduct();
+                }}
+                colorScheme="blue"
+                mr={3}
+              >
+                Создавать
+              </Button>
+            ) : (
+              <Button
+                isDisabled={allMoreProductData?.length ? false : true}
+                onClick={confrimWarehouseOpen}
+                colorScheme="facebook"
+                mr={3}
+                title="Hello"
+              >
+                Выберите склад
+              </Button>
+            )}
+            <Button
+              onClick={() => {
+                mordeProductClose();
+                handleClearMoreProductMOdalData();
+              }}
+              variant="ghost"
+            >
               Закрывать
             </Button>
           </ModalFooter>
@@ -1108,7 +1551,10 @@ const MainWarehouse = () => {
           <ModalBody display="flex" flexDirection="column" gap="15px">
             <FormControl>
               <FormLabel>Выберите склад</FormLabel>
-              <Select onChange={(e) => setDownloadWarehouseId(e.target.value)} placeholder="Choose warehouse">
+              <Select
+                onChange={(e) => setDownloadWarehouseId(e.target.value)}
+                placeholder="Choose warehouse"
+              >
                 {warehouses?.map((w) => (
                   <option key={w.id} value={w.id}>
                     {w.name}
@@ -1303,35 +1749,93 @@ const MainWarehouse = () => {
                 my={5}
               >
                 Продукты
+                {/*  */}
               </Heading>
-              <Flex
-                w={460}
-                justifyContent="space-between"
-                alignItems="center"
-                flexWrap="wrap"
+              <Box
+                sx={{
+                  width: "170px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
               >
-                <InputGroup sx={{ maxWidth: "220px", width: "100%" }} my={2}>
-                  <InputLeftElement pointerEvents="none">
-                    <SearchIcon color="gray.300" />
-                  </InputLeftElement>
-                  <Input
-                    onChange={(e) => setProductsSearch(e.target.value)}
-                    type="search"
-                    placeholder="Поиск по ID заказа"
-                  />
-                </InputGroup>
-                <Button onClick={addProductOnOpen} colorScheme="blue">
-                  добавить продукт
-                </Button>
-                <Button
-                  colorScheme="teal"
-                  onClick={() => {
-                    edownloadModalOpen();
-                  }}
-                >
-                  <SaveAltIcon />
-                </Button>
-              </Flex>
+                <Box>
+                  <Menu>
+                    <MenuButton
+                      colorScheme="blue"
+                      as={Button}
+                      rightIcon={<ChevronDownIcon />}
+                    >
+                      Actions
+                    </MenuButton>
+                    <MenuList sx={{ px: "10px", width: "300px" }}>
+                      <InputGroup fullWith my={2}>
+                        <InputLeftElement pointerEvents="none">
+                          <SearchIcon color="gray.300" />
+                        </InputLeftElement>
+                        <Input
+                          onChange={(e) => setProductsSearch(e.target.value)}
+                          type="search"
+                          placeholder="Поиск по ID заказа"
+                        />
+                      </InputGroup>
+
+                      <Button
+                        sx={{ width: "100%", my: "10px" }}
+                        onClick={addProductOnOpen}
+                        colorScheme="blue"
+                      >
+                        добавить продукт
+                      </Button>
+
+                      <Button
+                        sx={{ width: "100%", mb: "10px" }}
+                        onClick={mordeProductOpen}
+                        colorScheme="messenger"
+                      >
+                        добавить несколько продуктов
+                      </Button>
+
+                      <Button
+                        sx={{ width: "100%" }}
+                        colorScheme="teal"
+                        onClick={() => {
+                          downloadModalOpen();
+                        }}
+                      >
+                        Download
+                        <SaveAltIcon />
+                      </Button>
+                    </MenuList>
+                  </Menu>
+                </Box>
+                <Box>
+                  <Menu closeOnSelect={false}>
+                    <MenuButton as={Button} colorScheme="whatsapp">
+                      <TuneIcon />
+                    </MenuButton>
+                    <MenuList minWidth="240px">
+                      <MenuOptionGroup
+                        onChange={(e) => {
+                          // console.log(e);
+                          setFilterProductWarehouse(e);
+                        }}
+                        defaultValue="all"
+                        type="radio"
+                      >
+                        <MenuItemOption value="all">All</MenuItemOption>
+                        {warehouses?.map((w) => {
+                          return (
+                            <MenuItemOption value={w?.id}>
+                              {w?.name}
+                            </MenuItemOption>
+                          );
+                        })}
+                      </MenuOptionGroup>
+                    </MenuList>
+                  </Menu>
+                </Box>
+              </Box>
             </Flex>
 
             <TableContainer>

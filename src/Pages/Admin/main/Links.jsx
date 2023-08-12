@@ -171,7 +171,6 @@ export default function AdminLinkList() {
   const handlePageChange = (p) => {
     setPage(p);
   };
-
   return (
     <>
       <AddUserModal onOpen={onOpen} isOpen={isOpen} onClose={onClose} />
@@ -230,7 +229,7 @@ export default function AdminLinkList() {
                   <SearchIcon color="gray.300" />
                 </InputLeftElement>
                 <Input
-                  onChange={(e) => setSearchValue(e.target.value)}
+                  onChange={(e) => setSearchValue(e.target.value.trim())}
                   type="search"
                   placeholder="Поиск"
                 />
@@ -256,7 +255,7 @@ export default function AdminLinkList() {
               </Tr>
             </Thead>
             <Tbody>
-              {users?.map((e, i) => (
+              {(!searchValue.length ? users : searchedUsers)?.map((e, i) => (
                 <Tr key={i}>
                   <Td>{i + 1}</Td>
                   <Td>{e.name}</Td>

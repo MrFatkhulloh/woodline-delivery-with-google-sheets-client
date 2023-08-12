@@ -55,9 +55,9 @@ import {
   ChevronDownIcon,
   DeleteIcon,
   EditIcon,
-  Search2Icon,
   SearchIcon,
 } from "@chakra-ui/icons";
+import { accounting } from "accounting";
 
 const ModelRow = ({ element, handleChange, setReady }) => {
   const [modelHas, setModelHas] = useState(false);
@@ -122,6 +122,10 @@ export default function NewFurnitureType() {
   const [companys, setCompanys] = useState([]);
   const [compId, setCompId] = useState("");
 
+  const [modelPrice, setModelPrice] = useState(0);
+  const [modelSale, setModelSale] = useState(0);
+  const [modelCode, setModelCode] = useState("");
+
   const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
@@ -137,6 +141,7 @@ export default function NewFurnitureType() {
             },
           })
           .then((response) => {
+            // console.log(response.data.models);
             setModels(response.data.models);
             setTotalPages(response.data.totalAmount);
           })
@@ -234,11 +239,17 @@ export default function NewFurnitureType() {
   const handleUpdateSubmit = () => {
     setUpdateLoading(true);
     instance
-      .put(`/model/${model.id}`, { name: newModelName, company_id: compId })
+      .put(`/model/${model.id}`, {
+        name: newModelName,
+        company_id: compId,
+        price: modelPrice,
+        sale: modelSale,
+        code: modelCode,
+      })
       .then((res) => {
         if (res.status === 200) {
           toast.success("Updated model name");
-          console.log(model, compId);
+
           setReload(!reload);
         }
       })
@@ -264,6 +275,8 @@ export default function NewFurnitureType() {
         deleteClose();
       });
   };
+
+
 
   return (
     <>
@@ -389,6 +402,43 @@ export default function NewFurnitureType() {
                     <option value={company?.id}>{company.name}</option>
                   ))}
                 </Select>
+              </FormControl>
+
+              <FormControl mt={4}>
+                <FormLabel>изменить цена</FormLabel>
+
+                <Input
+                  onChange={(e) => {
+                    e.target.value = accounting.formatNumber(
+                      e.target.value,
+                      0,
+                      " "
+                    );
+                    setModelPrice(accounting.unformat(+e.target.value));
+                    console.log(accounting.unformat(e.target.value));
+                  }}
+                  defaultValue={model?.price}
+                  type="text"
+                />
+              </FormControl>
+
+              <FormControl mt={4}>
+                <FormLabel>изменить распродажа</FormLabel>
+
+                <Input
+                  defaultValue={model?.sale}
+                  onChange={(e) => setModelSale(e.target.value)}
+                  type="number"
+                />
+              </FormControl>
+              <FormControl mt={4}>
+                <FormLabel>код </FormLabel>
+
+                <Input
+                  defaultValue={model?.code}
+                  onChange={(e) => setModelCode(e.target.value)}
+                  type="text"
+                />
               </FormControl>
             </ModalBody>
 

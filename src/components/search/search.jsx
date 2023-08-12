@@ -38,7 +38,6 @@ import {
   CheckCircleIcon,
   CheckIcon,
   MinusIcon,
-  Search2Icon,
   SearchIcon,
 } from "@chakra-ui/icons";
 import axios from "axios";
@@ -71,6 +70,7 @@ function SearchModal({
       }
       return delivery;
     });
+    // console.log(newDeliveryRow)
     setD2cDeliveryRow(newDeliveryRow);
     setFoundOrders([]);
     setIndexSelected(999999999);
@@ -98,6 +98,25 @@ function SearchModal({
           console.error(error);
         });
     }
+    if (searchBy == "deal_id") {
+      axios
+        .get(`/get-orders-by-deal_id?${searchBy}=${searchKey}`, {
+          headers: {
+            "Content-Type": "application/json",
+            token: `${token}`,
+          },
+        })
+        .then((response) => {
+          // console.log(response);
+          setFoundOrders(response.data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          alert("database error");
+          console.error(error);
+        });
+    }
+
     if (searchBy == "name" || searchBy == "phone") {
       axios
         .get(`/get-orders-by-client?${searchBy}=${searchKey}`, {
@@ -172,6 +191,7 @@ function SearchModal({
                   onChange={(event) => setSearchBy(event.target.value)}
                 >
                   <option value={"order_id"}>ID</option>
+                  <option value={"deal_id"}>номер сделки </option>
                   <option value={"name"}>имя клиента</option>
                   <option value={"phone"}>Телефон</option>
                   <option value={"model"}>Модель</option>

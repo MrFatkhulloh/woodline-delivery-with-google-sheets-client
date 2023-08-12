@@ -7,6 +7,7 @@ import {
   Tr,
   Box,
   Tooltip,
+  useDisclosure,
 } from "@chakra-ui/react";
 import accounting from "accounting";
 import { useContext, useEffect, useState } from "react";
@@ -23,6 +24,7 @@ function OrderRow({
   allModels,
   handleMinus,
   handleDeliveryChange,
+  onOpen,
 }) {
   const [models, setModels] = useState(modelOptions);
   const filterModels = (selectType) => {
@@ -62,9 +64,54 @@ function OrderRow({
             }}
           />
         )}
+        {/* <Button
+          onClick={() => {
+            onOpen();
+            handleSelectModel(i);
+            if (e?.order?.id) {
+              setFoundOrders([e?.order]);
+            }
+          }}
+        >
+          Выберите ID
+          <Text>
+            {e?.order?.id
+              ? "\n" + e?.order?.model?.name + " - " + e?.order?.tissue
+              : ""}
+          </Text>
+        </Button>
+        {e.cathegory == "заказ" ? (
+          <Input
+            type="text"
+            placeholder={"авто"}
+            value={e.orderId}
+            disabled={true}
+            id={e.id}
+            onChange={(event) =>
+              handleChange(event, event.target.id, "orderId")
+            }
+            onBlur={(event) => {
+              handleChange(event, event.target.id, "orderId");
+            }}
+          />
+        ) : (
+          <Input
+            maxLength={7}
+            w={"200px"}
+            type="text"
+            placeholder={e.cathegory == "заказ" ? "авто" : "id"}
+            value={e.orderId}
+            id={e.id}
+            onChange={(event) =>
+              handleChange(event, event.target.id, "orderId")
+            }
+            onBlur={(event) => {
+              handleChange(event, event.target.id, "orderId");
+            }}
+          />
+        )} */}
       </Td>
       <Td>
-        {" "}
         <Select
           w={"200px"}
           placeholder="Выберите вид..."
@@ -283,16 +330,16 @@ function D2COrderRow({
         />
       </Td>
 
-          <Td>
-            <Input 
-              w={"200px"}
-              type="number"
-              id={e.id}
-              onChange={(event) => {
-                handleDeliveryChange(event, event.target.id, "trip_id")
-              }}
-            />
-          </Td>
+      <Td>
+        <Input
+          w={"200px"}
+          type="number"
+          id={e.id}
+          onChange={(event) => {
+            handleDeliveryChange(event, event.target.id, "trip_id");
+          }}
+        />
+      </Td>
 
       <Td>
         <Input

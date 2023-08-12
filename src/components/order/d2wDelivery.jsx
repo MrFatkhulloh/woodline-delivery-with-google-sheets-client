@@ -2,10 +2,27 @@ import { v4 as uuidv4 } from "uuid";
 import { useContext, useEffect, useState } from "react";
 import {
   Button,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Divider,
   Flex,
+  FormControl,
+  Heading,
+  IconButton,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Select,
   Table,
   TableContainer,
   Tbody,
+  Text,
   Th,
   Thead,
   Tr,
@@ -16,6 +33,7 @@ import accounting from "accounting";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
 import UserInfo from "../userInfo/userInfo";
 import { D2COrderRow, OrderRow } from "./orderRow";
+import { SearchIcon } from "@chakra-ui/icons";
 
 function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
   const {
@@ -32,6 +50,11 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
   //   const [delivery_type, setDelivery_type] = useState("");
   const [state, setState] = useState(1);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: modalIsOpen,
+    onOpen: modalOnOpen,
+    onClose: modalOnClose,
+  } = useDisclosure();
 
   useEffect(() => {
     const mappedData = warehouseOrders.map((e) => {
@@ -127,7 +150,7 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
   }
 
   function handleChange(event, rowId, fieldName) {
-    console.log(event.target.value, rowId, fieldName, "changeFn");
+    // console.log(event.target.value, rowId, fieldName, "changeFn");
     const updatedRows = warehouseOrders.map((row) => {
       if (row.id == rowId) {
         if (fieldName == "price") {
@@ -206,6 +229,9 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
 
   return (
     <>
+
+
+      {/* ============= */}
       <UserInfo
         onClose={onClose}
         isOpen={isOpen}
@@ -249,6 +275,7 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
                     handleMinus={handleMinus}
                     deliveryRow={deliveryRow}
                     handleDeliveryChange={handleDeliveryChange}
+                    onOpen={modalOnOpen}
                   />
                 );
               })}
@@ -261,7 +288,7 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
           +
         </Button>
         <Button colorScheme="green" onClick={handleSubmit}>
-        Отправить 
+          Отправить
         </Button>
       </Flex>
     </>

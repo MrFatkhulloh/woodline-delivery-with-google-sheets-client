@@ -179,7 +179,7 @@ function PaymentTable({
 
   useEffect(() => {
     const newUuid = d2cDeliveryRow[rowIndex]?.delivery_uuid;
-    console.log("new_uuid - ", newUuid);
+    // console.log("new_uuid - ", newUuid);
     const payRow = temporaryPaymentRow?.map((pay) => {
       return {
         ...pay,

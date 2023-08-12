@@ -152,7 +152,6 @@ const Warehouse = () => {
             }&search=${index === 1 ? transferSearch : deliveredSearch}`
           )
           .then((res) => {
-      
             if (index === 1) {
               setCount1(res.data.totalAmount);
               setSearchTransferedData(res.data.products);
@@ -161,7 +160,6 @@ const Warehouse = () => {
               setSearchDeliveredData(res.data.products);
             }
             // console.log(res);
-      
           });
   }, [
     reload,
@@ -248,7 +246,6 @@ const Warehouse = () => {
         setReload(!reload);
       }
     });
-    
   };
 
   const handlePageChange = (p) => {
@@ -262,7 +259,6 @@ const Warehouse = () => {
   };
   const handlePageChange3 = (p) => {
     setPage3(p);
-    
   };
 
   return (
@@ -337,6 +333,15 @@ const Warehouse = () => {
 
           <ModalFooter>
             <Button
+              isDisabled={
+                productData?.order_id?.length &&
+                type?.length &&
+                productData?.model_id?.length &&
+                productData?.tissue?.length &&
+                productData?.title?.length
+                  ? false
+                  : true
+              }
               isLoading={addLoading}
               onClick={handleCreateProduct}
               colorScheme="blue"
@@ -344,7 +349,15 @@ const Warehouse = () => {
             >
               Создавать
             </Button>
-            <Button onClick={addProductOnClose} variant="ghost">
+            <Button
+              onClick={() => {
+                addProductOnClose();
+                setProductData({
+                  cathegory: "заказ",
+                });
+              }}
+              variant="ghost"
+            >
               Закрывать
             </Button>
           </ModalFooter>
