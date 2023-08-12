@@ -38,7 +38,6 @@ import {
   CheckCircleIcon,
   CheckIcon,
   MinusIcon,
-  Search2Icon,
   SearchIcon,
 } from "@chakra-ui/icons";
 import axios from "axios";
@@ -71,6 +70,7 @@ function SearchModal({
       }
       return delivery;
     });
+    // console.log(newDeliveryRow)
     setD2cDeliveryRow(newDeliveryRow);
     setFoundOrders([]);
     setIndexSelected(999999999);

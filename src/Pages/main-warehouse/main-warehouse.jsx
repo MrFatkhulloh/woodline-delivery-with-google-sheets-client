@@ -1817,7 +1817,7 @@ const MainWarehouse = () => {
                     <MenuList minWidth="240px">
                       <MenuOptionGroup
                         onChange={(e) => {
-                          console.log(e);
+                          // console.log(e);
                           setFilterProductWarehouse(e);
                         }}
                         defaultValue="all"

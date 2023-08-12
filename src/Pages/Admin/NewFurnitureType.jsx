@@ -55,7 +55,6 @@ import {
   ChevronDownIcon,
   DeleteIcon,
   EditIcon,
-  Search2Icon,
   SearchIcon,
 } from "@chakra-ui/icons";
 import { accounting } from "accounting";

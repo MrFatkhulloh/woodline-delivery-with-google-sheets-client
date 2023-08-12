@@ -112,7 +112,6 @@ function OrderRow({
         )} */}
       </Td>
       <Td>
-        {" "}
         <Select
           w={"200px"}
           placeholder="Выберите вид..."

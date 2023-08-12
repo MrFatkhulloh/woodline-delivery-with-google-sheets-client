@@ -34,7 +34,6 @@ import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
 import UserInfo from "../userInfo/userInfo";
 import { D2COrderRow, OrderRow } from "./orderRow";
 import { SearchIcon } from "@chakra-ui/icons";
-import Search2Modal from "../search/search2";
 
 function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
   const {
@@ -151,7 +150,7 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
   }
 
   function handleChange(event, rowId, fieldName) {
-    console.log(event.target.value, rowId, fieldName, "changeFn");
+    // console.log(event.target.value, rowId, fieldName, "changeFn");
     const updatedRows = warehouseOrders.map((row) => {
       if (row.id == rowId) {
         if (fieldName == "price") {
@@ -240,15 +239,6 @@ function D2wOrderTable({ selectedCourier, setSelectedCourier }) {
         selectedCourier={selectedCourier}
       />
 
-{/* <Search2Modal
-        onClose={onClose}
-        isOpen={isOpen}
-        onOpen={onOpen}
-        // selectedCourier={selectedCourier}
-        // rowIndex={deliveryIndex}
-        // foundOrders={foundOrders}
-        // setFoundOrders={setFoundOrders}
-      /> */}
       <TableContainer>
         <Table
           variant="simple"
