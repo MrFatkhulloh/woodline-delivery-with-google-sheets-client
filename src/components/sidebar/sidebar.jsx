@@ -53,13 +53,13 @@ export const routes = [
     path: "/admin/new-furniture-type",
     name: "Модели",
     icon: <FiLayout />,
-    access_roles: ["SUPER_ADMIN", "ADMIN"],
+    access_roles: ["SUPER_ADMIN", "ADMIN", "MAIN_STOREKEEPER"],
   },
   {
     path: "/admin/category",
     name: "Вид мебели",
     icon: <FiLayout />,
-    access_roles: ["SUPER_ADMIN", "ADMIN"],
+    access_roles: ["SUPER_ADMIN", "ADMIN", "MAIN_STOREKEEPER"],
   },
   {
     path: "/admin/users",

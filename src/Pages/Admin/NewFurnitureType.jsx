@@ -59,8 +59,32 @@ import {
 } from "@chakra-ui/icons";
 import { accounting } from "accounting";
 
-const ModelRow = ({ element, handleChange, setReady }) => {
+const ModelRow = ({
+  element,
+  handleChange,
+  setReady,
+  setRequireData,
+  typeName,
+}) => {
   const [modelHas, setModelHas] = useState(false);
+  const [companys, setCompanys] = useState([]);
+
+  useEffect(() => {
+    instance.get("/company").then((res) => {
+      setCompanys(res.data);
+    });
+  }, []);
+
+  if (
+    typeName?.length &&
+    element?.name?.length &&
+    element?.code?.length &&
+    element?.price > 0 &&
+    element?.company_id?.length
+  ) {
+    setRequireData(true);
+  }
+
   return (
     <>
       <Tr id={element.id}>
@@ -70,12 +94,73 @@ const ModelRow = ({ element, handleChange, setReady }) => {
             variant={"filled"}
             id={element.id}
             onChange={(e) => {
-              handleChange(e.target.id, e.target.value);
+              handleChange(e.target.id, "name", e.target.value);
             }}
-            onBlur={(e) => handleChange(e.target.id, e.target.value)}
+            onBlur={(e) => handleChange(e.target.id, "name", e.target.value)}
             type="text"
             defaultValue={element.name}
           />
+        </Td>
+        <Td>
+          <Input
+            variant={"filled"}
+            id={element.id}
+            onChange={(e) => {
+              handleChange(e.target.id, "code", e.target.value);
+            }}
+            onBlur={(e) => {
+              handleChange(e.target.id, "code", e.target.value);
+            }}
+            type="text"
+            defaultValue={element.code}
+          />
+        </Td>
+        <Td>
+          <Input
+            variant={"filled"}
+            id={element.id}
+            onChange={(e) => {
+              e.target.value = accounting.formatNumber(e.target.value, 0, " ");
+              accounting.unformat(e.target.value, 0, " ");
+              handleChange(
+                e.target.id,
+                "price",
+                accounting.unformat(e.target.value, 0, " ")
+              );
+            }}
+            onBlur={(e) => {
+              e.target.value = accounting.formatNumber(e.target.value, 0, " ");
+              accounting.unformat(e.target.value, 0, " ");
+              handleChange(
+                e.target.id,
+                "price",
+                accounting.unformat(e.target.value, 0, " ")
+              );
+            }}
+            type="text"
+            defaultValue={element.price}
+          />
+        </Td>
+
+        <Td>
+          <Select
+            placeholder="Выберите компанию"
+            name="type"
+            id={element.id}
+            onChange={(event) => {
+              handleChange(event.target.id, "company_id", event.target.value);
+            }}
+            onBlur={(event) =>
+              handleChange(event.target.id, "company_id", event.target.value)
+            }
+          >
+            {companys.length &&
+              companys.map((element, index) => (
+                <option key={index} value={element.id}>
+                  {element.name}
+                </option>
+              ))}
+          </Select>
         </Td>
       </Tr>
     </>
@@ -105,7 +190,9 @@ export default function NewFurnitureType() {
   const { token, types } = useContext(OpenModalContext);
   const [isNew, setIsNew] = useState(true);
   const [type_name, setType_name] = useState("");
-  const [model_names, setModel_names] = useState([{ id: 1, name: "" }]);
+  const [model_names, setModel_names] = useState([
+    { id: 1, name: "", code: "", price: "", company_id: "" },
+  ]);
   const [ready, setReady] = useState(true);
   const [models, setModels] = useState([]);
   const { colorMode } = useColorMode();
@@ -127,6 +214,7 @@ export default function NewFurnitureType() {
   const [modelCode, setModelCode] = useState("");
 
   const [searchValue, setSearchValue] = useState("");
+  const [requireData, setRequireData] = useState(false);
 
   useEffect(() => {
     searchValue.trim() !== ""
@@ -167,12 +255,12 @@ export default function NewFurnitureType() {
     }
   };
 
-  const handleChange = (rowId, name) => {
+  const handleChange = (rowId, name, value) => {
     const updatedRows = model_names.map((row) => {
       if (row.id == rowId) {
         return {
           ...row,
-          name,
+          [name]: value,
         };
       } else {
         return row;
@@ -182,7 +270,16 @@ export default function NewFurnitureType() {
   };
 
   const handlePlus = () => {
-    setModel_names([...model_names, { id: model_names.length + 1, name: "" }]);
+    setModel_names([
+      ...model_names,
+      {
+        id: model_names.length + 1,
+        name: "",
+        code: "",
+        price: "",
+        company_id: "",
+      },
+    ]);
   };
 
   const handleSubmit = () => {
@@ -208,6 +305,17 @@ export default function NewFurnitureType() {
           setReload(!reload);
 
           toast.success("Добавлен новый тип мебели");
+          setType_name("");
+          setModel_names([
+            {
+              id: 1,
+              name: "",
+              code: "",
+              price: "",
+              company_id: "",
+            },
+          ]);
+          setRequireData(false);
         }
       })
       .finally(() => {
@@ -275,9 +383,7 @@ export default function NewFurnitureType() {
         deleteClose();
       });
   };
-
-
-
+  // console.log(modelPrice)
   return (
     <>
       <Layout>
@@ -287,12 +393,26 @@ export default function NewFurnitureType() {
           mx={{ base: "20px" }}
           isOpen={isOpen}
           onClose={onClose}
-          size="2xl"
+          size="6xl"
         >
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Добавить Вид мебели</ModalHeader>
-            <ModalCloseButton />
+            <ModalCloseButton
+              onClick={() => {
+                setType_name("");
+                setModel_names([
+                  {
+                    id: 1,
+                    name: "",
+                    code: "",
+                    price: null,
+                    company_id: "",
+                  },
+                ]);
+                setRequireData(false);
+              }}
+            />
             <ModalBody>
               <Flex alignItems={"center"} gap={4}>
                 <Text isTruncated>Новый вид мебели:</Text>
@@ -315,6 +435,9 @@ export default function NewFurnitureType() {
                     <Tr>
                       <Th>№</Th>
                       <Th>Модель</Th>
+                      <Th>Артикул</Th>
+                      <Th>Цена</Th>
+                      <Th>Компания</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -325,6 +448,8 @@ export default function NewFurnitureType() {
                           element={e}
                           handleChange={handleChange}
                           setReady={setReady}
+                          setRequireData={setRequireData}
+                          typeName={type_name}
                         />
                       ))}
                   </Tbody>
@@ -342,6 +467,7 @@ export default function NewFurnitureType() {
 
             <ModalFooter>
               <Button
+                isDisabled={!requireData ? true : false}
                 isLoading={addFTypeLoading}
                 colorScheme="blue"
                 mr={3}
@@ -349,7 +475,23 @@ export default function NewFurnitureType() {
               >
                 {"Создать"}
               </Button>
-              <Button variant="ghost" onClick={onClose}>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  onClose();
+                  setType_name("");
+                  setModel_names([
+                    {
+                      id: 1,
+                      name: "",
+                      code: "",
+                      price: "",
+                      company_id: "",
+                    },
+                  ]);
+                  setRequireData(false);
+                }}
+              >
                 Закрывать
               </Button>
             </ModalFooter>
@@ -399,7 +541,12 @@ export default function NewFurnitureType() {
                   placeholder="выбрать компанию"
                 >
                   {companys?.map((company) => (
-                    <option value={company?.id}>{company.name}</option>
+                    <option
+                      selected={model?.company_id == company.id ? true : false}
+                      value={company?.id}
+                    >
+                      {company.name}
+                    </option>
                   ))}
                 </Select>
               </FormControl>
@@ -408,22 +555,23 @@ export default function NewFurnitureType() {
                 <FormLabel>изменить цена</FormLabel>
 
                 <Input
+                  defaultValue={accounting.formatNumber(model?.price, 0, " ")}
                   onChange={(e) => {
                     e.target.value = accounting.formatNumber(
                       e.target.value,
                       0,
                       " "
                     );
-                    setModelPrice(accounting.unformat(+e.target.value));
-                    console.log(accounting.unformat(e.target.value));
+                    accounting.unformat(e.target.value);
+                    setModelPrice(accounting.unformat(e.target.value));
+                    // console.log(accounting.unformat(e.target.value));
                   }}
-                  defaultValue={model?.price}
                   type="text"
                 />
               </FormControl>
 
               <FormControl mt={4}>
-                <FormLabel>изменить распродажа</FormLabel>
+                <FormLabel>изменить скидка</FormLabel>
 
                 <Input
                   defaultValue={model?.sale}
@@ -432,7 +580,7 @@ export default function NewFurnitureType() {
                 />
               </FormControl>
               <FormControl mt={4}>
-                <FormLabel>код </FormLabel>
+                <FormLabel>артикул </FormLabel>
 
                 <Input
                   defaultValue={model?.code}
@@ -562,6 +710,7 @@ export default function NewFurnitureType() {
                             onClick={() => {
                               updateOpen();
                               setModel(model);
+                              console.log(model);
                             }}
                           >
                             Изменять
