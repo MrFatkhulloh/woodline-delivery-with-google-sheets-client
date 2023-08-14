@@ -16,9 +16,7 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <ModalProvider>
-        <ChakraProvider
-          toastOptions={{ defaultOptions: { position: "top" } }}
-        >
+        <ChakraProvider toastOptions={{ defaultOptions: { position: "top" } }}>
           <Toastify autoClose={3000} />
           <App />
         </ChakraProvider>
