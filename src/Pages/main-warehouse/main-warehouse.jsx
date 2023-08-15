@@ -669,7 +669,7 @@ const MainWarehouse = () => {
                   <option value={"SOLD_AND_CHECKED"}>К отправке</option>
                   <option value={"DELIVERED"}>Доставлено</option>
                   <option disabled={false} value={"READY_TO_DELIVERY"}>
-                    READY_TO_DELIVERY
+                    К отправке
                   </option>
                   <option disabled={true} value={"VIEWED_STOREKEEPER"}>
                     VIEWED_STOREKEEPER
