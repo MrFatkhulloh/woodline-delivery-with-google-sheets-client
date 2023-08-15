@@ -679,6 +679,10 @@ export default function NewFurnitureType() {
                 <Th>№</Th>
                 <Th>Вид_мебели</Th>
                 <Th>Модель</Th>
+                <Th>Компания</Th>
+                <Th>Артикул</Th>
+                <Th>Цена</Th>
+                {/* <Th>Скидка</Th> */}
                 <Th>Статус</Th>
                 <Th>Действия</Th>
               </Tr>
@@ -686,49 +690,66 @@ export default function NewFurnitureType() {
 
             <Tbody>
               {models.length > 0 ? (
-                models.map((model, modelIndex) => (
-                  <Tr>
-                    <Td>{modelIndex + 1}</Td>
-                    <Td>{model?.furniture_type?.name}</Td>
-                    <Td>{model.name}</Td>
-                    <Td>
-                      <Switch
-                        defaultChecked={model.is_active}
-                        onChange={() => handleChangeStatusModel(model)}
-                        colorScheme="green"
-                        size="lg"
-                      />
-                    </Td>
-                    <Td>
-                      <Menu>
-                        <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-                          Действия
-                        </MenuButton>
-                        <MenuList>
-                          <MenuItem
-                            icon={<EditIcon />}
-                            onClick={() => {
-                              updateOpen();
-                              setModel(model);
-                              console.log(model);
-                            }}
+                models.map((model, modelIndex) => {
+                  // console.log(model)
+                  return (
+                    <Tr>
+                      <Td>{modelIndex + 1}</Td>
+                      <Td>{model?.furniture_type?.name}</Td>
+                      <Td>{model?.name}</Td>
+                      {model?.company_id ? (
+                        companys.map((c) => {
+                          if (c?.id === model?.company_id) {
+                            return <Td>{c?.name}</Td>;
+                          }
+                        })
+                      ) : (
+                        <Td></Td>
+                      )}
+                      {model?.code ? <Td>{model?.code}</Td> : <Td></Td>}
+                      <Td>{model?.price}</Td>
+                      <Td>
+                        <Switch
+                          defaultChecked={model.is_active}
+                          onChange={() => handleChangeStatusModel(model)}
+                          colorScheme="green"
+                          size="lg"
+                        />
+                      </Td>
+                      <Td>
+                        <Menu>
+                          <MenuButton
+                            as={Button}
+                            rightIcon={<ChevronDownIcon />}
                           >
-                            Изменять
-                          </MenuItem>
-                          <MenuItem
-                            onClick={() => {
-                              setModel(model);
-                              deleteOnOpen();
-                            }}
-                            icon={<DeleteIcon />}
-                          >
-                            Удалить
-                          </MenuItem>
-                        </MenuList>
-                      </Menu>
-                    </Td>
-                  </Tr>
-                ))
+                            Действия
+                          </MenuButton>
+                          <MenuList>
+                            <MenuItem
+                              icon={<EditIcon />}
+                              onClick={() => {
+                                updateOpen();
+                                setModel(model);
+                                console.log(model);
+                              }}
+                            >
+                              Изменять
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() => {
+                                setModel(model);
+                                deleteOnOpen();
+                              }}
+                              icon={<DeleteIcon />}
+                            >
+                              Удалить
+                            </MenuItem>
+                          </MenuList>
+                        </Menu>
+                      </Td>
+                    </Tr>
+                  );
+                })
               ) : (
                 <Tr>
                   <Td>ПОКА ПУСТО!</Td>

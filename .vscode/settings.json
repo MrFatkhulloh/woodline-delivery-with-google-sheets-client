@@ -1,3 +1,11 @@
 {
-  "editor.definitionLinkOpensInPeek": true
+  "editor.definitionLinkOpensInPeek": true,
+  "oneDarkPro.bold": true,
+  "oneDarkPro.markdownStyle": true,
+  "notebook.find.scope": {
+    "markupSource": true,
+    "markupPreview": true,
+    "codeSource": true,
+    "codeOutput": true
+  }
 }

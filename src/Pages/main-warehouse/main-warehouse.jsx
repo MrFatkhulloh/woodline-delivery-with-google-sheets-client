@@ -668,11 +668,11 @@ const MainWarehouse = () => {
                   <option value={"RETURNED"}>Возврат</option>
                   <option value={"SOLD_AND_CHECKED"}>К отправке</option>
                   <option value={"DELIVERED"}>Доставлено</option>
+                  <option disabled={false} value={"READY_TO_DELIVERY"}>
+                    READY_TO_DELIVERY
+                  </option>
                   <option disabled={true} value={"VIEWED_STOREKEEPER"}>
                     VIEWED_STOREKEEPER
-                  </option>
-                  <option disabled={true} value={"READY_TO_DELIVERY"}>
-                    READY_TO_DELIVERY
                   </option>
                 </Select>
               </FormControl>
@@ -969,7 +969,7 @@ const MainWarehouse = () => {
                     <Thead>
                       <Tr>
                         <Th>Но</Th>
-                        <Th>ID заказа</Th>
+                        <Th>IDИД заказа</Th>
                         <Th>Заголовок</Th>
                         <Th>Модель</Th>
                         <Th>Ткань</Th>
@@ -1625,14 +1625,14 @@ const MainWarehouse = () => {
               >
                 <Thead>
                   <Tr>
-                    <Th>ID</Th>
+                    <Th>ИД</Th>
                     <Th>Вид мебели</Th>
                     <Th>Модел</Th>
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
                     <Th>заголовок</Th>
                     <Th>Статус</Th>
-                    <Th>actions</Th>
+                    <Th>действия</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -1714,7 +1714,7 @@ const MainWarehouse = () => {
               >
                 <Thead>
                   <Tr>
-                    <Th>ID</Th>
+                    <Th>ИД</Th>
                     <Th>название склада</Th>
                     <Th>компания</Th>
                     <Th>администратор</Th>
@@ -1845,7 +1845,7 @@ const MainWarehouse = () => {
               >
                 <Thead>
                   <Tr>
-                    <Th>ID</Th>
+                    <Th>ИД</Th>
                     <Th>Вид мебели</Th>
                     <Th>Модел</Th>
                     <Th>кол-во</Th>
@@ -1853,7 +1853,7 @@ const MainWarehouse = () => {
                     <Th>заголовок</Th>
                     <Th>Склад</Th>
                     <Th>Статус</Th>
-                    <Th>actions</Th>
+                    <Th>ДЕЙСТВИЯ</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -1922,7 +1922,7 @@ const MainWarehouse = () => {
                             as={Button}
                             rightIcon={<ChevronDownIcon />}
                           >
-                            Actions
+                            ДЕЙСТВИЯ
                           </MenuButton>
                           <MenuList>
                             <MenuItem
@@ -1980,7 +1980,7 @@ const MainWarehouse = () => {
                                   });
                               }}
                             >
-                              Dostavka
+                              Доставка
                             </MenuItem>
                             <MenuItem
                               isDisabled={
@@ -2001,7 +2001,7 @@ const MainWarehouse = () => {
                               }}
                               icon={<CheckIcon />}
                             >
-                              Active
+                              Готова
                             </MenuItem>
 
                             <MenuItem
@@ -2023,7 +2023,7 @@ const MainWarehouse = () => {
                               }}
                               icon={<InfoIcon />}
                             >
-                              Defected
+                              Брак
                             </MenuItem>
                           </MenuList>
                         </Menu>
@@ -2086,16 +2086,16 @@ const MainWarehouse = () => {
               >
                 <Thead>
                   <Tr>
-                    <Th>ID</Th>
+                    <Th>ИД</Th>
                     <Th>Модел</Th>
                     <Th>Складъ</Th>
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
                     <Th>цена</Th>
-                    <Th>распродажа</Th>
+                    <Th>СКИДКА</Th>
                     <Th>заголовок</Th>
                     <Th>сумма</Th>
-                    <Th>actions</Th>
+                    <Th>ДЕЙСТВИЯ</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -2126,7 +2126,7 @@ const MainWarehouse = () => {
                               as={Button}
                               rightIcon={<ChevronDownIcon />}
                             >
-                              Actions
+                              ДЕЙСТВИЯ
                             </MenuButton>
                             <MenuList>
                               <MenuItem

@@ -511,7 +511,7 @@ const Warehouse = () => {
                   as={Button}
                   rightIcon={<ChevronDownIcon />}
                 >
-                  Actions
+                 Ещё  
                 </MenuButton>
                 <MenuList>
                   <MenuItem
@@ -528,7 +528,7 @@ const Warehouse = () => {
                     </InputLeftElement>
                     <Input
                       type="search"
-                      placeholder="search"
+                      placeholder="поиск"
                       onChange={(e) => {
                         setSearchProductData(e.target.value.trim());
                       }}
@@ -545,16 +545,16 @@ const Warehouse = () => {
               >
                 <Thead>
                   <Tr>
-                    <Th>ID</Th>
+                    <Th>ИД</Th>
                     <Th>Модел</Th>
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
                     <Th>цена</Th>
-                    <Th>распродажа</Th>
+                    <Th>скидка</Th>
                     <Th>заголовок</Th>
                     <Th>сумма</Th>
-                    <Th>status</Th>
-                    <Th>actions</Th>
+                    <Th>Статус</Th>
+                    <Th>действия</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -601,7 +601,7 @@ const Warehouse = () => {
                             as={Button}
                             rightIcon={<ChevronDownIcon />}
                           >
-                            Actions
+                            ДЕЙСТВИЯ
                           </MenuButton>
                           <MenuList>
                             <MenuItem
@@ -741,15 +741,15 @@ const Warehouse = () => {
               >
                 <Thead>
                   <Tr>
-                    <Th>ID</Th>
+                    <Th>ИД</Th>
                     <Th>Модел</Th>
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
                     <Th>цена</Th>
-                    <Th>распродажа</Th>
+                    <Th>СКИДКА</Th>
                     <Th>заголовок</Th>
                     <Th>сумма</Th>
-                    <Th>actions</Th>
+                    <Th>ДЕЙСТВИЯ</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -779,10 +779,10 @@ const Warehouse = () => {
                                 }
                               });
                           }}
-                          placeholder="choose a status"
+                          placeholder="выбрать статус"
                         >
-                          <option value={"ACTIVE"}>ACTIVE</option>
-                          <option value={"DEFECTED"}>DEFECTED</option>
+                          <option value={"ACTIVE"}>Готова</option>
+                          <option value={"DEFECTED"}>Брак</option>
                         </Select>
                       </Td>
                     </Tr>
@@ -842,15 +842,15 @@ const Warehouse = () => {
               >
                 <Thead>
                   <Tr>
-                    <Th>ID</Th>
+                    <Th>ИД</Th>
                     <Th>Модел</Th>
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
                     <Th>цена</Th>
-                    <Th>распродажа</Th>
+                    <Th>СКИДКА</Th>
                     <Th>заголовок</Th>
                     <Th>сумма</Th>
-                    <Th>actions</Th>
+                    <Th>ДЕЙСТВИЯ</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -933,7 +933,7 @@ const Warehouse = () => {
               >
                 <Thead>
                   <Tr>
-                    <Th>ID</Th>
+                    <Th>ИД</Th>
                     <Th>Модел</Th>
                     <Th>кол-во</Th>
                     <Th>ткань</Th>
@@ -941,7 +941,7 @@ const Warehouse = () => {
                     <Th>распродажа</Th>
                     <Th>заголовок</Th>
                     <Th>сумма</Th>
-                    <Th>actions</Th>
+                    <Th>ДЕЙСТВИЯ</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -963,7 +963,7 @@ const Warehouse = () => {
                             as={Button}
                             rightIcon={<ChevronDownIcon />}
                           >
-                            Actions
+                            ДЕЙСТВИЯ
                           </MenuButton>
                           <MenuList>
                             <MenuItem
