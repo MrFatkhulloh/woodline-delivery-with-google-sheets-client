@@ -217,7 +217,7 @@ export default function AdminLinkList() {
           </Heading>
 
           <Menu>
-            <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+            <MenuButton colorScheme="blue" as={Button} rightIcon={<ChevronDownIcon />}>
               Действия
             </MenuButton>
             <MenuList>

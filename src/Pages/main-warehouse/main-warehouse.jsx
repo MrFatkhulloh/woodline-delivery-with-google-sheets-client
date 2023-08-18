@@ -5,6 +5,9 @@ import {
   AlertIcon,
   Box,
   Button,
+  Card,
+  CardBody,
+  CardHeader,
   Checkbox,
   Divider,
   Flex,
@@ -89,10 +92,19 @@ const MainWarehouse = () => {
   const [warehouses, setWarehouses] = useState([]);
   const [companys, setCompanys] = useState([]);
   const [products, setProducts] = useState([]);
+  const [bookedOrder, setBookedOrder] = useState();
+  const [seller, setSeller] = useState();
 
   const [type, setType] = useState("");
 
   const [addPrLoading, setAddPrLoading] = useState(false);
+
+  const [orderId, setOrderId] = useState("");
+  const [acceptID, setAcceptID] = useState(true);
+  const [errorID, setErrortID] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(
+    "значение не должно быть меньше 6 цифр"
+  );
 
   const {
     isOpen: addProductIsOpen,
@@ -140,6 +152,12 @@ const MainWarehouse = () => {
     isOpen: confrimWarehouseIsOpen,
     onOpen: confrimWarehouseOpen,
     onClose: confrimWarehouseClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: infoIsOpen,
+    onOpen: infoOpen,
+    onClose: infoClose,
   } = useDisclosure();
 
   const [empty, setEmpty] = useState(false);
@@ -225,6 +243,28 @@ const MainWarehouse = () => {
     },
   ]);
 
+  //  booked order info
+
+  useEffect(() => {
+    bookedOrder?.order?.seller_id &&
+      instance
+        .get(`/get-seller/${bookedOrder?.order?.seller_id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            token: `${token}`,
+          },
+        })
+        .then((response) => {
+          // console.log(response);
+          // console.log(bookedOrder);
+          setSeller(response.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+  }, [bookedOrder]);
+
+  // console.log(seller);
   useEffect(() => {
     instance.get("/company").then((res) => {
       setCompanys(res.data);
@@ -353,6 +393,7 @@ const MainWarehouse = () => {
           setProductData();
           setReload(!reload);
           addProductOnClose();
+          setOrderId("");
         }
       })
       .finally(() => setAddPrLoading(false))
@@ -786,7 +827,7 @@ const MainWarehouse = () => {
                 <FormControl>
                   <FormLabel>введите ID заказа</FormLabel>
                   <Input
-                    value={moreProductData.order_id}
+                    defaultValue={moreProductData.order_id}
                     onChange={(e) => {
                       setMoreProductData({
                         ...moreProductData,
@@ -1580,6 +1621,47 @@ const MainWarehouse = () => {
         </ModalContent>
       </Modal>
 
+      {/* INFO MODAL */}
+
+      <Modal isOpen={infoIsOpen} onClose={infoClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Данные о продукте</ModalHeader>
+          <ModalCloseButton
+            onClick={() => {
+              setBookedOrder();
+            }}
+          />
+          <ModalBody>
+            <Card>
+              <CardHeader>
+                <Heading size="md">этот продукт забронирован</Heading>
+              </CardHeader>
+              <CardBody>
+                <Text>Имя продавца: {seller?.name ? seller?.name : ""}</Text>
+                <Divider my={3} />
+                <Text>
+                  Номер телефона: {seller?.phone ? seller?.phone : ""}
+                </Text>
+              </CardBody>
+            </Card>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              onClick={() => {
+                infoClose();
+                setBookedOrder();
+              }}
+              colorScheme="blue"
+              mr={3}
+            >
+              понятно
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       <Tabs isFitted>
         <TabList>
           <Tab fontSize={{ "2xl": "2xl", xl: "xl", md: "", sm: "" }}>
@@ -1749,11 +1831,10 @@ const MainWarehouse = () => {
                 my={5}
               >
                 Продукты
-                {/*  */}
               </Heading>
               <Box
                 sx={{
-                  width: "170px",
+                  width: "150px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
@@ -1766,7 +1847,7 @@ const MainWarehouse = () => {
                       as={Button}
                       rightIcon={<ChevronDownIcon />}
                     >
-                      Actions
+                      Ещё
                     </MenuButton>
                     <MenuList sx={{ px: "10px", width: "300px" }}>
                       <InputGroup fullWith my={2}>
@@ -1803,7 +1884,7 @@ const MainWarehouse = () => {
                           downloadModalOpen();
                         }}
                       >
-                        Download
+                        скачать &nbsp;
                         <SaveAltIcon />
                       </Button>
                     </MenuList>
@@ -1870,6 +1951,14 @@ const MainWarehouse = () => {
                       </Td>
                       <Td>
                         <Alert
+                          cursor={
+                            p.order?.status === "BOOKED" ? "pointer" : "auto"
+                          }
+                          onClick={() => {
+                            console.log(p);
+                            setBookedOrder(p);
+                            p.order?.status === "BOOKED" && infoOpen();
+                          }}
                           bgColor={
                             p.order?.status === "BOOKED" ? "#c0c0c0" : ""
                           }

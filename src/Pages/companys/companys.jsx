@@ -127,7 +127,7 @@ const Companys = () => {
             Компании
           </Heading>
           <Button colorScheme="blue" onClick={onOpen}>
-            Добавить kомпании
+            Добавить компания
           </Button>
         </Flex>
 
