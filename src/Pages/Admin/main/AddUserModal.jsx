@@ -142,6 +142,7 @@ const AddUserModal = ({ onOpen, isOpen, onClose }) => {
               <option value="PRODUCER">Пред прениматель</option>
               <option value="STOREKEEPER">Кладовщик</option>
               <option value="MAIN_STOREKEEPER">Главный кладовщик</option>
+              <option value="MATERIAL_ACCOUNTANT">Материальный бухгалтер</option>
             </Select>
           </FormControl>
         </ModalBody>

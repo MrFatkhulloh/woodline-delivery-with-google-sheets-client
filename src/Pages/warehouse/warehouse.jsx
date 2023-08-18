@@ -8,6 +8,7 @@ import {
   Checkbox,
   Flex,
   FormControl,
+  FormHelperText,
   FormLabel,
   Heading,
   Input,
@@ -108,6 +109,12 @@ const Warehouse = () => {
   const [deliveredSearch, setDeliveredSearch] = useState("");
   const [searchAplicatinsData, setSearchAplicationsData] = useState([]);
   const [aplicationsSearch, setAplicationsSearch] = useState("");
+  const [orderId, setOrderId] = useState("");
+  const [acceptID, setAcceptID] = useState(true);
+  const [errorID, setErrortID] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(
+    "значение не должно быть меньше 6 цифр"
+  );
   useEffect(() => {
     instance.get("/warehouse-all").then((res) => {
       setCompanys(res.data);
@@ -202,6 +209,7 @@ const Warehouse = () => {
           });
           setReload(!reload);
           addProductOnClose();
+          setOrderId("");
         }
       })
       .finally(() => setAddLoading(false))
@@ -248,6 +256,33 @@ const Warehouse = () => {
     });
   };
 
+  // Validation create product ID
+  const checkCreateproductId = (id) => {
+    if (id.length < 6) {
+      setAcceptID(false);
+      setErrortID(true);
+      setErrorMessage("значение не должно быть меньше 6 цифр");
+    } else {
+      setAcceptID(true);
+      instance
+        .get(`/has-order-id/${id}`)
+        .then((res) => {
+          if (res.data === null) {
+            // console.log(res)
+            setErrortID(true);
+            setErrorMessage("");
+            setProductData({ ...productData, order_id: id });
+          } else {
+            setErrortID(false);
+            setErrorMessage("этот продукт уже создан.");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
   const handlePageChange = (p) => {
     setPage(p);
   };
@@ -268,16 +303,46 @@ const Warehouse = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Добавить продукт</ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton
+            onClick={() => {
+              setAcceptID(true);
+              setErrortID(true);
+            }}
+          />
           <ModalBody display={"flex"} flexDirection={"column"} gap={"15px"}>
-            <FormControl>
+            <FormControl isInvalid={!acceptID || !errorID}>
               <FormLabel>введите ID заказа</FormLabel>
               <Input
-                onChange={(e) =>
-                  setProductData({ ...productData, order_id: e.target.value })
+                focusBorderColor={
+                  !orderId?.length || orderId?.length === 0
+                    ? "#63b3ed"
+                    : !acceptID || !errorID
+                    ? `#FC8181`
+                    : "#65ce88"
                 }
+                onChange={(e) => {
+                  if (!e.target.value?.length || e.target.value?.length === 0) {
+                    setErrorMessage("");
+                  }
+                  checkCreateproductId(e.target.value.trim());
+                  setOrderId(e.target.value.trim());
+                }}
                 type="number"
               />
+              {!acceptID ? (
+                <FormHelperText color={"#FC8181"}>
+                  {errorMessage}
+                </FormHelperText>
+              ) : (
+                ""
+              )}
+              {!errorID ? (
+                <FormHelperText color={"#FC8181"}>
+                  {errorMessage}
+                </FormHelperText>
+              ) : (
+                ""
+              )}
             </FormControl>
 
             <Box display={"flex"} gap={"20px"}>
@@ -352,6 +417,8 @@ const Warehouse = () => {
             <Button
               onClick={() => {
                 addProductOnClose();
+                setAcceptID(true);
+                setErrortID(true);
                 setProductData({
                   cathegory: "заказ",
                 });
@@ -511,7 +578,7 @@ const Warehouse = () => {
                   as={Button}
                   rightIcon={<ChevronDownIcon />}
                 >
-                 Ещё  
+                  Ещё
                 </MenuButton>
                 <MenuList>
                   <MenuItem

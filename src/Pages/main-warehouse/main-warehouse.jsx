@@ -99,6 +99,13 @@ const MainWarehouse = () => {
 
   const [addPrLoading, setAddPrLoading] = useState(false);
 
+  const [orderId, setOrderId] = useState("");
+  const [acceptID, setAcceptID] = useState(true);
+  const [errorID, setErrortID] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(
+    "значение не должно быть меньше 6 цифр"
+  );
+
   const {
     isOpen: addProductIsOpen,
     onOpen: addProductOnOpen,
@@ -386,6 +393,7 @@ const MainWarehouse = () => {
           setProductData();
           setReload(!reload);
           addProductOnClose();
+          setOrderId("");
         }
       })
       .finally(() => setAddPrLoading(false))
@@ -819,7 +827,7 @@ const MainWarehouse = () => {
                 <FormControl>
                   <FormLabel>введите ID заказа</FormLabel>
                   <Input
-                    value={moreProductData.order_id}
+                    defaultValue={moreProductData.order_id}
                     onChange={(e) => {
                       setMoreProductData({
                         ...moreProductData,
@@ -1876,7 +1884,7 @@ const MainWarehouse = () => {
                           downloadModalOpen();
                         }}
                       >
-                        Download
+                        скачать &nbsp;
                         <SaveAltIcon />
                       </Button>
                     </MenuList>
