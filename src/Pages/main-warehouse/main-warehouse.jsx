@@ -12,6 +12,7 @@ import {
   Divider,
   Flex,
   FormControl,
+  FormHelperText,
   FormLabel,
   Heading,
   Icon,
@@ -106,6 +107,13 @@ const MainWarehouse = () => {
     "значение не должно быть меньше 6 цифр"
   );
 
+  const [orderId2, setOrderId2] = useState("");
+  const [acceptID2, setAcceptID2] = useState(true);
+  const [errorID2, setErrortID2] = useState(true);
+  const [errorMessage2, setErrorMessage2] = useState(
+    "значение не должно быть меньше 6 цифр"
+  );
+
   const {
     isOpen: addProductIsOpen,
     onOpen: addProductOnOpen,
@@ -162,12 +170,24 @@ const MainWarehouse = () => {
 
   const [empty, setEmpty] = useState(false);
   const [productData, setProductData] = useState();
+  const [moreProductTissue, setMoreProductTissue] = useState("");
+  const [moreProductTitle, setMoreProductTitle] = useState("");
   const [moreProductData, setMoreProductData] = useState({
     model_id: "",
     order_id: "",
     status: "",
     tissue: "",
     title: "",
+  });
+
+  const [checkProductData, setCheckProductData] = useState({
+    model_id: false,
+    order_id: false,
+    status: false,
+    tissue: false,
+    title: false,
+    type: false,
+    warehouse_id: false,
   });
   const [checkMoreProductData, setCheckMoreProductData] = useState({
     model_id: false,
@@ -191,6 +211,9 @@ const MainWarehouse = () => {
       tissue: "",
       title: "",
     });
+    setOrderId2("");
+    setMoreProductTissue("");
+    setMoreProductTitle("");
     setType("");
   };
   const { types, courier, token } = useContext(OpenModalContext);
@@ -437,6 +460,35 @@ const MainWarehouse = () => {
       });
   };
 
+  // Validation create product ID
+  const checkCreateproductId = (id) => {
+    if (id.length < 6) {
+      setAcceptID(false);
+      setErrortID(true);
+      setErrorMessage("значение не должно быть меньше 6 цифр");
+      setCheckProductData({ ...checkProductData, order_id: false });
+    } else {
+      setAcceptID(true);
+      instance
+        .get(`/has-order-id/${id}`)
+        .then((res) => {
+          if (res.data === null) {
+            // console.log(res)
+            setErrortID(true);
+            setErrorMessage("");
+            setProductData({ ...productData, order_id: id });
+            setCheckProductData({ ...checkProductData, order_id: true });
+          } else {
+            setErrortID(false);
+            setErrorMessage("этот продукт уже создан.");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
   const handleTransferProduct = () => {
     setTransferLoading(true);
 
@@ -618,23 +670,59 @@ const MainWarehouse = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Добавить продукт</ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton
+            onClick={() => {
+              setAcceptID(true);
+              setErrortID(true);
+            }}
+          />
           <ModalBody display={"flex"} flexDirection={"column"} gap={"15px"}>
             <FormControl>
               <FormLabel>введите ID заказа</FormLabel>
               <Input
-                onChange={(e) =>
-                  setProductData({ ...productData, order_id: e.target.value })
+                focusBorderColor={
+                  !orderId?.length || orderId?.length === 0
+                    ? "#63b3ed"
+                    : !acceptID || !errorID
+                    ? `#FC8181`
+                    : "#65ce88"
                 }
+                onChange={(e) => {
+                  if (!e.target.value?.length || e.target.value?.length === 0) {
+                    setErrorMessage("");
+                  }
+                  checkCreateproductId(e.target.value.trim());
+                  setOrderId(e.target.value.trim());
+                }}
                 type="number"
               />
+              {!acceptID ? (
+                <FormHelperText color={"#FC8181"}>
+                  {errorMessage}
+                </FormHelperText>
+              ) : (
+                ""
+              )}
+              {!errorID ? (
+                <FormHelperText color={"#FC8181"}>
+                  {errorMessage}
+                </FormHelperText>
+              ) : (
+                ""
+              )}
             </FormControl>
 
             <Box display={"flex"} gap={"20px"}>
               <FormControl>
                 <FormLabel>вид мебели</FormLabel>
                 <Select
-                  onChange={(e) => setType(e.target.value)}
+                  onChange={(e) => {
+                    setType(e.target.value);
+                    setCheckProductData({
+                      ...checkProductData,
+                      type: true,
+                    });
+                  }}
                   placeholder="выбрать вид мебель"
                 >
                   {types?.map((t) => (
@@ -647,9 +735,16 @@ const MainWarehouse = () => {
               <FormControl>
                 <FormLabel>модели</FormLabel>
                 <Select
-                  onChange={(e) =>
-                    setProductData({ ...productData, model_id: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setProductData({
+                      ...productData,
+                      model_id: e.target.value,
+                    });
+                    setCheckProductData({
+                      ...checkProductData,
+                      model_id: true,
+                    });
+                  }}
                   isDisabled={!type ? true : false}
                   placeholder="выбрать модель"
                 >
@@ -666,9 +761,14 @@ const MainWarehouse = () => {
             <FormControl>
               <FormLabel>введите название ткани</FormLabel>
               <Input
-                onChange={(e) =>
-                  setProductData({ ...productData, tissue: e.target.value })
-                }
+                onChange={(e) => {
+                  setProductData({ ...productData, tissue: e.target.value });
+                  if (e.target.value?.length && e.target.value?.length !== 0) {
+                    setCheckProductData({ ...checkProductData, tissue: true });
+                  } else {
+                    setCheckProductData({ ...checkProductData, tissue: false });
+                  }
+                }}
                 type="text"
               />
             </FormControl>
@@ -678,12 +778,16 @@ const MainWarehouse = () => {
                 <FormLabel>Склад</FormLabel>
 
                 <Select
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setProductData({
                       ...productData,
                       warehouse_id: e.target.value,
-                    })
-                  }
+                    });
+                    setCheckProductData({
+                      ...checkProductData,
+                      warehouse_id: true,
+                    });
+                  }}
                   placeholder="выбирать..."
                 >
                   {warehouses?.map((w) => (
@@ -698,9 +802,10 @@ const MainWarehouse = () => {
                 <FormLabel>Статус</FormLabel>
 
                 <Select
-                  onChange={(e) =>
-                    setProductData({ ...productData, status: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setProductData({ ...productData, status: e.target.value });
+                    setCheckProductData({ ...checkProductData, status: true });
+                  }}
                   placeholder="выбирать..."
                 >
                   <option value={"NEW"}>Новый</option>
@@ -720,9 +825,14 @@ const MainWarehouse = () => {
             </Box>
 
             <Textarea
-              onChange={(e) =>
-                setProductData({ ...productData, title: e.target.value })
-              }
+              onChange={(e) => {
+                setProductData({ ...productData, title: e.target.value });
+                if (e.target.value?.length && e.target.value?.length !== 0) {
+                  setCheckProductData({ ...checkProductData, title: true });
+                } else {
+                  setCheckProductData({ ...checkProductData, title: false });
+                }
+              }}
               placeholder="Заголовок..."
             />
           </ModalBody>
@@ -730,13 +840,13 @@ const MainWarehouse = () => {
           <ModalFooter>
             <Button
               isDisabled={
-                productData?.order_id?.length &&
-                type?.length &&
-                productData?.model_id?.length &&
-                productData?.tissue?.length &&
-                productData?.warehouse_id?.length &&
-                productData?.status?.length &&
-                productData?.title?.length
+                checkProductData?.order_id &&
+                checkProductData?.type &&
+                checkProductData?.model_id &&
+                checkProductData?.tissue &&
+                checkProductData?.warehouse_id &&
+                checkProductData?.status &&
+                checkProductData?.title
                   ? false
                   : true
               }
@@ -750,6 +860,7 @@ const MainWarehouse = () => {
             <Button
               onClick={() => {
                 addProductOnClose();
+                setOrderId("");
                 setProductData();
               }}
               variant="ghost"
@@ -813,7 +924,12 @@ const MainWarehouse = () => {
       <Modal isOpen={moreProductIsOpen} onClose={mordeProductClose} size="5xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalCloseButton />
+          <ModalCloseButton
+            onClick={() => {
+              setAcceptID2(true);
+              setErrortID2(true);
+            }}
+          />
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Box sx={{ width: "400px" }}>
               <ModalHeader>Добавить несколько продуктов</ModalHeader>
@@ -827,19 +943,73 @@ const MainWarehouse = () => {
                 <FormControl>
                   <FormLabel>введите ID заказа</FormLabel>
                   <Input
-                    defaultValue={moreProductData.order_id}
+                    value={orderId2}
+                    focusBorderColor={
+                      !orderId2?.length || orderId2?.length === 0
+                        ? "#63b3ed"
+                        : !acceptID2 || !errorID2
+                        ? `#FC8181`
+                        : "#65ce88"
+                    }
                     onChange={(e) => {
-                      setMoreProductData({
-                        ...moreProductData,
-                        order_id: e.target.value.trim(),
-                      });
-                      setCheckMoreProductData({
-                        ...checkMoreProductData,
-                        order_id: true,
-                      });
+                      const checkId = allMoreProductData.find(
+                        (item) => item?.order_id === e.target.value.trim()
+                      );
+                      if (e.target.value?.length < 6) {
+                        setAcceptID2(false);
+                        setErrortID2(true);
+                        setErrorMessage2(
+                          "значение не должно быть меньше 6 цифр"
+                        );
+                        setCheckMoreProductData({
+                          ...checkMoreProductData,
+                          order_id: false,
+                        });
+                      } else {
+                        setAcceptID2(true);
+                        instance
+                          .get(`/has-order-id/${e.target.value.trim()}`)
+                          .then((res) => {
+                            // console.log(res, checkId);
+                            if (res.data === null && !checkId) {
+                              // console.log(res)
+                              setErrortID2(true);
+                              setErrorMessage2("");
+                              setMoreProductData({
+                                ...moreProductData,
+                                order_id: e.target.value.trim(),
+                              });
+                              setCheckMoreProductData({
+                                ...checkMoreProductData,
+                                order_id: true,
+                              });
+                            } else {
+                              setErrortID2(false);
+                              setErrorMessage2("этот продукт уже создан.");
+                            }
+                          })
+                          .catch((err) => {
+                            console.log(err);
+                          });
+                      }
+                      setOrderId2(e.target.value.trim());
                     }}
                     type="number"
                   />
+                  {!acceptID2 ? (
+                    <FormHelperText color={"#FC8181"}>
+                      {errorMessage2}
+                    </FormHelperText>
+                  ) : (
+                    ""
+                  )}
+                  {!errorID2 ? (
+                    <FormHelperText color={"#FC8181"}>
+                      {errorMessage2}
+                    </FormHelperText>
+                  ) : (
+                    ""
+                  )}
                 </FormControl>
 
                 <Box display={"flex"} gap={"20px"}>
@@ -893,16 +1063,27 @@ const MainWarehouse = () => {
                 <FormControl>
                   <FormLabel>введите название ткани</FormLabel>
                   <Input
-                    value={moreProductData.tissue}
+                    value={moreProductTissue}
                     onChange={(e) => {
                       setMoreProductData({
                         ...moreProductData,
                         tissue: e.target.value.trim(),
                       });
-                      setCheckMoreProductData({
-                        ...checkMoreProductData,
-                        tissue: true,
-                      });
+                      setMoreProductTissue(e.target.value);
+                      if (
+                        e.target.value?.length &&
+                        e.target.value?.length !== 0
+                      ) {
+                        setCheckMoreProductData({
+                          ...checkMoreProductData,
+                          tissue: true,
+                        });
+                      } else {
+                        setCheckMoreProductData({
+                          ...checkMoreProductData,
+                          tissue: false,
+                        });
+                      }
                     }}
                     type="text"
                   />
@@ -943,27 +1124,39 @@ const MainWarehouse = () => {
                 </Box>
 
                 <Textarea
-                  value={moreProductData.title}
+                  value={moreProductTitle}
                   onChange={(e) => {
                     setMoreProductData({
                       ...moreProductData,
                       title: e.target.value.trim(),
                     });
-                    setCheckMoreProductData({
-                      ...checkMoreProductData,
-                      title: true,
-                    });
+                    setMoreProductTitle(e.target.value);
+                    if (
+                      e.target.value?.length &&
+                      e.target.value?.length !== 0
+                    ) {
+                      setCheckMoreProductData({
+                        ...checkMoreProductData,
+                        title: true,
+                      });
+                    } else {
+                      setCheckMoreProductData({
+                        ...checkMoreProductData,
+                        title: false,
+                      });
+                    }
                   }}
                   placeholder="Заголовок..."
                 />
 
                 <Button
                   isDisabled={
-                    moreProductData?.order_id.length &&
-                    moreProductData?.model_id.length &&
-                    moreProductData?.tissue.length &&
-                    moreProductData?.status.length &&
-                    moreProductData?.title.length
+                    checkMoreProductData?.order_id &&
+                    checkMoreProductData?.type &&
+                    checkMoreProductData?.model_id &&
+                    checkMoreProductData?.tissue &&
+                    checkMoreProductData?.status &&
+                    checkMoreProductData?.title
                       ? false
                       : true
                   }
@@ -1027,7 +1220,7 @@ const MainWarehouse = () => {
                               if (m?.id === p?.model_id) mName = m?.name;
                             });
                           });
-
+                          console.log(p);
                           return (
                             <Tr key={i}>
                               <Td>{i + 1}</Td>
@@ -1035,8 +1228,22 @@ const MainWarehouse = () => {
                               <Td>{p?.title}</Td>
                               <Td>{mName}</Td>
                               <Td>{p?.tissue}</Td>
-
-                              <Td>{p?.status}</Td>
+                              <Td>
+                                {p?.status === "NEW"
+                                  ? "Новый"
+                                  : p?.status === "ACTIVE"
+                                  ? "Готовa"
+                                  : p?.status === "DEFECTED"
+                                  ? "Брак"
+                                  : p?.status === "SOLD_AND_CHECKED"
+                                  ? "к отправке"
+                                  : p?.status === "DELIVERED"
+                                  ? "Доставлена"
+                                  : p?.status === "RETURNED"
+                                  ? "Возврат"
+                                  : ""}
+                                {/* DELIVERED */}
+                              </Td>
                             </Tr>
                           );
                         })
@@ -1955,7 +2162,7 @@ const MainWarehouse = () => {
                             p.order?.status === "BOOKED" ? "pointer" : "auto"
                           }
                           onClick={() => {
-                            console.log(p);
+                            // console.log(p);
                             setBookedOrder(p);
                             p.order?.status === "BOOKED" && infoOpen();
                           }}

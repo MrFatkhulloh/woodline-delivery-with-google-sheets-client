@@ -90,6 +90,13 @@ const Warehouse = () => {
   const [products, setProducts] = useState([]);
   const [type, setType] = useState();
   const [productData, setProductData] = useState();
+  const [checkProductData, setCheckProductData] = useState({
+    order_id: false,
+    type: false,
+    model_id: false,
+    tissue: false,
+    title: false,
+  });
   const [reload, setReload] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
   const [transferLoading, setTransferLoading] = useState(false);
@@ -262,16 +269,19 @@ const Warehouse = () => {
       setAcceptID(false);
       setErrortID(true);
       setErrorMessage("значение не должно быть меньше 6 цифр");
+      setCheckProductData({ ...checkProductData, order_id: false });
     } else {
       setAcceptID(true);
       instance
         .get(`/has-order-id/${id}`)
         .then((res) => {
+          console.log(res);
           if (res.data === null) {
             // console.log(res)
             setErrortID(true);
             setErrorMessage("");
             setProductData({ ...productData, order_id: id });
+            setCheckProductData({ ...checkProductData, order_id: true });
           } else {
             setErrortID(false);
             setErrorMessage("этот продукт уже создан.");
@@ -349,7 +359,10 @@ const Warehouse = () => {
               <FormControl>
                 <FormLabel>вид мебели</FormLabel>
                 <Select
-                  onChange={(e) => setType(e.target.value)}
+                  onChange={(e) => {
+                    setType(e.target.value);
+                    setCheckProductData({ ...checkProductData, type: true });
+                  }}
                   placeholder="выбрать вид мебель"
                 >
                   {types?.map((t) => (
@@ -362,9 +375,16 @@ const Warehouse = () => {
               <FormControl>
                 <FormLabel>модели</FormLabel>
                 <Select
-                  onChange={(e) =>
-                    setProductData({ ...productData, model_id: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setProductData({
+                      ...productData,
+                      model_id: e.target.value,
+                    });
+                    setCheckProductData({
+                      ...checkProductData,
+                      model_id: true,
+                    });
+                  }}
                   isDisabled={!type ? true : false}
                   placeholder="выбрать модель"
                 >
@@ -381,17 +401,39 @@ const Warehouse = () => {
             <FormControl>
               <FormLabel>введите название ткани</FormLabel>
               <Input
-                onChange={(e) =>
-                  setProductData({ ...productData, tissue: e.target.value })
-                }
+                onChange={(e) => {
+                  setProductData({ ...productData, tissue: e.target.value });
+                  if (e.target.value?.length && e.target.value?.length !== 0) {
+                    setCheckProductData({
+                      ...checkProductData,
+                      tissue: true,
+                    });
+                  } else {
+                    setCheckProductData({
+                      ...checkProductData,
+                      tissue: false,
+                    });
+                  }
+                }}
                 type="text"
               />
             </FormControl>
 
             <Textarea
-              onChange={(e) =>
-                setProductData({ ...productData, title: e.target.value })
-              }
+              onChange={(e) => {
+                setProductData({ ...productData, title: e.target.value });
+                if (e.target.value?.length && e.target.value?.length !== 0) {
+                  setCheckProductData({
+                    ...checkProductData,
+                    title: true,
+                  });
+                } else {
+                  setCheckProductData({
+                    ...checkProductData,
+                    title: false,
+                  });
+                }
+              }}
               placeholder="Заголовок..."
             />
           </ModalBody>
@@ -399,11 +441,11 @@ const Warehouse = () => {
           <ModalFooter>
             <Button
               isDisabled={
-                productData?.order_id?.length &&
-                type?.length &&
-                productData?.model_id?.length &&
-                productData?.tissue?.length &&
-                productData?.title?.length
+                checkProductData?.order_id &&
+                checkProductData?.type &&
+                checkProductData?.model_id &&
+                checkProductData?.tissue &&
+                checkProductData?.title
                   ? false
                   : true
               }
