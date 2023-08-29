@@ -215,6 +215,13 @@ export default function NewFurnitureType() {
 
   const [searchValue, setSearchValue] = useState("");
   const [requireData, setRequireData] = useState(false);
+  const [editModelCheck, setEditModelCheck] = useState({
+    name: true,
+    company_id: true,
+    price: true,
+    sale: true,
+    code: true,
+  });
 
   useEffect(() => {
     searchValue.trim() !== ""
@@ -356,9 +363,20 @@ export default function NewFurnitureType() {
       })
       .then((res) => {
         if (res.status === 200) {
-          toast.success("Updated model name");
-
+          toast.success("Изменено успешно");
+          setNewModelName("");
+          setCompId("");
+          setModelPrice(0);
+          setModelSale(0);
+          setModelCode("");
           setReload(!reload);
+          setEditModelCheck({
+            name: true,
+            company_id: true,
+            price: true,
+            sale: true,
+            code: true,
+          });
         }
       })
       .finally(() => {
@@ -373,7 +391,7 @@ export default function NewFurnitureType() {
       .delete(`/models/${model.id}`)
       .then((res) => {
         if (res.status === 200) {
-          toast.success(`${res.data}`);
+          toast.success(`Удален успешно`);
 
           setReload(!reload);
         }
@@ -518,14 +536,34 @@ export default function NewFurnitureType() {
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Изменить название модели</ModalHeader>
-            <ModalCloseButton />
+            <ModalCloseButton
+              onClick={() => {
+                setNewModelName("");
+                setCompId("");
+                setModelPrice(0);
+                setModelSale(0);
+                setModelCode("");
+                setEditModelCheck({
+                  name: true,
+                  company_id: true,
+                  price: true,
+                  sale: true,
+                  code: true,
+                });
+              }}
+            />
             <ModalBody>
               <FormControl>
                 <FormLabel>Изменить имя</FormLabel>
 
                 <Input
                   onChange={(e) => {
-                    setNewModelName(e.target.value);
+                    if (e.target.value.length) {
+                      setEditModelCheck({ ...editModelCheck, name: true });
+                    } else {
+                      setEditModelCheck({ ...editModelCheck, name: false });
+                    }
+                    setNewModelName(e.target.value.trim());
                   }}
                   defaultValue={model?.name}
                   type="text"
@@ -537,7 +575,20 @@ export default function NewFurnitureType() {
 
                 <Select
                   defaultValue={model?.company_id}
-                  onChange={(e) => setCompId(e.target.value)}
+                  onChange={(e) => {
+                    if (e.target.value.length) {
+                      setEditModelCheck({
+                        ...editModelCheck,
+                        company_id: true,
+                      });
+                    } else {
+                      setEditModelCheck({
+                        ...editModelCheck,
+                        company_id: false,
+                      });
+                    }
+                    setCompId(e.target.value);
+                  }}
                   placeholder="выбрать компанию"
                 >
                   {companys?.map((company) => (
@@ -557,13 +608,18 @@ export default function NewFurnitureType() {
                 <Input
                   defaultValue={accounting.formatNumber(model?.price, 0, " ")}
                   onChange={(e) => {
+                    if (e.target.value.length) {
+                      setEditModelCheck({ ...editModelCheck, price: true });
+                    } else {
+                      setEditModelCheck({ ...editModelCheck, price: false });
+                    }
                     e.target.value = accounting.formatNumber(
                       e.target.value,
                       0,
                       " "
                     );
                     accounting.unformat(e.target.value);
-                    setModelPrice(accounting.unformat(e.target.value));
+                    setModelPrice(accounting.unformat(e.target.value.trim()));
                     // console.log(accounting.unformat(e.target.value));
                   }}
                   type="text"
@@ -575,7 +631,14 @@ export default function NewFurnitureType() {
 
                 <Input
                   defaultValue={model?.sale}
-                  onChange={(e) => setModelSale(e.target.value)}
+                  onChange={(e) => {
+                    if (e.target.value.length) {
+                      setEditModelCheck({ ...editModelCheck, sale: true });
+                    } else {
+                      setEditModelCheck({ ...editModelCheck, sale: false });
+                    }
+                    setModelSale(e.target.value.trim());
+                  }}
                   type="number"
                 />
               </FormControl>
@@ -584,7 +647,14 @@ export default function NewFurnitureType() {
 
                 <Input
                   defaultValue={model?.code}
-                  onChange={(e) => setModelCode(e.target.value)}
+                  onChange={(e) => {
+                    if (e.target.value.length) {
+                      setEditModelCheck({ ...editModelCheck, code: true });
+                    } else {
+                      setEditModelCheck({ ...editModelCheck, code: false });
+                    }
+                    setModelCode(e.target.value.trim());
+                  }}
                   type="text"
                 />
               </FormControl>
@@ -592,6 +662,15 @@ export default function NewFurnitureType() {
 
             <ModalFooter>
               <Button
+                isDisabled={
+                  editModelCheck.name &&
+                  editModelCheck.price &&
+                  editModelCheck.company_id &&
+                  editModelCheck.code &&
+                  editModelCheck.sale
+                    ? false
+                    : true
+                }
                 isLoading={updateLoading}
                 colorScheme="blue"
                 mr={3}
@@ -599,7 +678,24 @@ export default function NewFurnitureType() {
               >
                 {"Изменять"}
               </Button>
-              <Button variant="ghost" onClick={updateClose}>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  updateClose();
+                  setNewModelName("");
+                  setCompId("");
+                  setModelPrice(0);
+                  setModelSale(0);
+                  setModelCode("");
+                  setEditModelCheck({
+                    name: true,
+                    company_id: true,
+                    price: true,
+                    sale: true,
+                    code: true,
+                  });
+                }}
+              >
                 Закрывать
               </Button>
             </ModalFooter>
@@ -730,7 +826,7 @@ export default function NewFurnitureType() {
                               onClick={() => {
                                 updateOpen();
                                 setModel(model);
-                                console.log(model);
+                                // console.log(model);
                               }}
                             >
                               Изменять
