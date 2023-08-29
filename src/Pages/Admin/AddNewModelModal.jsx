@@ -45,6 +45,7 @@ const ModelRow = ({
   useEffect(() => {
     instance.get("/company").then((res) => {
       setCompanys(res.data);
+      
     });
   }, []);
 
@@ -178,10 +179,10 @@ const ModelRow = ({
               handleChange(event.target.id, "company_id", event.target.value)
             }
           >
-            {companys.length &&
-              companys.map((element, index) => (
-                <option key={index} value={element.id}>
-                  {element.name}
+            {companys?.length &&
+              companys?.map((element, index) => (
+                <option key={index} value={element?.id}>
+                  {element?.name}
                 </option>
               ))}
           </Select>
@@ -241,6 +242,7 @@ export default function NewModelModal({
   const handleSubmit = () => {
     setAddModelLoading(true);
     setReady(false);
+    // console.log(models);
     axios
       .post(
         "/models",
@@ -257,7 +259,7 @@ export default function NewModelModal({
       .then((response) => {
         if (response.status === 200) {
           setReload(!reload);
-console.log(models)
+          // console.log(models)
           myOnClose();
           setModels([
             {
@@ -269,6 +271,8 @@ console.log(models)
               type_id: "",
             },
           ]);
+          // console.log(models);
+
           setRequireData(false);
           toast.success("Добавлена новая модель");
         }
