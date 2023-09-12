@@ -95,7 +95,7 @@ export const routes = [
     path: "/producer",
     name: "Продюсер",
     icon: null,
-    access_roles: ["SUPER_ADMIN", "PRODUCER"],
+    access_roles: ["SUPER_ADMIN", "PRODUCER", "MAIN_STOREKEEPER"],
   },
   {
     path: "/warehouse",
