@@ -1,12 +1,13 @@
 import { Box, Button, ButtonGroup, Flex } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const DynamicPagination = ({
   totalCount,
   pageSize,
   onPageChange,
   children,
+  page,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -114,6 +115,10 @@ const DynamicPagination = ({
 
     return buttons;
   };
+
+  useEffect(() => {
+    setCurrentPage(page);
+  }, [page]);
 
   return (
     <Flex align="center" justify="center" mt={4}>

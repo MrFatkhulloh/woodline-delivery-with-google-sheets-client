@@ -43,6 +43,7 @@ import { toast } from "react-toastify";
 import { FiMeh } from "react-icons/fi";
 import accounting from "accounting";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
+import DynamicPagination from "../../components/pagin/pagin";
 
 const Producer = () => {
   const {
@@ -67,17 +68,23 @@ const Producer = () => {
   const [order, setOrder] = useState();
   const [changeLoading, setChangeLoading] = useState(false);
   const [productData, setProductData] = useState();
+  const { role } = useContext(OpenModalContext);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalCount, setTotalCount] = useState();
 
   useEffect(() => {
     instance
       .get(
         `/get-order-by-status?status=${
           reqIndex === 0 ? "NEW" : reqIndex === 1 ? "ACCEPTED" : "REJECTED"
-        }`
+        }&page=${page}?limit=${limit}`
       )
-      .then((res) => setOrders(res.data));
-  }, [reqIndex, reload]);
-
+      .then((res) => {
+        setOrders(res?.data);
+        setTotalCount(res?.data?.totalAmount);
+      });
+  }, [reqIndex, reload, page, limit]);
   const handleChangeStatus = (event, order) => {
     statusCheckOnOpen();
 
@@ -134,6 +141,15 @@ const Producer = () => {
           );
         }
       });
+  };
+
+  const handlePageChange = (p) => {
+    setPage(p);
+  };
+  
+  const handleTabChange = (index) => {
+    setPage(1);
+    setReqIndex(index);
   };
 
   return (
@@ -312,7 +328,12 @@ const Producer = () => {
         </ModalContent>
       </Modal>
 
-      <Tabs isFitted onChange={(index) => setReqIndex(index)}>
+      <Tabs
+        isFitted
+        onChange={(index) => {
+          handleTabChange(index);
+        }}
+      >
         <TabList>
           <Tab fontSize={{ "2xl": "2xl", xl: "xl", md: "", sm: "" }}>
             приём заказа 📥
@@ -341,12 +362,14 @@ const Producer = () => {
                 приём заказа
               </Heading>
 
-              <Button onClick={addProductOnOpen} colorScheme="blue">
-                Добавить продукт
-              </Button>
+              {role !== "MAIN_STOREKEEPER" ? (
+                <Button onClick={addProductOnOpen} colorScheme="blue">
+                  Добавить продукт
+                </Button>
+              ) : null}
             </Flex>
 
-            {orders?.length === 0 ? (
+            {orders.orders?.length === 0 ? (
               <Flex
                 background={colorMode === "light" ? "#fff" : ""}
                 borderWidth={"1px"}
@@ -360,62 +383,66 @@ const Producer = () => {
                 </Text>
               </Flex>
             ) : (
-              <TableContainer overflowX="unset">
-                <Table
-                  variant="simple"
-                  background={colorMode === "light" ? "#fff" : ""}
-                >
-                  <Thead position="sticky" top={0} zIndex="docked">
-                    <Tr>
-                      <Th>Дата</Th>
-                      <Th>ID</Th>
-                      <Th>Вид мебели</Th>
-                      <Th>модель</Th>
-                      <Th>кол-во</Th>
-                      <Th>ткань</Th>
-                      <Th>подробности</Th>
-                      <Th>Дата доставки</Th>
-                      <Th>изменить статус</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {reqIndex === 0
-                      ? orders?.map((order) => (
-                          <Tr key={order.id}>
-                            <Td>
-                              {moment(order.createdAt).locale("ru").format("L")}
-                            </Td>
-                            <Td>{order.order_id}</Td>
-                            <Td>{order.model?.furniture_type?.name}</Td>
+              <>
+                <TableContainer overflowX="unset">
+                  <Table
+                    variant="simple"
+                    background={colorMode === "light" ? "#fff" : ""}
+                  >
+                    <Thead position="sticky" top={0} zIndex="docked">
+                      <Tr>
+                        <Th>Дата</Th>
+                        <Th>ID</Th>
+                        <Th>Вид мебели</Th>
+                        <Th>модель</Th>
+                        <Th>кол-во</Th>
+                        <Th>ткань</Th>
+                        <Th>подробности</Th>
+                        <Th>Дата доставки</Th>
+                        <Th>изменить статус</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {reqIndex === 0
+                        ? orders?.orders?.map((order) => (
+                            <Tr key={order.id}>
+                              <Td>
+                                {moment(order.createdAt)
+                                  .locale("ru")
+                                  .format("L")}
+                              </Td>
+                              <Td>{order.order_id}</Td>
+                              <Td>{order.model?.furniture_type?.name}</Td>
 
-                            <Td>{order.model?.name}</Td>
-                            <Td>{order.qty}</Td>
-                            <Td>{order.tissue}</Td>
-                            <Td whiteSpace={"pre-wrap"}>{order.title}</Td>
-                            <Td>
-                              {moment(order.deal?.delivery_date)
-                                .locale("ru")
-                                .format("L")}
-                            </Td>
-                            <Td>
-                              <Select
-                                placeholder="изменить статус"
-                                defaultValue={order.status}
-                                width={200}
-                                onChange={(e) => handleChangeStatus(e, order)}
-                              >
-                                <option value={"ACCEPTED"}>принял ✅</option>
-                                <option value={"REJECTED"}>
-                                  отклоненный ❌
-                                </option>
-                              </Select>
-                            </Td>
-                          </Tr>
-                        ))
-                      : null}
-                  </Tbody>
-                </Table>
-              </TableContainer>
+                              <Td>{order.model?.name}</Td>
+                              <Td>{order.qty}</Td>
+                              <Td>{order.tissue}</Td>
+                              <Td whiteSpace={"pre-wrap"}>{order.title}</Td>
+                              <Td>
+                                {moment(order.deal?.delivery_date)
+                                  .locale("ru")
+                                  .format("L")}
+                              </Td>
+                              <Td>
+                                <Select
+                                  placeholder="изменить статус"
+                                  defaultValue={order.status}
+                                  width={200}
+                                  onChange={(e) => handleChangeStatus(e, order)}
+                                >
+                                  <option value={"ACCEPTED"}>принял ✅</option>
+                                  <option value={"REJECTED"}>
+                                    отклоненный ❌
+                                  </option>
+                                </Select>
+                              </Td>
+                            </Tr>
+                          ))
+                        : null}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+              </>
             )}
           </TabPanel>
           <TabPanel>
@@ -427,12 +454,14 @@ const Producer = () => {
                 нужно отправить
               </Heading>
 
-              <Button onClick={addProductOnOpen} colorScheme="blue">
-                Добавить продукт
-              </Button>
+              {role !== "MAIN_STOREKEEPER" ? (
+                <Button onClick={addProductOnOpen} colorScheme="blue">
+                  Добавить продукт
+                </Button>
+              ) : null}
             </Flex>
 
-            {orders?.length === 0 ? (
+            {orders?.orders?.length === 0 ? (
               <Flex
                 background={colorMode === "light" ? "#fff" : ""}
                 borderWidth={"1px"}
@@ -446,65 +475,68 @@ const Producer = () => {
                 </Text>
               </Flex>
             ) : (
-              <TableContainer>
-                <Table
-                  variant="simple"
-                  background={colorMode === "light" ? "#fff" : ""}
-                >
-                  <Thead>
-                    <Tr>
-                      <Th>Дата создания</Th>
-                      <Th>ID</Th>
-                      <Th>Вид мебели</Th>
-
-                      <Th>модель</Th>
-                      <Th>количество</Th>
-                      <Th>ткань</Th>
-                      <Th>подробности</Th>
-                      <Th>Дата доставки</Th>
-                      <Th>изменить статус</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {reqIndex === 1
-                      ? orders?.map((order) => (
-                          <Tr key={order.id}>
-                            <Td>
-                              {moment(order.createdAt).locale("ru").format("L")}
-                            </Td>
-                            <Td>{order.order_id}</Td>
-                            <Td>{order.model?.furniture_type?.name}</Td>
-                            <Td>{order.model?.name}</Td>
-                            <Td>{order.qty}</Td>
-                            <Td>{order.tissue}</Td>
-                            <Td whiteSpace={"pre-wrap"}>{order.title}</Td>
-                            <Td>
-                              {moment(order.deal?.delivery_date)
-                                .locale("ru")
-                                .format("L")}
-                            </Td>
-                            <Td>
-                              <Select
-                                isDisabled={order.status === "CREATED"}
-                                defaultValue={order.status}
-                                width={200}
-                                onChange={(e) => handleChangeStatus(e, order)}
-                              >
-                                {order.status === "CREATED" ? (
-                                  <option>на склад</option>
-                                ) : null}
-                                <option value={"ACCEPTED"}>принял ✅</option>
-                                <option value={"REJECTED"}>
-                                  отклоненный ❌
-                                </option>
-                              </Select>
-                            </Td>
-                          </Tr>
-                        ))
-                      : null}
-                  </Tbody>
-                </Table>
-              </TableContainer>
+              <>
+                <TableContainer>
+                  <Table
+                    variant="simple"
+                    background={colorMode === "light" ? "#fff" : ""}
+                  >
+                    <Thead>
+                      <Tr>
+                        <Th>Дата создания</Th>
+                        <Th>ID</Th>
+                        <Th>Вид мебели</Th>
+                        <Th>модель</Th>
+                        <Th>количество</Th>
+                        <Th>ткань</Th>
+                        <Th>подробности</Th>
+                        <Th>Дата доставки</Th>
+                        <Th>изменить статус</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {reqIndex === 1
+                        ? orders?.orders?.map((order) => (
+                            <Tr key={order.id}>
+                              <Td>
+                                {moment(order.createdAt)
+                                  .locale("ru")
+                                  .format("L")}
+                              </Td>
+                              <Td>{order.order_id}</Td>
+                              <Td>{order.model?.furniture_type?.name}</Td>
+                              <Td>{order.model?.name}</Td>
+                              <Td>{order.qty}</Td>
+                              <Td>{order.tissue}</Td>
+                              <Td whiteSpace={"pre-wrap"}>{order.title}</Td>
+                              <Td>
+                                {moment(order.deal?.delivery_date)
+                                  .locale("ru")
+                                  .format("L")}
+                              </Td>
+                              <Td>
+                                <Select
+                                  isDisabled={order.status === "CREATED"}
+                                  defaultValue={order.status}
+                                  width={200}
+                                  onChange={(e) => handleChangeStatus(e, order)}
+                                >
+                                  {order.status === "CREATED" ? (
+                                    <option>на склад</option>
+                                  ) : null}
+                                  <option value={"ACCEPTED"}>принял ✅</option>
+                                  <option value={"REJECTED"}>
+                                    отклоненный ❌
+                                  </option>
+                                </Select>
+                              </Td>
+                            </Tr>
+                          ))
+                        : null}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+              </>
             )}
           </TabPanel>
           <TabPanel>
@@ -517,7 +549,7 @@ const Producer = () => {
               </Heading>
             </Flex>
 
-            {orders?.length === 0 ? (
+            {orders?.orders?.length === 0 ? (
               <Flex
                 background={colorMode === "light" ? "#fff" : ""}
                 borderWidth={"1px"}
@@ -531,63 +563,88 @@ const Producer = () => {
                 </Text>
               </Flex>
             ) : (
-              <TableContainer>
-                <Table
-                  variant="simple"
-                  background={colorMode === "light" ? "#fff" : ""}
-                >
-                  <Thead>
-                    <Tr>
-                      <Th>Дата создания</Th>
-                      <Th>ID</Th>
-                      <Th>Вид мебели</Th>
+              <>
+                <TableContainer>
+                  <Table
+                    variant="simple"
+                    background={colorMode === "light" ? "#fff" : ""}
+                  >
+                    <Thead>
+                      <Tr>
+                        <Th>Дата создания</Th>
+                        <Th>ID</Th>
+                        <Th>Вид мебели</Th>
 
-                      <Th>модель</Th>
-                      <Th>количество</Th>
-                      <Th>ткань</Th>
-                      <Th>подробности</Th>
-                      <Th>Дата доставки</Th>
-                      <Th>изменить статус</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {reqIndex === 2
-                      ? orders?.map((order) => (
-                          <Tr key={order.id}>
-                            <Td>
-                              {moment(order.createdAt).locale("ru").format("L")}
-                            </Td>
-                            <Td>{order.order_id}</Td>
-                            <Td>{order.model?.furniture_type?.name}</Td>
-                            <Td>{order.model?.name}</Td>
-                            <Td>{order.qty}</Td>
-                            <Td>{order.tissue}</Td>
-                            <Td whiteSpace={"pre-wrap"}>{order.title}</Td>
-                            <Td>
-                              {moment(order.deal?.delivery_date)
-                                .locale("ru")
-                                .format("L")}
-                            </Td>
-                            <Td>
-                              <Select
-                                defaultValue={order.status}
-                                width={200}
-                                onChange={(e) => handleChangeStatus(e, order)}
-                              >
-                                <option value={"ACCEPTED"}>принял ✅</option>
-                                <option value={"REJECTED"}>
-                                  отклоненный ❌
-                                </option>
-                              </Select>
-                            </Td>
-                          </Tr>
-                        ))
-                      : null}
-                  </Tbody>
-                </Table>
-              </TableContainer>
+                        <Th>модель</Th>
+                        <Th>количество</Th>
+                        <Th>ткань</Th>
+                        <Th>подробности</Th>
+                        <Th>Дата доставки</Th>
+                        <Th>изменить статус</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {reqIndex === 2
+                        ? orders?.orders?.map((order) => (
+                            <Tr key={order.id}>
+                              <Td>
+                                {moment(order.createdAt)
+                                  .locale("ru")
+                                  .format("L")}
+                              </Td>
+                              <Td>{order.order_id}</Td>
+                              <Td>{order.model?.furniture_type?.name}</Td>
+                              <Td>{order.model?.name}</Td>
+                              <Td>{order.qty}</Td>
+                              <Td>{order.tissue}</Td>
+                              <Td whiteSpace={"pre-wrap"}>{order.title}</Td>
+                              <Td>
+                                {moment(order.deal?.delivery_date)
+                                  .locale("ru")
+                                  .format("L")}
+                              </Td>
+                              <Td>
+                                <Select
+                                  defaultValue={order.status}
+                                  width={200}
+                                  onChange={(e) => handleChangeStatus(e, order)}
+                                >
+                                  <option value={"ACCEPTED"}>принял ✅</option>
+                                  <option value={"REJECTED"}>
+                                    отклоненный ❌
+                                  </option>
+                                </Select>
+                              </Td>
+                            </Tr>
+                          ))
+                        : null}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+              </>
             )}
           </TabPanel>
+          {totalCount > 10 ? (
+            <DynamicPagination
+              totalCount={totalCount}
+              pageSize={limit}
+              currentPage={page}
+              onPageChange={handlePageChange}
+              page={page}
+            >
+              <Select
+                defaultValue={limit}
+                ml={4}
+                onChange={(e) => setLimit(e.target.value)}
+                placeholder="Choose"
+                w={100}
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+              </Select>
+            </DynamicPagination>
+          ) : null}
         </TabPanels>
       </Tabs>
     </Layout>
