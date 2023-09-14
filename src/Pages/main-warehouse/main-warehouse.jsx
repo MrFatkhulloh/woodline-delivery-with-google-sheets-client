@@ -2186,6 +2186,8 @@ const MainWarehouse = () => {
                               ? "info"
                               : p.order?.status === "BOOKED"
                               ? "warning"
+                              : p.order?.status === "CREATED"
+                              ? "info"
                               : "warning"
                           }
                         >
@@ -2206,6 +2208,8 @@ const MainWarehouse = () => {
                             ? "к отправке"
                             : p.order?.status === "BOOKED"
                             ? "Забронировано"
+                            : p.order?.status === "CREATED"
+                            ? "Создан"
                             : "Возврат"}
                         </Alert>
                       </Td>
@@ -2243,7 +2247,8 @@ const MainWarehouse = () => {
                             </MenuItem>
                             <MenuItem
                               isDisabled={
-                                p.order?.status === "SOLD_AND_CHECKED"
+                                p.order?.status === "SOLD_AND_CHECKED" ||
+                                p.order?.status === "CREATED"
                                   ? true
                                   : false
                               }
@@ -2280,7 +2285,10 @@ const MainWarehouse = () => {
                             </MenuItem>
                             <MenuItem
                               isDisabled={
-                                p.order?.status === "ACTIVE" ? true : false
+                                p.order?.status === "ACTIVE" ||
+                                p.order?.status === "SOLD_AND_CHECKED"
+                                  ? true
+                                  : false
                               }
                               onClick={() => {
                                 instance
@@ -2302,7 +2310,10 @@ const MainWarehouse = () => {
 
                             <MenuItem
                               isDisabled={
-                                p.order?.status === "DEFECTED" ? true : false
+                                p.order?.status === "DEFECTED" ||
+                                p.order?.status === "CREATED"
+                                  ? true
+                                  : false
                               }
                               onClick={() => {
                                 instance

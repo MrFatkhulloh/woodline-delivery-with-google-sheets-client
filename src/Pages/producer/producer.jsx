@@ -90,7 +90,7 @@ const Producer = () => {
         }&page=${page}?limit=${limit}&search=${searchValue}`
       )
       .then((res) => {
-        setOrders(res?.data);
+        setOrders(res.data);
         setTotalCount(res?.data?.totalAmount);
       });
   }, [reqIndex, reload, page, limit, searchValue]);
@@ -413,13 +413,13 @@ const Producer = () => {
                   <Input
                     onChange={(e) => setSearchValue(e.target.value.trim())}
                     type="search"
-                    placeholder="Поиск"
+                    placeholder="Поиск ИД"
                   />
                 </InputGroup>
               )}
             </Flex>
 
-            {orders.orders?.length === 0 ? (
+            {orders?.orders?.length === 0 ? (
               <Flex
                 background={colorMode === "light" ? "#fff" : ""}
                 borderWidth={"1px"}
@@ -524,7 +524,7 @@ const Producer = () => {
                             setSearchValue(e.target.value.trim())
                           }
                           type="search"
-                          placeholder="Поиск"
+                          placeholder="Поиск ИД"
                         />
                       </InputGroup>
 
@@ -645,7 +645,7 @@ const Producer = () => {
                 <Input
                   onChange={(e) => setSearchValue(e.target.value.trim())}
                   type="search"
-                  placeholder="Поиск"
+                  placeholder="Поиск ИД"
                 />
               </InputGroup>
             </Flex>
