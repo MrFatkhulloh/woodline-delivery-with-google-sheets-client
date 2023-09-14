@@ -9,8 +9,14 @@ import {
   Heading,
   Icon,
   Input,
+  InputGroup,
+  InputLeftElement,
   List,
   ListItem,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -44,6 +50,7 @@ import { FiMeh } from "react-icons/fi";
 import accounting from "accounting";
 import { OpenModalContext } from "../../Contexts/ModalContext/ModalContext";
 import DynamicPagination from "../../components/pagin/pagin";
+import { AddIcon, ChevronDownIcon, SearchIcon } from "@chakra-ui/icons";
 
 const Producer = () => {
   const {
@@ -73,18 +80,20 @@ const Producer = () => {
   const [limit, setLimit] = useState(10);
   const [totalCount, setTotalCount] = useState();
 
+  const [searchValue, setSearchValue] = useState("");
+
   useEffect(() => {
     instance
       .get(
         `/get-order-by-status?status=${
           reqIndex === 0 ? "NEW" : reqIndex === 1 ? "ACCEPTED" : "REJECTED"
-        }&page=${page}?limit=${limit}`
+        }&page=${page}?limit=${limit}&search=${searchValue}`
       )
       .then((res) => {
         setOrders(res?.data);
         setTotalCount(res?.data?.totalAmount);
       });
-  }, [reqIndex, reload, page, limit]);
+  }, [reqIndex, reload, page, limit, searchValue]);
   const handleChangeStatus = (event, order) => {
     statusCheckOnOpen();
 
@@ -146,7 +155,7 @@ const Producer = () => {
   const handlePageChange = (p) => {
     setPage(p);
   };
-  
+
   const handleTabChange = (index) => {
     setPage(1);
     setReqIndex(index);
@@ -363,10 +372,51 @@ const Producer = () => {
               </Heading>
 
               {role !== "MAIN_STOREKEEPER" ? (
-                <Button onClick={addProductOnOpen} colorScheme="blue">
-                  Добавить продукт
-                </Button>
-              ) : null}
+                <>
+                  <Menu>
+                    <MenuButton
+                      colorScheme="blue"
+                      as={Button}
+                      rightIcon={<ChevronDownIcon />}
+                    >
+                      Действия
+                    </MenuButton>
+                    <MenuList padding={"5px 5px 5px 5px"}>
+                      <InputGroup margin={"0 0 7px 0"}>
+                        <InputLeftElement pointerEvents="none">
+                          <SearchIcon color="gray.300" />
+                        </InputLeftElement>
+                        <Input
+                          onChange={(e) =>
+                            setSearchValue(e.target.value.trim())
+                          }
+                          type="search"
+                          placeholder="Поиск"
+                        />
+                      </InputGroup>
+
+                      <Button
+                        onClick={addProductOnOpen}
+                        colorScheme="blue"
+                        width={"100%"}
+                      >
+                        Добавить продукт
+                      </Button>
+                    </MenuList>
+                  </Menu>
+                </>
+              ) : (
+                <InputGroup maxWidth={"250px"}>
+                  <InputLeftElement pointerEvents="none">
+                    <SearchIcon color="gray.300" />
+                  </InputLeftElement>
+                  <Input
+                    onChange={(e) => setSearchValue(e.target.value.trim())}
+                    type="search"
+                    placeholder="Поиск"
+                  />
+                </InputGroup>
+              )}
             </Flex>
 
             {orders.orders?.length === 0 ? (
@@ -389,7 +439,7 @@ const Producer = () => {
                     variant="simple"
                     background={colorMode === "light" ? "#fff" : ""}
                   >
-                    <Thead position="sticky" top={0} zIndex="docked">
+                    <Thead position="sticky" top={0} zIndex="initial">
                       <Tr>
                         <Th>Дата</Th>
                         <Th>ID</Th>
@@ -455,10 +505,51 @@ const Producer = () => {
               </Heading>
 
               {role !== "MAIN_STOREKEEPER" ? (
-                <Button onClick={addProductOnOpen} colorScheme="blue">
-                  Добавить продукт
-                </Button>
-              ) : null}
+                <>
+                  <Menu>
+                    <MenuButton
+                      colorScheme="blue"
+                      as={Button}
+                      rightIcon={<ChevronDownIcon />}
+                    >
+                      Действия
+                    </MenuButton>
+                    <MenuList padding={"5px 5px 5px 5px"}>
+                      <InputGroup margin={"0 0 7px 0"}>
+                        <InputLeftElement pointerEvents="none">
+                          <SearchIcon color="gray.300" />
+                        </InputLeftElement>
+                        <Input
+                          onChange={(e) =>
+                            setSearchValue(e.target.value.trim())
+                          }
+                          type="search"
+                          placeholder="Поиск"
+                        />
+                      </InputGroup>
+
+                      <Button
+                        onClick={addProductOnOpen}
+                        colorScheme="blue"
+                        width={"100%"}
+                      >
+                        Добавить продукт
+                      </Button>
+                    </MenuList>
+                  </Menu>
+                </>
+              ) : (
+                <InputGroup maxWidth={"250px"}>
+                  <InputLeftElement pointerEvents="none">
+                    <SearchIcon color="gray.300" />
+                  </InputLeftElement>
+                  <Input
+                    onChange={(e) => setSearchValue(e.target.value.trim())}
+                    type="search"
+                    placeholder="Поиск"
+                  />
+                </InputGroup>
+              )}
             </Flex>
 
             {orders?.orders?.length === 0 ? (
@@ -547,6 +638,16 @@ const Producer = () => {
               >
                 отмененные заказы
               </Heading>
+              <InputGroup maxWidth={"250px"}>
+                <InputLeftElement pointerEvents="none">
+                  <SearchIcon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  onChange={(e) => setSearchValue(e.target.value.trim())}
+                  type="search"
+                  placeholder="Поиск"
+                />
+              </InputGroup>
             </Flex>
 
             {orders?.orders?.length === 0 ? (
