@@ -413,7 +413,7 @@ const Producer = () => {
                   <Input
                     onChange={(e) => setSearchValue(e.target.value.trim())}
                     type="search"
-                    placeholder="Поиск"
+                    placeholder="Поиск ИД"
                   />
                 </InputGroup>
               )}
@@ -524,7 +524,7 @@ const Producer = () => {
                             setSearchValue(e.target.value.trim())
                           }
                           type="search"
-                          placeholder="Поиск"
+                          placeholder="Поиск ИД"
                         />
                       </InputGroup>
 
@@ -645,7 +645,7 @@ const Producer = () => {
                 <Input
                   onChange={(e) => setSearchValue(e.target.value.trim())}
                   type="search"
-                  placeholder="Поиск"
+                  placeholder="Поиск ИД"
                 />
               </InputGroup>
             </Flex>
