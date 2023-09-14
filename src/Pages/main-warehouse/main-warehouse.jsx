@@ -2209,7 +2209,7 @@ const MainWarehouse = () => {
                             : p.order?.status === "BOOKED"
                             ? "Забронировано"
                             : p.order?.status === "CREATED"
-                            ? "Созданный"
+                            ? "Создан"
                             : "Возврат"}
                         </Alert>
                       </Td>
