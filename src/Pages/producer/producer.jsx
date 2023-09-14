@@ -90,7 +90,7 @@ const Producer = () => {
         }&page=${page}?limit=${limit}&search=${searchValue}`
       )
       .then((res) => {
-        setOrders(res?.data);
+        setOrders(res.data);
         setTotalCount(res?.data?.totalAmount);
       });
   }, [reqIndex, reload, page, limit, searchValue]);
@@ -419,7 +419,7 @@ const Producer = () => {
               )}
             </Flex>
 
-            {orders.orders?.length === 0 ? (
+            {orders?.orders?.length === 0 ? (
               <Flex
                 background={colorMode === "light" ? "#fff" : ""}
                 borderWidth={"1px"}
