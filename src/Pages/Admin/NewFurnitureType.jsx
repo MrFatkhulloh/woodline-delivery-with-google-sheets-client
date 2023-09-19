@@ -401,7 +401,26 @@ export default function NewFurnitureType() {
         deleteClose();
       });
   };
-  // console.log(modelPrice)
+
+  const handleDownload = () => {
+    instance
+      .get("/models/excel", { responseType: "blob" })
+      .then((response) => {
+        // Create a URL from the blob data
+        const url = URL.createObjectURL(new Blob([response.data]));
+
+        // Create a temporary link element and click it to trigger the download
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "Модели.xlsx";
+        a.click();
+
+        // Clean up the URL object after download
+        URL.revokeObjectURL(url);
+      })
+      .catch((error) => console.error("Error downloading the file:", error));
+  };
+
   return (
     <>
       <Layout>
@@ -751,6 +770,9 @@ export default function NewFurnitureType() {
                 Добавить модель
               </MenuItem>
 
+              <MenuItem onClick={handleDownload} icon={<AddIcon />}>
+                Скачать как файл Excel
+              </MenuItem>
               <InputGroup>
                 <InputLeftElement pointerEvents="none">
                   <SearchIcon color="gray.300" />

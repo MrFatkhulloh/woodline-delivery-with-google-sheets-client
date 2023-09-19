@@ -173,6 +173,7 @@ const ModelRow = ({
             name="type"
             id={element.id}
             onChange={(event) => {
+              console.log(event.target.id)
               handleChange(event.target.id, "company_id", event.target.value);
             }}
             onBlur={(event) =>
