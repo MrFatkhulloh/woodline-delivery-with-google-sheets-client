@@ -56,6 +56,7 @@ import {
   DeleteIcon,
   EditIcon,
   SearchIcon,
+  DownloadIcon
 } from "@chakra-ui/icons";
 import { accounting } from "accounting";
 
@@ -770,7 +771,7 @@ export default function NewFurnitureType() {
                 Добавить модель
               </MenuItem>
 
-              <MenuItem onClick={handleDownload} icon={<AddIcon />}>
+              <MenuItem marginBottom={"10px"} onClick={handleDownload} icon={<DownloadIcon />}>
                 Скачать как файл Excel
               </MenuItem>
               <InputGroup>
