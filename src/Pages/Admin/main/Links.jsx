@@ -23,13 +23,14 @@ import {
   Td,
   Th,
   Thead,
+  Tooltip,
   Tr,
   useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
 import Layout from "../../../components/layout/layout";
 import AddUserModal from "./AddUserModal";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { OpenModalContext } from "../../../Contexts/ModalContext/ModalContext";
 import EditUserModal from "./EditUserModal";
@@ -43,6 +44,8 @@ import {
 import { toast } from "react-toastify";
 import { instance } from "../../../config/axios.instance.config";
 import DynamicPagination from "../../../components/pagin/pagin";
+
+import "./links.css";
 
 const companies = [
   {
@@ -87,6 +90,7 @@ export default function AdminLinkList() {
   const [count, setCount] = useState();
   const [searchValue, setSearchValue] = useState("");
   const [searchedUsers, setSearchedUsers] = useState([]);
+  const [changeLoading, setChangeLoading] = useState(false);
 
   const handleActive = (activeIndex) => {
     const newUsers = users.map((user, index) => {
@@ -140,14 +144,14 @@ export default function AdminLinkList() {
       .catch((error) => {
         console.error(error);
       });
-  }, [reload, page, limit]);
+  }, [reload, page, limit, changeLoading]);
 
   useEffect(() => {
     searchValue !== "" &&
       instance.get(`/search-seller?search=${searchValue}`).then((res) => {
         setSearchedUsers(res.data);
       });
-  }, [searchValue]);
+  }, [searchValue, changeLoading]);
 
   const { colorMode } = useColorMode();
 
@@ -171,6 +175,20 @@ export default function AdminLinkList() {
   const handlePageChange = (p) => {
     setPage(p);
   };
+
+  const handleChangeTelegramStatus = (status, botId) => {
+    setChangeLoading(true);
+
+    instance
+      .put(`/activate-b2b-user/${botId}`, { use_bot: status })
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success("User statusi muvaffaqiyatli o'zgartirildi !!!");
+        }
+      })
+      .finally(() => setChangeLoading(false));
+  };
+
   return (
     <>
       <AddUserModal onOpen={onOpen} isOpen={isOpen} onClose={onClose} />
@@ -217,7 +235,11 @@ export default function AdminLinkList() {
           </Heading>
 
           <Menu>
-            <MenuButton colorScheme="blue" as={Button} rightIcon={<ChevronDownIcon />}>
+            <MenuButton
+              colorScheme="blue"
+              as={Button}
+              rightIcon={<ChevronDownIcon />}
+            >
               Действия
             </MenuButton>
             <MenuList>
@@ -250,7 +272,7 @@ export default function AdminLinkList() {
                 <Th>Телефон пользователя</Th>
                 <Th>Компания</Th>
                 <Th>Роль</Th>
-                <Th>Активен</Th>
+                <Th>ТГ БОТ</Th>
                 <Th>Изменять</Th>
               </Tr>
             </Thead>
@@ -269,11 +291,13 @@ export default function AdminLinkList() {
                   </Td>
                   <Td>{e?.role}</Td>
                   <Td>
-                    <Switch
-                      size="lg"
-                      colorScheme="green"
-                      defaultChecked={e.is_active}
-                      onChange={() => handleActivate(i)}
+                    <input
+                      type="checkbox"
+                      disabled={e.bot_id === null || changeLoading}
+                      checked={e.use_bot}
+                      onChange={() =>
+                        handleChangeTelegramStatus(!e.use_bot, e.id)
+                      }
                     />
                   </Td>
                   <Td>
