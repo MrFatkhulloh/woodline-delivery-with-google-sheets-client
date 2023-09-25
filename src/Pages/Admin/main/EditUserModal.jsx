@@ -142,14 +142,14 @@ const EditUserModal = ({
 
             <Select
               onChange={(e) =>
-                setEditData({ ...editData, company_id: e.target.value })
+                setEditData({ ...editData, comp_id: e.target.value })
               }
-              defaultValue={user.company_id}
+              defaultValue={user.id}
               placeholder="Выбрать компанию"
             >
               {companys?.map((c, i) => {
                 return (
-                  <option key={i} value={c.company_id}>
+                  <option key={i} value={c.id}>
                     {c.name}
                   </option>
                 );
@@ -173,7 +173,9 @@ const EditUserModal = ({
               <option value="PRODUCER">Предпрениматель</option>
               <option value="STOREKEEPER">Кладовщик</option>
               <option value="MAIN_STOREKEEPER">Главный кладовщик</option>
-              <option value="MATERIAL_ACCOUNTANT">Материальный бухгалтер</option>
+              <option value="MATERIAL_ACCOUNTANT">
+                Материальный бухгалтер
+              </option>
             </Select>
           </FormControl>
         </ModalBody>

@@ -54,6 +54,7 @@ const AddUserModal = ({ onOpen, isOpen, onClose }) => {
   };
 
   const sendData = () => {
+    console.log("clicked");
     axios
       .post(
         "/seller",
@@ -66,9 +67,11 @@ const AddUserModal = ({ onOpen, isOpen, onClose }) => {
         }
       )
       .then((response) => {
+        console.log(response);
         onClose();
       })
       .catch((error) => {
+        console.log(error);
         console.log(error);
       });
   };
