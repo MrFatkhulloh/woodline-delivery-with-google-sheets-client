@@ -69,6 +69,8 @@ const AddUserModal = ({ onOpen, isOpen, onClose }) => {
         }
       )
       .then((response) => {
+        console.log(response);
+
         onClose();
       })
       .catch((error) => {
@@ -119,11 +121,11 @@ const AddUserModal = ({ onOpen, isOpen, onClose }) => {
           <FormControl mt={4}>
             <Select
               placeholder="Выбрать компанию"
-              onChange={(e) => handleChange("company_id", e.target.value)}
+              onChange={(e) => handleChange("comp_id", e.target.value)}
             >
               {companys.length &&
                 companys.map((company, comp_index) => (
-                  <option key={comp_index} value={company.company_id}>
+                  <option key={comp_index} value={company.id}>
                     {company.name}
                   </option>
                 ))}
@@ -142,7 +144,9 @@ const AddUserModal = ({ onOpen, isOpen, onClose }) => {
               <option value="PRODUCER">Пред прениматель</option>
               <option value="STOREKEEPER">Кладовщик</option>
               <option value="MAIN_STOREKEEPER">Главный кладовщик</option>
-              <option value="MATERIAL_ACCOUNTANT">Материальный бухгалтер</option>
+              <option value="MATERIAL_ACCOUNTANT">
+                Материальный бухгалтер
+              </option>
             </Select>
           </FormControl>
         </ModalBody>

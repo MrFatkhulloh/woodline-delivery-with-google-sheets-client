@@ -7,7 +7,7 @@ export default function Admin() {
   return (
     <>
       <Routes>
-        <Route path="/new-furniture-type" element={<NewFurnitureType />} />
+         <Route path="/new-furniture-type" element={<NewFurnitureType />} />
         <Route path="/category" element={<Category />} />
         <Route path="/users" element={<AdminLinkList />} />
       </Routes>
