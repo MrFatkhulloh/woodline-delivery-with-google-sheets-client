@@ -8,8 +8,8 @@ import { ChakraProvider } from "@chakra-ui/react";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer as Toastify } from "react-toastify";
 import ModalForm from "./components/applyForm/applyForm";
-axios.defaults.baseURL = "https://mirabdullo.backend4devs.uz";
-// axios.defaults.baseURL = "https://fatkhullo.backend4devs.uz";
+// axios.defaults.baseURL = "https://mirabdullo.backend4devs.uz";
+axios.defaults.baseURL = "https://fatkhullo.backend4devs.uz";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
