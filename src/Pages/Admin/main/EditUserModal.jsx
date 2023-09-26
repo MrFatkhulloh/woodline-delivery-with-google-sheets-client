@@ -55,10 +55,13 @@ const EditUserModal = ({
   }
 
   const handleEdit = () => {
+    const copyData = { ...editData };
+    delete copyData.company_id;
+
     setLoading(true);
     instance
       .put(`/user/${user.id}`, {
-        ...removeNullKeys(editData),
+        ...removeNullKeys({ ...copyData, comp_id: editData.company_id }),
       })
       .then((res) => {
         if (res.status === 200) {
@@ -126,6 +129,7 @@ const EditUserModal = ({
               </InputRightElement>
             </InputGroup>
           </FormControl>
+
           <FormControl mt={4}>
             <FormLabel>Изменить телефон</FormLabel>
             <Input
