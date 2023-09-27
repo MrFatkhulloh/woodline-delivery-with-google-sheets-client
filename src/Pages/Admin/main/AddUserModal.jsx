@@ -57,15 +57,10 @@ const AddUserModal = ({ onOpen, isOpen, onClose }) => {
   };
 
   const sendData = () => {
-    const copyUser = { ...user };
-    delete copyUser.company_id;
-
-    console.log({ ...copyUser, comp_id: user.comp_id });
-
     axios
       .post(
         "/seller",
-        { ...copyUser, comp_id: user.comp_id },
+        { ...user },
         {
           headers: {
             "Content-Type": "application/json",
