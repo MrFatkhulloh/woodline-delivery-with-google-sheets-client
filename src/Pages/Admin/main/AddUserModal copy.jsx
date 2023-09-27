@@ -55,25 +55,25 @@ const AddUserModal = ({ onOpen, isOpen, onClose }) => {
 
   const sendData = () => {
     console.log(user)
-    // axios
-    //   .post(
-    //     "/seller",
-    //     { ...user },
-    //     {
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         token: `${token}`,
-    //       },
-    //     }
-    //   )
-    //   .then((response) => {
-    //     console.log(response);
-    //     onClose();
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //     console.log(error);
-    //   });
+    axios
+      .post(
+        "/seller",
+        { ...user },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            token: `${token}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response);
+        onClose();
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(error);
+      });
   };
 
   return (
