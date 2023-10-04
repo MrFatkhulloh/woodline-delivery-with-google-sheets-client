@@ -61,7 +61,7 @@ const EditUserModal = ({
     setLoading(true);
     instance
       .put(`/user/${user.id}`, {
-        ...removeNullKeys({ ...copyData, comp_id: editData.company_id }),
+        ...removeNullKeys({ ...editData }),
       })
       .then((res) => {
         if (res.status === 200) {
