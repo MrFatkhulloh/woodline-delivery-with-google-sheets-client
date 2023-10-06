@@ -227,7 +227,8 @@ export default function NewFurnitureType() {
   useEffect(() => {
     searchValue.trim() !== ""
       ? instance.get(`/search-model?name=${searchValue}`).then((res) => {
-          setModels(res.data);
+        setModels(res.data);
+        console.log(res)
         })
       : axios
           .get(`/models?page=${page}&limit=${limit}`, {
