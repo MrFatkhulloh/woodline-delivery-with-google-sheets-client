@@ -124,6 +124,7 @@ const Warehouse = () => {
   );
   useEffect(() => {
     instance.get("/warehouse-all").then((res) => {
+      console.log(res.data)
       setCompanys(res.data);
     });
 

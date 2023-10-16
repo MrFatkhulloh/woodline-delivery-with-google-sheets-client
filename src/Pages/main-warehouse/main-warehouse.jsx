@@ -114,6 +114,10 @@ const MainWarehouse = () => {
     "значение не должно быть меньше 6 цифр"
   );
 
+  const [adminWarehouse, setAdminWarehouse] = useState({});
+  const [newAdminWarehouse, setNewAdminWarehouse] = useState({});
+  const [editAdminWarehouseLoading, setAdminWarehouseLoading] = useState(false);
+
   const {
     isOpen: addProductIsOpen,
     onOpen: addProductOnOpen,
@@ -166,6 +170,12 @@ const MainWarehouse = () => {
     isOpen: infoIsOpen,
     onOpen: infoOpen,
     onClose: infoClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: editWarehouseAdminIsOpen,
+    onOpen: editWarehouseAdminOpen,
+    onClose: editWarehouseAdminClose,
   } = useDisclosure();
 
   const [empty, setEmpty] = useState(false);
@@ -293,12 +303,11 @@ const MainWarehouse = () => {
       setCompanys(res.data);
     });
 
-    instance.get("/get-storekeeper").then((res) => {
+    instance.get("/get-by-role?role=STOREKEEPER").then((res) => {
       setUsers(res.data);
     });
 
     instance.get(`/warehouse`).then((res) => {
-      // console.log(res)
       setWarehouses(res.data);
     });
 
@@ -333,6 +342,7 @@ const MainWarehouse = () => {
     productsSearch,
     deliveredProductsSearch,
     filterProductWarehouse,
+    editAdminWarehouseLoading,
   ]);
   useEffect(() => {
     instance
@@ -515,7 +525,7 @@ const MainWarehouse = () => {
   const handleReturnedProduct = () => {
     setReturnedLoading(true);
     instance
-      .put(`/warehouse-product-returned/${returnedProduct?.order?.id}`, {
+      .put(`/warehouse-product-returned/${returnedProduct?.order_id}`, {
         warehouse_id: returnedProdectWarehouseId,
       })
       .then((res) => {
@@ -531,6 +541,7 @@ const MainWarehouse = () => {
         console.log(err);
       });
   };
+  console.log(returnedProduct)
 
   const handePutProduct = async () => {
     console.log(putOrder?.model_id);
@@ -578,9 +589,27 @@ const MainWarehouse = () => {
       })
       .catch((error) => console.error("Error downloading the file:", error));
   };
-  // console.log(moreProductData);
-  // console.log(allMoreProductData);
-  // console.log(warehouses);
+
+  // edit admin warehouse
+  const handleEditWarehouseAdmin = () => {
+    instance
+      .put(`warehouse/${adminWarehouse?.id}`, newAdminWarehouse)
+      .then((res) => {
+        setAdminWarehouseLoading(true);
+        if (res.status === 200) {
+          setAdminWarehouseLoading(false);
+          setReload(!reload);
+          editWarehouseAdminClose();
+          setAdminWarehouse({});
+          toast.success("Изменено успешно");
+        }
+      })
+      .catch((err) => {
+        console.log(`Error in edit admin warehouse ${err}`);
+        toast.error("Этот пользователь привязан к другому складу");
+      });
+  };
+  
   return (
     <Layout>
       {/* ADD WAREHOUSE MODAL */}
@@ -588,7 +617,11 @@ const MainWarehouse = () => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Создать склад</ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton
+            onClick={() => {
+              setAdminWarehouse({});
+            }}
+          />
           <ModalBody display="flex" flexDirection="column" gap="15px">
             <FormControl>
               <FormLabel>enter a name</FormLabel>
@@ -658,7 +691,13 @@ const MainWarehouse = () => {
             >
               Создавать
             </Button>
-            <Button onClick={onClose} variant="ghost">
+            <Button
+              onClick={() => {
+                onClose();
+                setAdminWarehouse({});
+              }}
+              variant="ghost"
+            >
               Закрывать
             </Button>
           </ModalFooter>
@@ -1869,6 +1908,58 @@ const MainWarehouse = () => {
         </ModalContent>
       </Modal>
 
+      {/* EDIT ADMIN WAREHOUSE */}
+      <Modal
+        isOpen={editWarehouseAdminIsOpen}
+        onClose={editWarehouseAdminClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Выберите администратора</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody display={"flex"} flexDirection={"column"} gap={"15px"}>
+            <FormControl>
+              <FormLabel>администратор</FormLabel>
+              <Select
+                defaultValue={adminWarehouse?.seller?.id}
+                onChange={(e) => {
+                  setNewAdminWarehouse({
+                    ...newAdminWarehouse,
+                    admin: e.target.value,
+                  });
+                }}
+              >
+                {users?.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.name}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              onClick={() => {
+                editWarehouseAdminClose();
+              }}
+              variant="ghost"
+            >
+              Закрывать
+            </Button>
+            <Button
+              style={{ marginLeft: "10px" }}
+              isLoading={editAdminWarehouseLoading}
+              onClick={handleEditWarehouseAdmin}
+              colorScheme="blue"
+              mr={3}
+            >
+              Готова
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       <Tabs isFitted>
         <TabList>
           <Tab fontSize={{ "2xl": "2xl", xl: "xl", md: "", sm: "" }}>
@@ -2008,18 +2099,28 @@ const MainWarehouse = () => {
                     <Th>компания</Th>
                     <Th>администратор</Th>
                     <Th>телефон администратора</Th>
-                    {/* <Th>actions</Th> */}
+                    <Th>ДЕЙСТВИЯ</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
                   {warehouses?.map((w, i) => (
-                    <Tr>
+                    <Tr key={i}>
                       <Td>{i + 1}</Td>
                       <Td>{w.name}</Td>
                       <Td>{w.company?.name}</Td>
                       <Td>{w.seller?.name}</Td>
                       <Td>{w.seller?.phone}</Td>
-                      {/* <Td>actions</Td> */}
+                      <Td>
+                        <Button
+                          colorScheme="teal"
+                          onClick={() => {
+                            editWarehouseAdminOpen();
+                            setAdminWarehouse(w);
+                          }}
+                        >
+                          Изменить <EditIcon style={{ marginLeft: "5px" }} />
+                        </Button>
+                      </Td>
                     </Tr>
                   ))}
                 </Tbody>
