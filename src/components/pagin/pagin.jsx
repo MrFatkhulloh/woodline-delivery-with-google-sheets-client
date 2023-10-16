@@ -11,6 +11,10 @@ const DynamicPagination = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
+  useEffect(() => {
+    page && setCurrentPage(page);
+  }, [page]);
+
   const totalPages = Math.ceil(totalCount / pageSize);
 
   const handleClick = (page) => {
@@ -115,10 +119,6 @@ const DynamicPagination = ({
 
     return buttons;
   };
-
-  useEffect(() => {
-    setCurrentPage(page);
-  }, [page]);
 
   return (
     <Flex align="center" justify="center" mt={4}>

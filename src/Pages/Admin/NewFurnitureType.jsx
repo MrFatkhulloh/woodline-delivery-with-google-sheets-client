@@ -238,9 +238,9 @@ export default function NewFurnitureType() {
             },
           })
           .then((response) => {
-            // console.log(response.data.models);
             setModels(response.data.models);
             setTotalPages(response.data.totalAmount);
+            console.log(response)
           })
           .catch((error) => {
             console.error(error);

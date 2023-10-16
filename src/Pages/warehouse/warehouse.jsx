@@ -124,6 +124,7 @@ const Warehouse = () => {
   );
   useEffect(() => {
     instance.get("/warehouse-all").then((res) => {
+      console.log(res.data)
       setCompanys(res.data);
     });
 
@@ -136,6 +137,7 @@ const Warehouse = () => {
         // console.log(res.data);
         setSearchData(res.data.products);
         // console.log(res.data);
+        console.log(res.data.totalAmount);
         setCount(res.data.totalAmount);
       });
   }, [reload, searchProductData, page, limit]);
