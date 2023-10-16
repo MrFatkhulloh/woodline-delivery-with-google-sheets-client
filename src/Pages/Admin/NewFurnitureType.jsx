@@ -228,7 +228,6 @@ export default function NewFurnitureType() {
     searchValue.trim() !== ""
       ? instance.get(`/search-model?name=${searchValue}`).then((res) => {
         setModels(res.data);
-        console.log(res)
         })
       : axios
           .get(`/models?page=${page}&limit=${limit}`, {
@@ -240,7 +239,6 @@ export default function NewFurnitureType() {
           .then((response) => {
             setModels(response.data.models);
             setTotalPages(response.data.totalAmount);
-            console.log(response)
           })
           .catch((error) => {
             console.error(error);
