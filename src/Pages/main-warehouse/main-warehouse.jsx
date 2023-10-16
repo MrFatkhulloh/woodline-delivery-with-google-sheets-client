@@ -288,8 +288,6 @@ const MainWarehouse = () => {
           },
         })
         .then((response) => {
-          // console.log(response);
-          // console.log(bookedOrder);
           setSeller(response.data);
         })
         .catch((error) => {
@@ -297,7 +295,6 @@ const MainWarehouse = () => {
         });
   }, [bookedOrder]);
 
-  // console.log(seller);
   useEffect(() => {
     instance.get("/company").then((res) => {
       setCompanys(res.data);
@@ -318,9 +315,7 @@ const MainWarehouse = () => {
         }`
       )
       .then((res) => {
-        // console.log(res)
         setSearchProductsData(res.data.products);
-        // setProducts(res.data.products);
         setCount3(res.data.totalAmount);
       });
 
