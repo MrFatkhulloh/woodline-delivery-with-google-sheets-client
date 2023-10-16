@@ -597,6 +597,7 @@ const MainWarehouse = () => {
         setAdminWarehouseLoading(true);
         if (res.status === 200) {
           setAdminWarehouseLoading(false);
+          setReload(!reload);
           editWarehouseAdminClose();
           setAdminWarehouse({});
           toast.success("Изменено успешно");
