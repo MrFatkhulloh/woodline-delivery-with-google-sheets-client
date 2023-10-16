@@ -525,7 +525,7 @@ const MainWarehouse = () => {
   const handleReturnedProduct = () => {
     setReturnedLoading(true);
     instance
-      .put(`/warehouse-product-returned/${returnedProduct?.order?.id}`, {
+      .put(`/warehouse-product-returned/${returnedProduct?.order_id}`, {
         warehouse_id: returnedProdectWarehouseId,
       })
       .then((res) => {
@@ -541,6 +541,7 @@ const MainWarehouse = () => {
         console.log(err);
       });
   };
+  console.log(returnedProduct)
 
   const handePutProduct = async () => {
     console.log(putOrder?.model_id);
