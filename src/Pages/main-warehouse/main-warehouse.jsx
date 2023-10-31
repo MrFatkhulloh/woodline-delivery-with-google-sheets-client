@@ -345,9 +345,9 @@ const MainWarehouse = () => {
         `/warehouse-products-search-deal?search=${dealSearch}&page=${page}&limit=${limit}`
       )
       .then((res) => {
-        // console.log(res)
-        setSearchDealProducts(res.data);
-        setCount(res.data?.length);
+        console.log(res.data)
+        setSearchDealProducts(res.data?.products);
+        setCount(res.data?.totalAmount);
       });
   }, [dealSearch, page, limit]);
 
