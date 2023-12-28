@@ -8,19 +8,21 @@ import { ChakraProvider } from "@chakra-ui/react";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer as Toastify } from "react-toastify";
 import ModalForm from "./components/applyForm/applyForm";
-axios.defaults.baseURL = "https://fatkhullo.backend4devs.uz";
+axios.defaults.baseURL = "https://apiv1.woodlines.shop";
 // axios.defaults.baseURL = "https://mirabdullo.backend4devs.uz";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <ModalProvider>
-        <ChakraProvider toastOptions={{ defaultOptions: { position: "top" } }}>
-          <Toastify autoClose={3000} />
-          <App />
-        </ChakraProvider>
-      </ModalProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+    <React.StrictMode>
+        <BrowserRouter>
+            <ModalProvider>
+                <ChakraProvider
+                    toastOptions={{ defaultOptions: { position: "top" } }}
+                >
+                    <Toastify autoClose={3000} />
+                    <App />
+                </ChakraProvider>
+            </ModalProvider>
+        </BrowserRouter>
+    </React.StrictMode>
 );
